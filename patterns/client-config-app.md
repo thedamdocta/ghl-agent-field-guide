@@ -166,9 +166,9 @@ next to the input.
 
 This is the cheapest good idea in the whole app. It converts an invisible property of
 the system into something the operator can see at the moment of editing. Changing the
-event date touches five surfaces; changing a replay-window sentence touches two. She
-The operator does not need to know what the surfaces are to behave correctly once
-they know there are five of them.
+event date touches five surfaces; changing a replay-window sentence touches two. The
+operator does not need to know what the surfaces are to behave correctly once they
+know there are five of them.
 
 It also enforces the §2 rule on you as the builder. If you find yourself writing
 `surfaces: 1` on a field, that field should not be in the form and should not be a

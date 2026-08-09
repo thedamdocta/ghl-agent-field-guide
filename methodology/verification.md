@@ -168,6 +168,29 @@ you must verify by presence.**
 
 ---
 
+## Existence is not definition
+
+A small, humiliating instance of the same principle, committed while writing this file.
+
+A patch script guarded itself with `if 'AGENT_GUIDE' in source:` before inserting a
+constant, so it would not insert twice. It reported *"already present"* and exited
+cleanly. The constant had never been inserted. What the check matched was a
+`print(AGENT_GUIDE)` line elsewhere in the file — the **reference**, added by an
+earlier run that had failed partway. The definition was missing; the name was not.
+
+The program then crashed at runtime with `NameError: AGENT_GUIDE is not defined`,
+which was the only reason anyone found out.
+
+**Substring presence is not the property you care about.** `'X' in source` answers
+*"does this text appear?"*, not *"is X defined?"* — and those diverge exactly when a
+previous attempt half-finished, which is the moment a guard matters most. The fix was
+to check for the assignment, `'AGENT_GUIDE = ' in source`, not the bare name.
+
+The general shape, and it is the same one as empty workflow stubs and unwired
+`workflow_id: ""` fields: **the cheap check passes on the artefact of the failure.**
+Whenever you write a guard, ask what a *partial* previous run would leave behind, and
+whether your check would mistake that debris for success.
+
 ## Verify your verifier
 
 Three separate times in one project, the *verification tooling itself* was wrong:

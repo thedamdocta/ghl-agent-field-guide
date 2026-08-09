@@ -555,6 +555,36 @@ cost of iterating exceeds the cost of waiting for a human.
 
 ---
 
+## 8. Your own tooling
+
+The platform is not the only thing that fails silently. The tools you build to work on
+it do too, and those failures are harder to see because you trust them.
+
+### A default that resolves to something plausible
+
+**Symptom.** A search tool returns results. They look reasonable. They are from the
+wrong corpus entirely, and nothing says so.
+
+**Cause.** A helper resolved its scope as
+`os.environ.get('SOME_PROJECT_DIR', '<a hardcoded path>')`. The environment variable
+was unset in the context the tool actually ran in, so every invocation — from anywhere
+on the machine — silently answered from one hardcoded project. Other projects, with
+hundreds of indexed notes, were simply unreachable. Nobody noticed for months, because
+the tool never returned an *error*; it returned an *answer*.
+
+**Detection.** Ask any tool that chooses something on your behalf to tell you what it
+chose. If it cannot, that is the bug. Run it from a directory it has no business
+defaulting into and see whether the output changes.
+
+**The rule.** *A default that silently produces plausible results is worse than no
+default.* An empty result set makes you look harder. A confident wrong one ends the
+investigation. If a tool picks for you, it must say what it picked — and if nothing
+resolves, it should fail with instructions rather than guess.
+
+This generalises well past search tools: fallback config values, default branches,
+implicit accounts, "current" workspaces. Anywhere a program quietly picks one of
+several valid-looking options, you have this.
+
 ## The shape of all of these
 
 Every entry in this file is one of three things:
