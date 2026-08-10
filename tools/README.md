@@ -1,11 +1,12 @@
 # GHL agent tools
 
-Five standalone Python scripts for building on GoHighLevel programmatically.
+Eleven standalone Python scripts for building on GoHighLevel programmatically.
 Production-verified against a real account, then stripped of every client
 identifier. Nothing here is hardcoded to any location, funnel, page, form, or
 template — everything comes from arguments or environment variables.
 
-Python 3.9+. Standard library only, except `get_token.py`, which needs Playwright.
+Python 3.9+. Standard library only, except `get_token.py` and `create_steps.py`,
+which need Playwright to drive an already-logged-in Chrome.
 
 ---
 
@@ -19,8 +20,12 @@ Getting this wrong is the most common way to lose an afternoon.
 | Credential | **PIT** (`Authorization: Bearer`) | **token-id** JWT (`token-id:` header) |
 | Where it comes from | Settings → Private Integrations | a logged-in browser session |
 | Lifetime | long-lived | ~1 hour |
-| Covers | contacts, custom values, email templates, most CRUD | funnel page writes, workflow CRUD |
-| Tool | `ghl_mcp.py` | `inject_page.py`, `deploy_workflow.py` |
+| Covers | contacts, custom values, email templates, form *reads*, most CRUD | funnel page writes, form writes, workflow CRUD |
+| Tool | `ghl_mcp.py`, `create_custom_values.py` | `inject_page.py`, `create_form.py`, `deploy_workflow.py` |
+
+A third category needs **neither**: `capture_funnel.py` reads any *public* funnel
+page with no credentials at all, and `create_steps.py` drives the UI because step
+creation has no API on either host.
 
 The PIT does **not** reach the internal API — it returns `Unauthorized`.
 `Authorization: Bearer` does **not** work on the internal API either, for *any*
@@ -94,12 +99,15 @@ create and update but **not delete** — archive instead.
 Write operations refuse to run without `--yes`.
 
 **What the MCP does not cover:** no `create-workflow`, and funnel pages are
-read-only. Those need tools 3 and 5 below. Re-check with `search` before
-believing it — the catalogue grows.
+read-only, and there is no create-funnel-step operation at all. Those need
+`inject_page.py`, `deploy_workflow.py` and `create_steps.py` below. Re-check with
+`search` before believing it — the catalogue grows.
 
 ### 2. `get_token.py` — capture the internal `token-id`
 
-Needed only for tools 3 and 5.
+Needed by `inject_page.py`, `create_form.py` and `deploy_workflow.py`.
+`create_steps.py` needs the same logged-in Chrome, but drives the UI rather than
+the token.
 
 **Prerequisite:** Chrome must already be running with a remote-debugging port
 open, on a dedicated profile that you have already logged into GHL by hand:
@@ -128,7 +136,78 @@ the human logs out it stops working — there is no offline path, by design.
 The token lives about an hour and GHL refreshes it while the session is alive, so
 just re-run it. Do not cache it beyond one build.
 
-### 3. `css_emitter.py` — make styling actually apply
+### 3. `capture_funnel.py` — read a real page before you write one
+
+No credentials. Works on **any public GHL funnel page**, including one you did not
+build.
+
+```bash
+python3 capture_funnel.py https://funnel.example.com/optin --out optin.json
+python3 capture_funnel.py <url> --exemplars exemplars.json   # clonable elements
+python3 capture_funnel.py <url> --summary                    # analysis, no files
+```
+
+A public GHL funnel page is a server-rendered Nuxt 3 app, and the **complete page
+definition ships inside the HTML** in `__NUXT_DATA__`. The payload is
+`devalue`-serialized: a flat array where index 0 is the root and **every integer
+inside an object or array is a pointer back into that same array**. Resolve those
+pointers and you have the whole section→row→col→element tree — styles, responsive
+flags, button wiring, merge tags.
+
+Two things the resolver must do or it breaks: bound the depth *and* keep a visited
+set (the graph self-references — one without the other still hangs), and fetch
+with `curl` and a browser UA (Cloudflare 403s Python's default UA).
+
+Desktop and mobile payloads are **byte-identical** — GHL serves one definition and
+does responsive work with per-element flags. Do not fetch twice expecting two
+layouts.
+
+`--exemplars` is the important flag: it writes one clonable element per type, which
+is what `ghl_generator.py` consumes. Mind the **role trap** — an exemplar carries
+its original *role*, not just its schema. Cloning a page's first section when that
+section was the sticky nav produced seven stacked sticky navs, schema-valid and
+semantically wrong, with a zero-difference key diff. When a type occurs more than
+once the tool says so; `--pick TYPE=N` chooses another.
+
+Output holds the source account's real ids. Gitignore it.
+
+### 4. `ghl_generator.py` — build the `pageData` tree
+
+```bash
+python3 ghl_generator.py --emit-example > page-spec.json
+python3 ghl_generator.py --spec page-spec.json --templates exemplars.json \
+    --base captured-pagedata.json --out page.json
+```
+
+`css_emitter.py` *styles* a tree and `inject_page.py` *writes* one; this is what
+**builds** one. It clones the exemplars from step 3 and overrides only text, colour
+and layout — because a GHL element carries dozens of required keys and every value
+is wrapped as `{"value": X}`, so hand-written elements fail in ways that never name
+the missing key.
+
+It mints authoring ids (no leading `c`) and sets `extra.nodeId` to the `c`-prefixed
+rendered id, which is the relationship `css_emitter.py` depends on.
+
+Three semantics it preserves, each one paid for:
+
+- **Button actions are not interchangeable.** `go-to-next-funnel-step` needs no
+  target; `scroll-to-element` writes `extra.scrollToElement`; `openPopup` needs a
+  `popupId`; `go-to-funnel-step` needs a step id. Writing a scroll target into
+  `visitWebsite` is schema-valid, returns 201, and produces a button that moves the
+  page **0px** — that is how every CTA on a six-page funnel ended up inert. The
+  tool refuses an action that requires a target when none was given.
+- **Form submit behaviour lives on the PAGE element, not the form record.**
+  Writing `formAction.actionType` / `redirectUrl` onto the form record returns 200
+  and silently does not persist. Only `"ThankYouMessage"` is verified;
+  `"Redirect"` is a candidate value, **unverified**.
+- **The custom-code payload field is `extra.customCode`.** Guessing `code` / `html`
+  / `text` renders an empty block and the script never runs.
+
+Pass `--base` (a real page's `pageData`) so the seven top-level builder blocks are
+cloned rather than defaulted — the empty defaults are unverified and the tool says
+so loudly.
+
+### 5. `css_emitter.py` — make styling actually apply
 
 Run this **before** injecting any page.
 
@@ -149,7 +228,103 @@ Section-level layout keys off the first; element-level styling — button fills,
 nav typography — keys off the second. Emit only one and half your CSS lands on a
 selector that matches nothing, which reads as "my CSS is ignored".
 
-### 4. `inject_page.py` — write a page and prove it
+### 6. `create_steps.py` — create somewhere to inject into
+
+```bash
+python3 create_steps.py --funnel-id <id> \
+    --step "Registration:registration" --step "Confirmation:confirmation" --apply
+```
+
+`inject_page.py` writes *into* an existing page; it cannot conjure one. **There is
+no REST route for creating a funnel step** — `POST backend/funnels/page` 404s, and
+`PUT services|backend /funnels/page` returns `403 "This route is not yet supported
+by the IAM Service"` for both the PIT and the internal JWT. That is a platform
+gate, not a scope problem. So this drives the real builder UI in the same
+already-logged-in Chrome that `get_token.py` attaches to.
+
+The non-obvious part: the dialog's inputs are **React-controlled**, so
+`el.value = "x"` updates the DOM without telling React — the field looks filled,
+the Create button stays disabled, and nothing explains why. The injected script
+calls the native value setter and dispatches `input` + `change`. Selectors match on
+visible button text, because GHL's generated class names churn between releases and
+the labels do not.
+
+It reads existing step names first and skips matches (GHL happily creates a second
+step with the same name), derives a URL-safe path when you omit one, and **verifies
+each step exists on the funnel afterwards** — a click that lands is not a step that
+exists.
+
+Nothing is created without `--apply`.
+
+### 7. `create_form.py` — give the funnel its own form
+
+```bash
+python3 create_form.py --list                               # find a clone source
+python3 create_form.py --dump <sourceFormId> --out src.json
+python3 create_form.py --name "Webinar registration" --clone-from-file src.json \
+    --fields first_name,email,phone --id-file .form-id --apply
+```
+
+Use a **native** form: a hand-rolled `<form>` in a custom-code block renders
+perfectly and captures no leads. And give each funnel **its own** form — pointing a
+page at a generically-named account form imports that form's fields, image, linked
+header, branding and fixed width, and restyling it changes every other place it is
+embedded.
+
+Build it by **cloning a working form's `formData`** and deleting fields; hand-written
+field dicts miss required keys.
+
+Two warnings the tool encodes:
+
+- **`POST /forms/{id}` 422s if the body contains `locationId`**, and the 422 names
+  the field. Note the asymmetry: create (`POST /forms/`) *requires* `locationId` in
+  the body, update (`POST /forms/{id}`) *rejects* it. `POST /forms/{id}` is the
+  update route — `PUT` and `PATCH` both 404.
+- **The forms list returns `name: null`** for forms created via the backend API, so
+  any "does my form exist?" check that matches on name misses and creates a
+  duplicate, every run, forever. Match on a stored id — that is what `--id-file` is
+  for, and why re-runs update instead of duplicating.
+
+The form renders **inline in the page document, not in an iframe**, so page CSS
+reaches its submit button.
+
+### 8. `create_custom_values.py` — create every slot before anything references it
+
+```bash
+python3 create_custom_values.py --values values.json              # report only
+python3 create_custom_values.py --scan page.json --scan email.html
+python3 create_custom_values.py --values values.json --apply
+python3 create_custom_values.py --values values.json --apply --overwrite
+```
+
+**GHL resolves an unknown `{{custom_values.x}}` to the empty string. Silently.** A
+live email once shipped reading "Grab the now" for exactly this reason and nothing
+failed. `--scan` walks your generated pages and emails, extracts every referenced
+slot, and reports the ones that do not exist — those are live silent failures, and
+the tool exits non-zero on them.
+
+Four API facts it is built around:
+
+- **`PUT /customValues/bulk` is gone.** Not renamed — gone. It returns the
+  *per-value* 422, and a per-value body to the same URL 404s with "The custom value
+  id is invalid", i.e. `bulk` is being parsed as the `{id}` segment. Per-value
+  writes only; twenty-odd calls is fine.
+- **A per-value PUT needs `name` AND `value`.** Value alone fails. The `name` is
+  sourced from the live record, never from a local constant, so an update can never
+  silently rename a key.
+- **A PUT needs an existing id**, so **creation is a separate call** (`POST`, no
+  id). Resolve keys → ids first, then create the missing and update the rest.
+- **`locationId` goes in the path**; in the query it 422s.
+
+`fieldKey` is the wrapped form — `{{ custom_values.x }}` with braces *and* interior
+spaces — so it is parsed with a regex, never string-matched.
+
+Before you seed 70 slots, read `knowledge/custom-values.md` §3: a custom value earns
+its place only when the same string appears on **more than one surface**. In one real
+build 59 of 75 slots were single-surface — each a silent-failure risk that bought
+nothing and made the client's own copy unreadable in the builder.
+
+### 9. `inject_page.py` — write a page and prove it
 
 ```bash
 python3 inject_page.py --page-id <id> --funnel-id <id> \
@@ -174,7 +349,7 @@ And make it a short distinctive phrase from your copy, not markup — GHL
 
 `--dry-run` validates and reports the version it would write.
 
-### 5. `deploy_workflow.py` — create and update workflows
+### 10. `deploy_workflow.py` — create and update workflows
 
 ```bash
 python3 deploy_workflow.py --emit-example > workflows.json   # see the schemas
@@ -209,25 +384,53 @@ schema prevents:
 **Not done when this exits:** triggers and publishing are still UI steps. A
 deployed workflow with no trigger never runs.
 
+### 11. `scrub_secrets.py` — the gate before anything is published
+
+```bash
+python3 scrub_secrets.py . --env-file ../project/.env --secret "Client Name"
+```
+
+A knowledge repo like this one is written by copying lessons out of real client
+work, which is exactly the process most likely to carry an account id, a CDN URL or
+a client's name along with the lesson. Exits non-zero on any finding, so it can gate
+a commit hook. Pass your real literals with `--secret` / `--env-file` — a generic
+scanner cannot know them, and they are the ones that matter.
+
 ---
 
 ## Typical end-to-end order
 
 ```
-1. cp .env.example .env, fill in GHL_PIT + GHL_LOCATION_ID
-2. ghl_mcp.py locations                     # prove auth
-3. ghl_mcp.py search / describe             # find real operations, never guess
-4. ghl_mcp.py execute ...                   # custom values, then email templates
-5. get_token.py                             # internal token, for steps 6-8
-6. css_emitter.py page.json                 # emit sectionStyles
-7. inject_page.py --expect "..."            # write the page, verify rendered
-8. deploy_workflow.py --spec ... --deploy   # workflows (templates must exist)
-9. UI: set workflow triggers, publish, publish the funnel
+ 1. cp .env.example .env, fill in GHL_PIT + GHL_LOCATION_ID
+ 2. ghl_mcp.py locations                       # prove auth
+ 3. ghl_mcp.py search / describe               # find real operations, never guess
+ 4. capture_funnel.py <url> --exemplars ex.json  # READ a real page first
+ 5. get_token.py                               # internal token, for 6-11
+ 6. ghl_generator.py --spec ... --out page.json  # BUILD the tree
+ 7. css_emitter.py page.json                   # emit sectionStyles (or nothing styles)
+ 8. create_steps.py --funnel-id ... --apply    # somewhere to inject into
+    create_form.py --name ... --apply          # the funnel's own form
+    create_custom_values.py --values ... --apply   # every slot, before it is referenced
+ 9. inject_page.py --expect "..."              # write the page
+10. verify: sites.leadconnectorhq.com/preview/<pageId> — the ONLY proof
+11. ghl_mcp.py execute create-email-template   # emails (before workflows)
+12. deploy_workflow.py --spec ... --deploy     # workflows reference those templates
+13. UI: set workflow triggers, publish, publish the funnel
 ```
 
-Create **custom values before anything references them.** GHL resolves an unknown
+Steps 4→7 are the read/build/style loop; run them as many times as you like without
+touching the account. Nothing before step 8 writes anything.
+
+Two ordering rules that are not negotiable:
+
+**Create custom values before anything references them.** GHL resolves an unknown
 `{{custom_values.x}}` to an empty string, silently — a live email that reads
-"Grab the now" is what that failure looks like in production.
+"Grab the now" is what that failure looks like in production. Run
+`create_custom_values.py --scan` over your generated pages and emails as the check.
+
+**Create email templates before deploying workflows.** `workflowData.templates` is
+the list of *steps*, not email templates — but an email *step* references a template
+by id, so the template must already exist.
 
 ---
 
