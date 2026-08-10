@@ -59,6 +59,10 @@ Work through this. It is short and it prevents the expensive category of mistake
 - [ ] Do you have a Private Integration Token and a location id? (`knowledge/auth.md`)
 - [ ] Do you know which of the two hosts your task lives on, and therefore which auth
       scheme applies? Getting this wrong looks exactly like a bad credential.
+- [ ] Writing pages, forms, funnel steps or workflows? You need the internal token,
+      and you can get it **without a human** — see
+      [`knowledge/getting-the-token.md`](knowledge/getting-the-token.md). Check for an
+      already-authenticated Chrome profile before asking anyone for anything.
 - [ ] Have you tried the MCP server's `search_operations` before assuming an endpoint
       doesn't exist? An operation missing from that catalogue is **not** proof the
       platform can't do it — workflows are creatable via the internal API despite being

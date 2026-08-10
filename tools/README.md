@@ -105,6 +105,10 @@ read-only, and there is no create-funnel-step operation at all. Those need
 
 ### 2. `get_token.py` — capture the internal `token-id`
 
+> Full cold-start runbook, including launching Chrome yourself and what to do when
+> no authenticated profile exists yet:
+> [`../knowledge/getting-the-token.md`](../knowledge/getting-the-token.md)
+
 Needed by `inject_page.py`, `create_form.py` and `deploy_workflow.py`.
 `create_steps.py` needs the same logged-in Chrome, but drives the UI rather than
 the token.
