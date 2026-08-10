@@ -585,6 +585,26 @@ This generalises well past search tools: fallback config values, default branche
 implicit accounts, "current" workspaces. Anywhere a program quietly picks one of
 several valid-looking options, you have this.
 
+### Applying CSS at the preview URL
+
+**Symptom.** CSS "applied" and nothing changes — or changes and vanishes on reload.
+No error at any point.
+
+**Cause.** `sites.leadconnectorhq.com/preview/{pageId}` is a rendered output, not the
+page. **The preview URL is a photograph.** The page lives in `pageData`; page CSS
+belongs in a `custom-code` element inside it, and form CSS belongs in the form record
+at `formData.form.fieldCSS`. Neither lives at the URL you are looking at.
+
+This one is induced by the documentation, including this repo's: the preview URL is
+described everywhere as "the verification surface", which is true, and reads to a
+tired agent as "where the page is". Both statements are about the same URL and only
+one of them is about writing.
+
+**Detection.** Ask what object you are modifying. If the answer is a URL rather than a
+record, stop. And note the two destinations are different DOCUMENTS — a form renders
+in its own document, so page CSS cannot reach it and form CSS cannot escape it. Style
+a submit button in one place only and the funnel ships two different buttons.
+
 ## The shape of all of these
 
 Every entry in this file is one of three things:

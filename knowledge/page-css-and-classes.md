@@ -416,3 +416,44 @@ For CSS specifically, grepping the HTML is not enough either:
 - [`../patterns/design-systems-in-ghl.md`](../patterns/design-systems-in-ghl.md) — holding one design system across pages and email
 - [`../methodology/design-quality.md`](../methodology/design-quality.md) — measuring instead of eyeballing
 - [`../tools/README.md`](../tools/README.md) — the pipeline these tools sit in
+
+---
+
+## Where CSS goes — and the mistake that keeps happening
+
+**Never try to apply CSS at the preview URL.** An inheriting agent lost time to this
+and it was entirely avoidable.
+
+```
+https://sites.leadconnectorhq.com/preview/{pageId}
+```
+
+That is a **rendered output**. It is read-only. It is the surface you *check* your work
+on, never a surface you write to — there is nothing there to modify, and anything you
+appear to change in a browser session is gone on reload. It is documented all over this
+repo as "the verification surface", which is true and evidently easy to misread as "the
+place the page lives". The page lives in `pageData`. The preview is a photograph of it.
+
+**CSS has exactly two destinations, and which one depends on what you are styling:**
+
+| styling… | goes into | how |
+|---|---|---|
+| the **page** — sections, headings, buttons, layout | a `custom-code` element in `pageData` (`extra.customCode`, wrapped in `<style>`) | `page_shell.py --attach`, then `inject_page.py` |
+| the **form** — inputs, placeholders, the submit button, dropdowns | the **form record**, at `formData.form.fieldCSS` | `POST backend…/forms/{formId}` |
+
+**They are different documents and neither reaches the other.** A GHL form renders in
+its own document — an iframe when embedded on a third-party site — so page CSS cannot
+cross into it and form CSS cannot escape it. Put form rules on the page and precisely
+nothing happens; the page still returns 201 and the preview still renders, which is why
+this failure is quiet.
+
+The practical consequence people miss: **a submit button has to be styled twice.** Once
+on the page for the page's own call-to-action, once in `fieldCSS` for the one inside the
+form. Style it in one place only and the funnel ships with two different buttons, one of
+which you did not design.
+
+### The check
+
+After writing either one, reload the preview URL and confirm the change is *there*.
+That is what the preview is for. If you find yourself editing anything at that URL, you
+are working on the photograph.

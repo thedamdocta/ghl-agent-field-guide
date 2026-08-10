@@ -8,6 +8,10 @@
    ON a funnel page.
 
    HOW IT GETS APPLIED
+     NOT at the preview URL. sites.leadconnectorhq.com/preview/{pageId} is a
+     rendered photograph of the page — read-only. It is where you CHECK this
+     worked, never where you apply it. An agent lost time to exactly that.
+
      Not through `styles` on your elements. GHL does not compile an element's
      `styles` dict into CSS (knowledge/funnel-pages.md §4). Two stylesheets
      actually reach the browser and you author both:

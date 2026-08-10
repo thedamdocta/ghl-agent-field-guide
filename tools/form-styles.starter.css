@@ -6,6 +6,10 @@
    something misbehaves.
 
    HOW IT GETS APPLIED
+     NOT at the preview URL. sites.leadconnectorhq.com/preview/{pageId} is a
+     rendered photograph of the page — read-only. It is where you CHECK this
+     worked, never where you apply it. An agent lost time to exactly that.
+
      Not by your site's stylesheet. A GHL form renders in its own document
      (an iframe when embedded on a third-party site), so nothing you write on
      the host page reaches it. This CSS goes INTO the form record:
