@@ -84,17 +84,38 @@ a two-minute manual step, once per project.
 
 ## 5. `PAGE_ID`
 
-Least tidy of the four. In order of reliability:
+Fully solved. **All four query params are required:**
 
-1. **The builder URL.** Open the page in the funnel builder; the id is in the address.
-   Always works.
-2. **`GET /funnels/page?funnelId=<id>&limit=20&offset=0`** — `funnelId`, `limit` and
-   `offset` are all **required**, and `locationId` must NOT be passed.
-   ⚠️ **In testing this returned `pages: 0` on a funnel that demonstrably had six.**
-   Treat it as unreliable and fall back to the builder URL. If you find the condition
-   under which it works, correct this file.
-3. `tools/create_steps.py` prints the ids of steps it creates — capture them then
-   rather than re-discovering them later.
+```bash
+curl -s -H "Authorization: Bearer $GHL_PIT" -H "Version: 2021-07-28" -A "Mozilla/5.0" \
+  "https://services.leadconnectorhq.com/funnels/page?\
+funnelId=$FUNNEL_ID&locationId=$GHL_LOCATION_ID&limit=20&offset=0"
+```
+
+Returns one object per page carrying `_id` (the **pageId** you inject into), `name`,
+`funnelId`, `locationId`, and `stepId`.
+
+**Two traps, and they are why an earlier version of this file called the endpoint
+unreliable:**
+
+1. **The response is a BARE ARRAY**, not `{"pages": [...]}`. A parser doing
+   `data.get("pages", [])` finds nothing and reports zero pages on a funnel that has
+   six. Nothing errors. This is the shape of almost every silent failure in this
+   guide: the request succeeded and the reader was wrong.
+
+2. **`locationId` is required even though the MCP catalogue omits it.**
+   `describe_operation getPagesByFunnelId` lists only `funnelId`, `limit` and `offset`.
+   Omit `locationId` and you get `422 "locationId should not be empty"`. Omit `offset`
+   and you get `422 "offset should not be empty"`. **The catalogue's parameter list can
+   be incomplete — the 422 is the authority.** Post a deliberately minimal request and
+   let the validator name what it wants.
+
+Also useful: `GET /funnels/page/count?funnelId=…&locationId=…` returns
+`{"count": N}` — a cheap way to check whether your parser is lying to you.
+
+Other sources: the **builder URL** (the id is in the address) always works, and
+`tools/create_steps.py` prints the ids of steps it creates — capture them then rather
+than re-deriving them later.
 
 **Keep an id map.** Write `page-ids.json` mapping human names to ids the moment you
 have them. Every later step needs them and re-deriving them is pure waste.

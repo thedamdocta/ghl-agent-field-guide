@@ -471,3 +471,13 @@ spaces, which does not match the compact form you write into content.
   technique applies to the PUBLIC host only.
 - **Form `name: null`** appears specific to API-created forms; UI-created forms
   carry a real name.
+
+### The MCP catalogue can under-report parameters (2026-08-10)
+
+`describe_operation getPagesByFunnelId` lists `funnelId`, `limit`, `offset`.
+The endpoint also **requires `locationId`**, and says so in a 422 if you omit it.
+Treat `describe_operation` as a strong hint, not a contract: **the validator is
+the authority.** Send a minimal request deliberately and read what it demands.
+
+Related shape trap: `GET /funnels/page` returns a **bare array**, not a wrapped
+`{"pages": [...]}` object. A parser expecting the wrapper silently reports zero.
