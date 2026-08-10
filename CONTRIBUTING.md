@@ -33,6 +33,47 @@ sentence itself, not in a footnote.
 
 ---
 
+## Treat this as a product
+
+If this were sold, a tool in it that does not run would be a defect, not a
+documentation problem. Hold that standard.
+
+**Every tool ships tested, not inspected.** Reading code and concluding it works is
+the failure this repository was built out of. Before anything is committed:
+
+1. `--help` runs clean, exit 0.
+2. The tool has been RUN — on its offline paths at minimum (argument parsing, payload
+   construction, dry run), and against a real account where that is safe and
+   reversible.
+3. Anything it emits has been fed to whatever consumes it next. A spec that
+   `--emit-example` produces must survive the tool that reads specs. A generated page
+   must survive the CSS emitter.
+4. The result was **verified independently** — read the value back, not the response
+   that claims it was written. A 200 is not evidence, and neither is a tool printing
+   "OK".
+
+**Say what you ran.** A commit message that claims a tool works should name the
+command and the result. "Verified" without a command is an opinion.
+
+### The specific failure this prevents
+
+Four times in one session this repo shipped a *description* of an artifact instead of
+the artifact:
+
+| documented | missing |
+|---|---|
+| how to decode `__NUXT_DATA__` | the decoder |
+| "clone an element's shape" | any element corpus |
+| "clone a form's field schema" | any seed schema |
+| "style via `fieldCSS`, target `#_builder-form`" | a working stylesheet |
+
+Each one reads as complete. Each one leaves the reader to redo work that was already
+done — and on a fresh account, three of the four are impossible to redo at all.
+
+**The test:** when you write "do X", ask whether X requires an artifact you already
+have. If it does, ship the artifact. The output of your discovery is the deliverable;
+telling the next agent to repeat the discovery is not passing on knowledge.
+
 ## The rules
 
 1. **Date anything time-sensitive.** Endpoints disappear. One documented here worked in
