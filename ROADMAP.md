@@ -21,6 +21,11 @@ That is why this repo is split the way it is, and why **the answer to "how do I 
 is usually "which X"**. Expect to go deeper than feels reasonable — GHL rewards it and
 punishes assuming.
 
+**Inheriting this properly?** [`vault/`](vault/README.md) is this repository distilled
+into 51 atomic memory notes — one file per fact, indexed by
+[`vault/_GHL_INDEX.md`](vault/_GHL_INDEX.md) — so the knowledge surfaces from your own
+memory search instead of needing a re-read.
+
 Two files pay for themselves before you touch anything:
 
 1. [`methodology/how-to-learn-ghl.md`](methodology/how-to-learn-ghl.md) — how to find
@@ -127,6 +132,7 @@ knowledge/known-unknowns.md      or it may be genuinely blocked — check first
 
 ```bash
 python3 tools/check_docs.py .          # every documented flag exists; no dead links
+python3 tools/check_vault.py vault/    # notes parse, names match, links resolve
 python3 tools/scrub_secrets.py . --env-file .env --secret "<client name>"
 ```
 

@@ -5,8 +5,11 @@ Production-verified against a real account, then stripped of every client
 identifier. Nothing here is hardcoded to any location, funnel, page, form, or
 template — everything comes from arguments or environment variables.
 
-Python 3.9+. Standard library only, except `get_token.py` and `create_steps.py`,
-which need Playwright to drive an already-logged-in Chrome.
+Python 3.9+. Standard library only, except the four that drive an already-logged-in
+Chrome and so need Playwright: `get_token.py`, `create_steps.py`,
+`configure_trigger.py` and `publish_workflow.py` (plus `ghl_ui.py`, the library the
+last two share). All of them import Playwright *lazily*, so `--help` works on a
+machine that has never installed it.
 
 ---
 
@@ -24,8 +27,10 @@ Getting this wrong is the most common way to lose an afternoon.
 | Tool | `ghl_mcp.py`, `create_custom_values.py` | `inject_page.py`, `create_form.py`, `deploy_workflow.py` |
 
 A third category needs **neither**: `capture_funnel.py` reads any *public* funnel
-page with no credentials at all, and `create_steps.py` drives the UI because step
-creation has no API on either host.
+page with no credentials at all, and `create_steps.py`, `configure_trigger.py` and
+`publish_workflow.py` drive the UI because creating a funnel step, attaching a
+workflow trigger and publishing a workflow have **no API on either host**. Those
+three borrow a live browser session instead of a token.
 
 The PIT does **not** reach the internal API — it returns `Unauthorized`.
 `Authorization: Bearer` does **not** work on the internal API either, for *any*
@@ -46,7 +51,8 @@ Two more rules that hold everywhere:
 
 ```bash
 cp .env.example .env      # then fill in GHL_PIT and GHL_LOCATION_ID
-pip install playwright    # only needed for get_token.py
+pip install playwright    # only for the four UI-driving tools; no `playwright
+                          # install` — they CONNECT to your Chrome
 ```
 
 `GHL_LOCATION_ID` is the 20-character id in your GHL URL:
@@ -609,8 +615,104 @@ schema prevents:
   Cold start: deploy once to mint ids, then run again to wire them. The `--state`
   file carries ids between runs and is what stops re-runs creating duplicates.
 
-**Not done when this exits:** triggers and publishing are still UI steps. A
-deployed workflow with no trigger never runs.
+**Not done when this exits:** the workflow has a body and nothing else. Its trigger
+is unset and it is still a Draft — which means it is inert. The next two tools are
+what make it actually run, and they are the last two steps of the chain.
+
+### 11b. `configure_trigger.py` — attach the trigger (there is no API)
+
+```bash
+python3 configure_trigger.py --workflow "WF 1" --trigger "Form Submitted"
+python3 configure_trigger.py --workflow "WF 1" --trigger "Form Submitted" --apply
+python3 configure_trigger.py --workflow "WF 2" --trigger "Contact Tag" \
+    --filter "Tag is:did-not-attend" --apply
+```
+
+A workflow with no trigger has no way in. Every step is correct, every email exists,
+and not one contact will ever enter it — and nothing in the UI says so. There is no
+endpoint for this on either API; the `trigger` field in a build spec is a note to a
+human, and nothing consumes it. So this drives the builder in the same
+already-logged-in Chrome that `get_token.py` attaches to.
+
+Three things it handles that are not guessable:
+
+- **The picker renders below the fold.** A coordinate click at those coordinates
+  lands on whatever is actually on screen there, which is usually nothing, silently.
+  Every click in the picker is a *dispatched* MouseEvent instead, which fires on the
+  element wherever it is.
+- **The first-view modal blocks everything.** The AI-builder modal opens the first
+  time any workflow is opened and eats every click underneath it. It is dismissed on
+  the way in, before anything else is attempted.
+- **Frame references die on Vue Router navigation.** The frame URL does not change,
+  but the handle goes stale and every later call throws. The frame is re-acquired by
+  polling for expected content after every navigating click.
+
+**Filters are the brittle part** — they are framework-generated select widgets with
+no stable ids, found by position in the config panel. When a filter step fails this
+tool **saves nothing** and says so, leaving the panel open for you to finish by hand:
+a half-configured trigger that got saved is worse than no trigger, because it looks
+done. It also refuses to add a trigger whose label is already on the canvas unless
+you pass `--force`, since two triggers means two ways in and every contact runs the
+workflow twice.
+
+It verifies by re-reading the canvas afterwards — a click that lands is not a trigger
+that exists. Nothing is changed without `--apply`, and the workflow is still a Draft
+when it exits.
+
+### 11c. `publish_workflow.py` — Draft → Published (there is no API)
+
+```bash
+python3 publish_workflow.py --all
+python3 publish_workflow.py --workflow "WF 1" --apply --verify
+python3 publish_workflow.py --all --apply --verify
+```
+
+A workflow deploys in **Draft**, and a draft workflow is inert: the trigger never
+fires, no contact ever enters it, and nothing anywhere tells you. Everything the
+build did is real and does nothing. There is no endpoint for publishing either, so
+this flips the toggle.
+
+Two details, both of which cost hours if you improvise:
+
+1. **Read the state from `aria-checked`, never from page text.**
+   `body.innerText.includes('Draft')` returns **true on a workflow that is already
+   published** — the word survives elsewhere in the builder chrome (save-state
+   labels, version history). A tool that believes it reports "still draft" forever,
+   or reports success at random. The toggle is `[role="switch"]`;
+   `aria-checked="true"` means Published and nothing else does.
+2. **The toggle alone persists nothing.** Flipping it sets local Vue state. Navigate
+   away without clicking Save and the workflow is a draft again, with no error and no
+   warning. This tool refuses to report success if it cannot find and click Save.
+
+One **fresh page load per workflow**: walking the paginated list in place loses frame
+references and starts throwing on the second row. `--all` opens every workflow on the
+list and skips the ones already live, so it publishes exactly the drafts. `--verify`
+re-opens each workflow from a fresh list load and re-reads `aria-checked`, which is
+the only thing that proves Save actually persisted rather than the Vue state still
+being warm. Names resolve the way `ghl_ids.py` resolves a funnel — exact, then a
+unique prefix, then a unique substring, and several matches is an error that lists
+them.
+
+### `ghl_ui.py` — the shared iframe plumbing behind both
+
+```bash
+python3 ghl_ui.py --self-test
+```
+
+Not a step; a library. Both UI tools stand on it, so the cross-origin rules live in
+one place and cannot drift apart: acquire the *frame* rather than the page, prefer
+dispatched events over the mouse, translate any real mouse click through the iframe's
+**queried** `bounding_box()` rather than a hardcoded offset (list view and full-page
+builder view do not agree), re-acquire frames after navigation, and reach a builder
+only by clicking a row in the list — a direct `/automation/builder/<id>` URL does not
+create the iframe at all. Its module docstring is the reference for all of that.
+`--self-test` runs offline fixture tests: no browser, no network, no account touched.
+
+> **UNTESTED against a live account.** Both tools above were verified offline —
+> argument parsing, every refusal path, and both state machines driven against a
+> stubbed browser — but **no browser path in either has been run against a real
+> GoHighLevel account.** Treat your first run as a test, not as a deploy: start with
+> a `--dry-run` on one workflow and read the result before you reach for `--all`.
 
 ### 12. `scrub_secrets.py` — the gate before anything is published
 
@@ -648,7 +750,9 @@ scanner cannot know them, and they are the ones that matter.
     push_emails.py --manifest ... --check           # offline; refuses a bad write
     push_emails.py --manifest ... --apply --verify  # writes, then proves on previewUrl
 12. deploy_workflow.py --spec ... --deploy     # workflows reference those template ids
-13. UI: set workflow triggers, publish, publish the funnel
+13. configure_trigger.py --workflow ... --trigger ... --apply   # UI-driven; no API
+14. publish_workflow.py --all --apply --verify # UI-driven; no API. Draft == inert
+15. UI, by hand: publish the funnel (no tool for that one yet)
 ```
 
 Steps 4→7 are the read/build/style loop; run them as many times as you like without

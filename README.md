@@ -40,6 +40,7 @@ shipping something that returns `200 OK` and does nothing.
 | **know what content to put in** — brief → capture → spec → page | [`methodology/producing-the-work.md`](methodology/producing-the-work.md) |
 | stop it looking templated | [`methodology/design-quality.md`](methodology/design-quality.md) |
 | write the words | [`methodology/writing-copy.md`](methodology/writing-copy.md) |
+| **install this into your own memory** — 51 atomic notes, one per fact | [`vault/`](vault/README.md) |
 
 The last three are the newest and the least like anything else you have read. The rest
 of this repository teaches mechanism — how a page is shaped, where behaviour lives, how

@@ -93,8 +93,16 @@ telling the next agent to repeat the discovery is not passing on knowledge.
 
 ```bash
 python3 tools/check_docs.py .        # every documented flag exists; no dead links
+python3 tools/check_vault.py vault/  # notes parse, names match, links resolve
 python3 tools/scrub_secrets.py . --env-file .env --secret "<client name>"
 ```
+
+**`check_vault.py` exists for the same reason, one layer down.** The note package
+shipped with four descriptions that could not be parsed as YAML — values containing
+`": "` left unquoted, which a loader reads as a nested mapping rather than a string.
+The check that passed them tested whether the text `description:` appeared in the file.
+It did. That is not the same question, and a note whose frontmatter does not parse is
+invisible to exactly the search the note exists to be found by.
 
 **`check_docs.py` exists because prose rules do not survive a tired session.** An
 inheriting agent followed the golden path and hit two commands naming flags no parser

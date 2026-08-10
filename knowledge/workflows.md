@@ -6,7 +6,11 @@ verified is labelled **UNVERIFIED** inline.
 
 **Scope warning up front.** There is no public API for creating workflows, and the
 internal one only covers the *body* of a workflow. **Triggers and publishing have no
-API at all** — they are browser-only. Plan for that before you promise automation.
+API at all** — they are browser-only. That is not a handoff to a human: the body goes
+in through `tools/deploy_workflow.py`, and the two browser-only steps have tools of
+their own, `tools/configure_trigger.py` and `tools/publish_workflow.py`. Plan for the
+split before you promise automation — and note that **neither browser tool has been
+run against a live account yet**; see [`known-unknowns.md`](known-unknowns.md).
 
 ---
 
@@ -17,8 +21,8 @@ API at all** — they are browser-only. Plan for that before you promise automat
 | Create a workflow shell | `POST backend.leadconnectorhq.com/workflow/{locationId}` — **internal API, verified** |
 | Write the workflow body (steps) | `PUT backend.leadconnectorhq.com/workflow/{locationId}/{workflowId}` — **internal API, verified** |
 | Read a workflow back | `GET backend.leadconnectorhq.com/workflow/{locationId}/{workflowId}` — verified |
-| **Configure the trigger** | **NO API.** Browser automation only. |
-| **Publish (Draft → Published)** | **NO API.** Browser automation only. |
+| **Configure the trigger** | **NO API.** Browser automation only — `tools/configure_trigger.py`. |
+| **Publish (Draft → Published)** | **NO API.** Browser automation only — `tools/publish_workflow.py`. |
 | Create a workflow via GHL's MCP server | **Does not exist.** The catalogue offers only `get-workflow`, `add-contact-to-workflow`, `delete-contact-from-workflow`, `list-workflow-campaigns`. |
 
 **Check the catalogue before believing a capability is missing, and before believing
@@ -647,16 +651,24 @@ start from "contact exists".
 
 ## 7. What is still manual after deploy
 
-Both of these have **no API** and require browser automation:
+Both of these have **no API** and require browser automation. "Manual" means
+*browser*, not *human* — each has a tool:
 
-1. **Trigger configuration.** The `trigger` field in your local build spec is
-   documentation for a human/browser step, not something the API consumes.
-2. **Publish (Draft → Published).** Workflows deploy in **Draft** and do nothing until
-   published.
+1. **Trigger configuration** — `tools/configure_trigger.py`. The `trigger` field in
+   your local build spec is documentation for the browser step; the API never
+   consumes it. A workflow with no trigger has no way in, and nothing flags it.
+2. **Publish (Draft → Published)** — `tools/publish_workflow.py`. Workflows deploy in
+   **Draft** and do nothing until published. `--all` publishes exactly the drafts.
+
+**Neither tool's browser path has been run against a live account yet.** Both were
+built from the verified production pattern and checked offline only. Dry-run first
+(that is the default in both), read the result, and do not report a build as finished
+on the strength of an exit code you have not watched.
 
 **Detect publish state via `aria-checked` on the `[role="switch"]` element — never via
 `body.innerText.includes('Draft')`.** The word "Draft" appears elsewhere in the
-builder chrome and returns a false positive.
+builder chrome and returns a false positive. And **click Save after toggling**: the
+toggle sets local Vue state only, so navigating away discards it without an error.
 
 ---
 
@@ -680,7 +692,9 @@ builder chrome and returns a false positive.
    carries at least one condition **and has its two branch nodes**, every anchored
    wait has a populated `appointmentStartAfter` (not just `startAfter`), and every
    `next`/`parentKey`/`targetNodeId` resolves to a step that exists.
-8. Configure triggers in the browser.
-9. Publish in the browser. Verify via `aria-checked`.
+8. Configure triggers: `configure_trigger.py --workflow "<name>" --trigger "<type>"`,
+   then again with `--apply`. It verifies by re-reading the canvas.
+9. Publish: `publish_workflow.py --all --apply --verify`. Verified via `aria-checked`
+   on a fresh page load — never via page text.
 10. Confirm the event anchor custom value holds a real, parseable datetime. It is the
     one value that silently disables half the sequence.

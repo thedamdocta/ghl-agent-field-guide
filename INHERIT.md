@@ -37,13 +37,23 @@ CLAUDE.md, a RAG store — the shape that works is **one file per fact, with a o
 description that lets future-you decide relevance without opening it**, plus an index
 that gets loaded every session.
 
+**That work is already done. Do not redo it.** [`vault/`](vault/README.md) is this
+repository distilled into **51 atomic notes, one fact per file**, each with a
+description written to be matched by a search — including the symptom you would
+actually type when stuck (*"both branches ran"*, *"CSS not applying"*). Copy the
+`ghl-*.md` files into your memory directory and paste
+[`vault/_GHL_INDEX.md`](vault/_GHL_INDEX.md) into the index your session-start protocol
+already loads. That second step is the one that makes them findable; skipping it leaves
+you with 51 files nothing will ever surface.
+
 A reasonable import:
 
 1. **Read `methodology/` end to end. Once, properly.** It is short and it is the part
    that changes how you work rather than what you know.
-2. **Write one memory note per hard-won fact** — not one note per file here. Granularity
-   matters: "the internal API uses a `token-id` header, not Bearer" is a note. "GoHighLevel
-   API reference" is not; it will never surface at the moment you need it.
+2. **Install `vault/` and index it** (above). Then write your own notes for what *you*
+   discover — one per hard-won fact, not one per file here. Granularity matters: "the
+   internal API uses a `token-id` header, not Bearer" is a note. "GoHighLevel API
+   reference" is not; it will never surface at the moment you need it.
 3. **Index them.** A note nobody can find is a note that doesn't exist.
 4. **Keep the failure attached to the lesson.** "Verify at the rendered surface" is
    forgettable advice. "Two writes returned 200, the API echoed them back, and the live

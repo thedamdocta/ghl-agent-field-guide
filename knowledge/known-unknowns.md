@@ -20,6 +20,11 @@ human required. Each one says so and points at
 [`driving-the-ui.md`](driving-the-ui.md), which carries the setup, the cross-origin
 iframe rules and the quirks table. Read it before you conclude anything here is a wall.
 
+Two of them now ship a tool rather than only a description —
+`tools/configure_trigger.py` and `tools/publish_workflow.py`, the last two steps of a
+workflow build. They stay listed as BLOCKED because the *API* is still blocked, and
+because **neither tool's browser path has been run against a live account yet.**
+
 ---
 
 ## BLOCKED — tried, no route found
@@ -39,18 +44,39 @@ one builder where the iframe rules there were **not** enough on their own.
 ### Workflow triggers
 No API found. A workflow can be created, populated and updated programmatically, but
 **attaching a trigger has no endpoint.** Blocked as an API call — **not blocked as
-work.** It has been done repeatedly by driving the builder with Playwright, and the
-full pattern (acquire the iframe, dismiss the modal, `dispatchEvent` the picker item
-that renders below the fold, save, verify) is written out in
-[`driving-the-ui.md`](driving-the-ui.md). Do it yourself; do not hand it back.
+work.** It has been done repeatedly by driving the builder with Playwright.
+
+**There is now a tool for it: `tools/configure_trigger.py`.** It encodes the full
+pattern — acquire the iframe, dismiss the first-view modal, `dispatchEvent` the
+picker item that renders below the fold, save, then re-read the canvas to verify.
+
+> **Its browser path has NOT been run against a live account.** The tool was built
+> from the verified production pattern and checked offline — argument parsing, every
+> refusal path, and its state machine against a stubbed browser — but nobody has
+> pointed it at a real sub-account since it was written. Treat your first run as the
+> test it is: dry-run one workflow (the default) and read the result.
+
+The hand-driven pattern is still written out in
+[`driving-the-ui.md`](driving-the-ui.md), and you will want it the first time a
+selector moves. Either way: do it yourself; do not hand it back.
 
 ### Publishing a workflow
-Same — no endpoint, and the same answer: **flip the toggle in the browser.** Verified
-working; step-by-step in [`driving-the-ui.md`](driving-the-ui.md), which is the worked
-example on that page. Two things that cost hours if you improvise: detect state via
-`aria-checked` on the `[role="switch"]` (`body.innerText.includes('Draft')` returns
-true even when published, because the word appears elsewhere in the builder chrome),
-and **click Save after toggling** — the toggle alone only sets local Vue state.
+Same — no endpoint, and the same answer: **flip the toggle in the browser.** The
+manual path is verified working and written up step-by-step in
+[`driving-the-ui.md`](driving-the-ui.md), which is the worked example on that page.
+
+**There is now a tool for it: `tools/publish_workflow.py`** — one workflow, several,
+or `--all`, which skips the ones already live and so publishes exactly the drafts.
+
+> **Its browser path has NOT been run against a live account either.** Built from the
+> verified pattern, checked offline only. Same caveat, same advice: dry-run one
+> workflow before you reach for `--all`.
+
+Two things that cost hours if you improvise, and that the tool and any hand-run both
+have to get right: detect state via `aria-checked` on the `[role="switch"]`
+(`body.innerText.includes('Draft')` returns true even when published, because the
+word appears elsewhere in the builder chrome), and **click Save after toggling** —
+the toggle alone only sets local Vue state, and navigating away discards it silently.
 
 ### Creating a funnel
 No public create-funnel endpoint found. Funnel *steps* and *pages* can be created; the
