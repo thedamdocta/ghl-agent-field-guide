@@ -177,6 +177,11 @@ Output holds the source account's real ids. Gitignore it.
 
 ### 4. `ghl_generator.py` — build the `pageData` tree
 
+> **No `--templates` needed.** A corpus of 15 verified element types ships as
+> `element-templates.json` and is the default. Pass `--templates` only to match an
+> existing design. Likewise `create_form.py --seed` needs no donor form. See
+> [`../knowledge/building-from-scratch.md`](../knowledge/building-from-scratch.md).
+
 ```bash
 python3 ghl_generator.py --emit-example > page-spec.json
 python3 ghl_generator.py --spec page-spec.json --templates exemplars.json \

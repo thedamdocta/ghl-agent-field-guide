@@ -18,6 +18,7 @@ shipping something that returns `200 OK` and does nothing.
 
 | if you want to… | read |
 |---|---|
+| **start from an empty account** | [`knowledge/building-from-scratch.md`](knowledge/building-from-scratch.md) |
 | understand what you're dealing with | [`knowledge/api-map.md`](knowledge/api-map.md) |
 | authenticate anything | [`knowledge/auth.md`](knowledge/auth.md) |
 | **get the internal token (do it yourself)** | [`knowledge/getting-the-token.md`](knowledge/getting-the-token.md) |

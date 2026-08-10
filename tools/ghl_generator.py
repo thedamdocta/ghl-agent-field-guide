@@ -87,6 +87,31 @@ import random
 import string
 import sys
 
+# ── the built-in element corpus ──────────────────────────────────────────────
+# 15 verified element types captured from a page GHL's own builder produced, with
+# every account id and hosted asset replaced by a placeholder.
+#
+# THIS SHIPS ON PURPOSE. An earlier version refused to run without `--templates`
+# and told you to capture your own from a public funnel page. That is a hard
+# dependency on someone else's page existing, being public, and containing the
+# element type you need — and it is unsatisfiable on an account that uses GHL as a
+# back end and has no funnel pages at all. Nobody should have to rediscover the
+# shape of a button.
+#
+# `--templates` still overrides this, which is what you want when matching an
+# existing design. The default is now "it works".
+BUILTIN_TEMPLATES_PATH = pathlib.Path(__file__).with_name("element-templates.json")
+
+
+def load_builtin_templates() -> dict:
+    if not BUILTIN_TEMPLATES_PATH.exists():
+        raise SystemExit(
+            f"FATAL: built-in element corpus missing at {BUILTIN_TEMPLATES_PATH}.\n"
+            f"  It ships with this repo — re-clone, or capture your own:\n"
+            f"  python3 capture_funnel.py <public funnel url> --exemplars t.json")
+    return json.loads(BUILTIN_TEMPLATES_PATH.read_text())
+
+
 # Top-level blocks a pageData document needs alongside `sections`. GHL populates
 # these itself in the builder; cloning them off a real page (--base) is the only
 # way to be sure they are shaped correctly.
@@ -177,10 +202,7 @@ class Generator:
     def __init__(self, templates: dict, base: dict = None,
                  page_id: str = "", funnel_id: str = "", location_id: str = ""):
         if not isinstance(templates, dict) or not templates:
-            raise SystemExit(
-                "FATAL: no exemplars. Capture some first:\n"
-                "  python3 capture_funnel.py <public funnel page url> "
-                "--exemplars exemplars.json")
+            templates = load_builtin_templates()
         self.templates = templates
         self.base = base or {}
         self.page_id = page_id
@@ -651,11 +673,13 @@ def main() -> int:
         return 0
 
     if args.list_exemplars:
-        if not args.templates:
-            raise SystemExit("FATAL: --list needs --templates (or "
-                             "$GHL_ELEMENT_TEMPLATES).")
-        templates = _read_json(args.templates, "exemplars")
-        print(f"  {len(templates)} exemplar(s) in {args.templates}:")
+        if args.templates:
+            templates = _read_json(args.templates, "exemplars")
+            source = args.templates
+        else:
+            templates = load_builtin_templates()
+            source = f"{BUILTIN_TEMPLATES_PATH.name} (built in)"
+        print(f"  {len(templates)} exemplar(s) in {source}:")
         for name in sorted(templates):
             node = templates[name] if isinstance(templates[name], dict) else {}
             print(f"    {name:<18} keys={len(node)}  "
@@ -669,17 +693,18 @@ def main() -> int:
             "FATAL: nothing to do. Pass --spec <file> to build a page, or "
             "--emit-example to see the spec format, or --list to inspect "
             "exemplars. This tool never writes without an explicit --spec.")
-    if not args.templates:
-        raise SystemExit(
-            "FATAL: no exemplars. Pass --templates <file> or set "
-            "$GHL_ELEMENT_TEMPLATES.\n"
-            "  get one: python3 capture_funnel.py <public funnel url> "
-            "--exemplars exemplars.json")
-
     spec = _read_json(args.spec, "spec")
-    gen = Generator.from_file(args.templates, args.base,
-                              page_id=args.page_id, funnel_id=args.funnel_id,
-                              location_id=args.location_id)
+    if args.templates:
+        gen = Generator.from_file(args.templates, args.base,
+                                  page_id=args.page_id, funnel_id=args.funnel_id,
+                                  location_id=args.location_id)
+    else:
+        # No --templates is the NORMAL case now. The built-in corpus covers the
+        # 15 element types; override only when matching an existing design.
+        print(f"  using built-in element corpus ({BUILTIN_TEMPLATES_PATH.name})")
+        gen = Generator(load_builtin_templates(), args.base,
+                        page_id=args.page_id, funnel_id=args.funnel_id,
+                        location_id=args.location_id)
     doc = build_page(gen, spec)
 
     dumped = json.dumps(doc, indent=args.indent) if args.indent \

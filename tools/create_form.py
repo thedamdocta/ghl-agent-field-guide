@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-create_form.py — create a funnel form by CLONING an existing form's field schema.
+create_form.py — create a funnel form, from a built-in seed or by cloning.
 
 WHY THIS EXISTS
 ---------------
@@ -17,11 +17,27 @@ Two rules, both learned from client-visible bugs:
    a webinar funnel — and restyling it would have changed every other place that
    form is embedded.
 
-CLONE, DO NOT HAND-WRITE. A form's `formData.form` carries field dicts plus
-`fieldStyle` / `inputStyleType` / `style` appearance blocks with many required
-keys. Hand-written field dicts miss keys and fail in ways that do not name them.
-So: copy a WORKING form's `formData`, delete the fields you do not want, rename,
-and write that.
+TWO WAYS TO GET A SCHEMA — and an earlier version of this file was wrong about it.
+
+  --seed        Use the built-in minimal schema below. Needs NO donor form.
+                This is the right default, and it is what you want on a FRESH
+                sub-account, where there is nothing to clone. A form created
+                through the UI's "Create form" button is NOT a usable donor
+                either: it exists with a real name but its formData is ~520
+                bytes of timestamp.
+
+  --clone-from  Copy a WORKING form's formData, drop the fields you do not want,
+                rename. Better when you want to inherit an existing form's
+                appearance blocks exactly.
+
+THE CORRECTION (2026-08-10). This tool used to say "CLONE, DO NOT HAND-WRITE —
+hand-written field dicts miss keys and fail in ways that do not name them", and it
+refused to run without a donor. That was wrong, and it stranded anyone starting from
+an empty account. The production form this pattern came from was built from
+hand-written field dicts, exactly the ones in SEED_FIELDS below. The original notes
+DESCRIBED that work as "cloning the field schema" — meaning the schema was learned by
+reading an existing form — and the description, not the code, is what got carried
+forward. Read the code, not the summary of the code.
 
 THE TWO WARNINGS THAT COST REAL TIME
 --------------------------------------
@@ -79,6 +95,50 @@ import os
 import pathlib
 import subprocess
 import sys
+
+# Verified in production: these exact dicts created a working 3-field form on a live
+# account. `standard: True` marks a built-in contact field; `hiddenFieldQueryKey`
+# enables URL prefill, which is how a later step can carry values forward.
+SEED_FIELDS = [
+    {"tag": "first_name", "label": "First name", "placeholder": "First name",
+     "required": True, "standard": True, "hiddenFieldQueryKey": "first_name"},
+    {"tag": "email", "label": "Email", "placeholder": "Email address",
+     "required": True, "standard": True, "hiddenFieldQueryKey": "email"},
+    {"tag": "phone", "label": "Phone", "placeholder": "Phone number",
+     "required": True, "standard": True, "hiddenFieldQueryKey": "phone",
+     "enableCountryPicker": False},
+]
+
+SEED_FORM_DATA = {
+    "form": {
+        "fields": SEED_FIELDS,
+        "formAction": "message",
+        "formSubmissionEvent": "Submit",
+        "formLabelVisible": False,
+        "fullScreenMode": False,
+        "inputStyleType": "line",
+        "fieldCSS": "",
+        "customStyle": "",
+    }
+}
+
+
+def seed_form_data(field_tags=None) -> dict:
+    """The built-in schema, optionally narrowed to a subset of field tags."""
+    import copy as _copy
+    data = _copy.deepcopy(SEED_FORM_DATA)
+    if field_tags:
+        wanted = [t.strip() for t in field_tags if t.strip()]
+        data["form"]["fields"] = [f for f in data["form"]["fields"]
+                                  if f["tag"] in wanted]
+        missing = set(wanted) - {f["tag"] for f in data["form"]["fields"]}
+        if missing:
+            raise SystemExit(
+                f"--fields names {sorted(missing)}, which the built-in seed does not "
+                f"carry. Seed tags: {[f['tag'] for f in SEED_FIELDS]}. For anything "
+                f"else, clone a form that already has the field.")
+    return data
+
 
 PUBLIC_API = "https://services.leadconnectorhq.com"
 INTERNAL_API = "https://backend.leadconnectorhq.com"
@@ -228,6 +288,9 @@ def main() -> int:
         epilog="Writes need the internal token-id (get_token.py). Nothing is "
                "created without --apply.")
     ap.add_argument("--name", help="Name for the new form.")
+    ap.add_argument("--seed", action="store_true",
+                    help="Use the built-in minimal schema — no donor form needed. "
+                         "The right choice on a fresh sub-account.")
     ap.add_argument("--clone-from", metavar="FORM_ID",
                     help="Read this form's schema from the internal API and clone "
                          "it (route is UNVERIFIED — see --clone-from-file).")
@@ -297,13 +360,14 @@ def main() -> int:
         raise SystemExit(
             "FATAL: nothing to do. Pass --name to create a form, or --list / "
             "--dump to inspect. This tool never creates anything implicitly.")
-    if not (args.clone_from or args.clone_from_file):
+    if not (args.seed or args.clone_from or args.clone_from_file):
         raise SystemExit(
-            "FATAL: no clone source. Pass --clone-from <formId> or "
-            "--clone-from-file <file>.\n"
-            "  Hand-written field dicts miss required keys; always clone a form "
-            "that already works.\n"
-            "  Find a source with: python3 create_form.py --list")
+            "FATAL: no schema source. Choose one:\n"
+            "  --seed                      built-in minimal schema, no donor needed.\n"
+            "                              The right choice on a fresh sub-account.\n"
+            "  --clone-from <formId>       copy a form that already works\n"
+            "  --clone-from-file <file>    copy from a dumped record\n"
+            "  Inspect what exists: python3 create_form.py --list")
 
     location_id = env.get("GHL_LOCATION_ID")
     if not location_id:
@@ -311,7 +375,12 @@ def main() -> int:
                          "Form CREATE requires it in the body.")
     token = read_token(args.token, args.token_file)
 
-    if args.clone_from_file:
+    if args.seed:
+        # No donor. The built-in schema was verified in production — see SEED_FIELDS.
+        source = {"formData": seed_form_data(
+            [f.strip() for f in args.fields.split(",")] if args.fields else None)}
+        print("  using the built-in seed schema (no donor form)")
+    elif args.clone_from_file:
         path = pathlib.Path(args.clone_from_file).expanduser()
         if not path.is_file():
             raise SystemExit(f"FATAL: no such --clone-from-file: {path}")
@@ -323,7 +392,7 @@ def main() -> int:
         source = get_form(token, args.clone_from)
 
     form_data = extract_form_data(source)
-    if args.fields:
+    if args.fields and not args.seed:
         keep = [f.strip() for f in args.fields.split(",") if f.strip()]
         form_data = filter_fields(form_data, keep)
     fields = (form_data.get("form") or {}).get("fields") or []

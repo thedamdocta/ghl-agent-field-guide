@@ -1,0 +1,2905 @@
+{
+ "section": {
+  "id": "section-bJbzmSpqOp",
+  "type": "section",
+  "child": [
+   "row-khr-vTJ0xq",
+   "row-J6blWw2Tia"
+  ],
+  "class": {
+   "width": {
+    "value": "fullSection"
+   }
+  },
+  "styles": {
+   "boxShadow": {
+    "value": "none"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 120,
+    "unit": "px"
+   },
+   "paddingTop": {
+    "value": 100,
+    "unit": "px"
+   },
+   "marginTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "backgroundColor": {
+    "value": "#F8F7F4"
+   },
+   "background": {
+    "value": "none"
+   },
+   "backdropFilter": {
+    "value": "none"
+   },
+   "borderColor": {
+    "value": "var(--black)"
+   },
+   "borderWidth": {
+    "value": "0px"
+   },
+   "borderStyle": {
+    "value": "none"
+   },
+   "borderRadius": {
+    "value": "0px"
+   }
+  },
+  "extra": {
+   "sticky": {
+    "value": "noneSticky"
+   },
+   "visibility": {
+    "value": {
+     "hideDesktop": false,
+     "hideMobile": false
+    }
+   },
+   "bgImage": {
+    "value": {
+     "mediaType": "image",
+     "url": "",
+     "opacity": "1",
+     "options": "full-center",
+     "svgCode": "",
+     "videoUrl": "",
+     "videoThumbnail": "",
+     "videoLoop": true
+    }
+   },
+   "allowRowMaxWidth": {
+    "value": false
+   },
+   "customClass": {
+    "value": []
+   },
+   "elementScreenshot": {
+    "value": []
+   }
+  },
+  "wrapper": {},
+  "meta": "section",
+  "tagName": "c-section",
+  "title": "probate-reality-check",
+  "mobileStyles": {
+   "backgroundColor": {
+    "value": ""
+   },
+   "paddingTop": {
+    "value": 60,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 80,
+    "unit": "px"
+   }
+  },
+  "mobileWrapper": {}
+ },
+ "row": {
+  "id": "row-J6blWw2Tia",
+  "type": "row",
+  "child": [
+   "column-TPA7sibavs",
+   "column-tdMP_h_75x"
+  ],
+  "class": {
+   "alignRow": {
+    "value": "row-align-center"
+   }
+  },
+  "styles": {
+   "boxShadow": {
+    "value": "none"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "backgroundColor": {
+    "value": "var(--transparent)"
+   },
+   "background": {
+    "value": "none"
+   },
+   "backdropFilter": {
+    "value": "none"
+   },
+   "borderColor": {
+    "value": "var(--black)"
+   },
+   "borderWidth": {
+    "value": "0px"
+   },
+   "borderStyle": {
+    "value": "none"
+   },
+   "borderRadius": {
+    "value": "0px"
+   },
+   "position": {
+    "value": "relative"
+   },
+   "zIndex": {
+    "value": 2
+   }
+  },
+  "extra": {
+   "visibility": {
+    "value": {
+     "hideDesktop": false,
+     "hideMobile": false
+    }
+   },
+   "bgImage": {
+    "value": {
+     "mediaType": "image",
+     "url": "",
+     "opacity": "1",
+     "options": "cover",
+     "svgCode": "",
+     "videoUrl": "",
+     "videoThumbnail": "",
+     "videoLoop": true
+    }
+   },
+   "rowWidth": {
+    "value": 100,
+    "unit": "%"
+   },
+   "customClass": {
+    "value": []
+   },
+   "name": "row",
+   "marginTop": "0px",
+   "row": {
+    "value": {
+     "width": "100%"
+    }
+   }
+  },
+  "wrapper": {
+   "marginTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginLeft": {
+    "value": "auto",
+    "unit": ""
+   },
+   "marginRight": {
+    "value": "auto",
+    "unit": ""
+   }
+  },
+  "tagName": "c-row",
+  "meta": "row",
+  "mobileStyles": {
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 0,
+    "unit": "px"
+   }
+  },
+  "mobileWrapper": {},
+  "title": "row"
+ },
+ "col": {
+  "id": "column-tdMP_h_75x",
+  "type": "col",
+  "child": [
+   "row-CA5P3vi5at",
+   "row-_u0IvX124X",
+   "row-qaU9eBewGI"
+  ],
+  "class": {},
+  "styles": {
+   "boxShadow": {
+    "value": "none"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "backgroundColor": {
+    "value": "var(--transparent)"
+   },
+   "background": {
+    "value": "none"
+   },
+   "backdropFilter": {
+    "value": "none"
+   },
+   "width": {
+    "value": 50,
+    "unit": "%"
+   },
+   "borderColor": {
+    "value": "var(--black)"
+   },
+   "borderWidth": {
+    "value": "0px"
+   },
+   "borderStyle": {
+    "value": "none"
+   },
+   "borderRadius": {
+    "value": "0px"
+   },
+   "forceColumnLayoutForMobile": {
+    "value": false
+   }
+  },
+  "extra": {
+   "visibility": {
+    "value": {
+     "hideDesktop": false,
+     "hideMobile": false
+    }
+   },
+   "bgImage": {
+    "value": {
+     "mediaType": "image",
+     "url": "",
+     "opacity": "1",
+     "options": "full-center",
+     "svgCode": "",
+     "videoUrl": "",
+     "videoThumbnail": "",
+     "videoLoop": true
+    }
+   },
+   "columnLayout": {
+    "value": "column"
+   },
+   "justifyContentColumnLayout": {
+    "value": "space-evenly"
+   },
+   "alignContentColumnLayout": {
+    "value": "inherit"
+   },
+   "forceColumnLayoutForMobile": {
+    "value": false
+   },
+   "customClass": {
+    "value": []
+   },
+   "elementVersion": {
+    "value": 2
+   },
+   "name": "Column"
+  },
+  "wrapper": {
+   "marginLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginBottom": {
+    "value": 0,
+    "unit": "px"
+   }
+  },
+  "tagName": "c-column",
+  "meta": "col",
+  "mobileStyles": {
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   }
+  },
+  "mobileWrapper": {},
+  "title": "Column"
+ },
+ "button": {
+  "extra": {
+   "nodeId": "cbutton-VNwuVKFK00",
+   "visibility": {
+    "value": {
+     "hideDesktop": false,
+     "hideMobile": false
+    }
+   },
+   "text": {
+    "value": "Get Started"
+   },
+   "subText": {
+    "value": ""
+   },
+   "mobileFontSize": {
+    "value": 16,
+    "unit": "px"
+   },
+   "desktopFontSize": {
+    "value": 16,
+    "unit": "px"
+   },
+   "subTextDesktopFontSize": {
+    "value": 15,
+    "unit": "px"
+   },
+   "subTextMobileFontSize": {
+    "value": 15,
+    "unit": "px"
+   },
+   "typography": {
+    "value": "var(--contentfont)"
+   },
+   "iconStart": {
+    "value": {
+     "name": "",
+     "unicode": "",
+     "fontFamily": "",
+     "color": "var(--black)"
+    }
+   },
+   "iconEnd": {
+    "value": {
+     "name": "",
+     "unicode": "",
+     "fontFamily": "",
+     "color": "var(--black)"
+    }
+   },
+   "action": {
+    "value": "scroll-to-element"
+   },
+   "visitWebsite": {
+    "value": "#secure-your-future"
+   },
+   "downloadFile": {
+    "value": {
+     "fileUrl": "",
+     "fileName": ""
+    }
+   },
+   "hideElements": {
+    "value": []
+   },
+   "showElements": {
+    "value": []
+   },
+   "scrollToElement": {
+    "value": ""
+   },
+   "phoneNumber": {
+    "value": ""
+   },
+   "emailAddress": {
+    "value": ""
+   },
+   "productId": {
+    "value": ""
+   },
+   "storeProductId": {
+    "value": ""
+   },
+   "storeProductPriceId": {
+    "value": "all"
+   },
+   "storeCollectionId": {
+    "value": ""
+   },
+   "stepPath": {
+    "value": ""
+   },
+   "saleAction": {
+    "value": "go-to-next-funnel-step"
+   },
+   "popupId": {
+    "value": ""
+   },
+   "customClass": {
+    "value": []
+   },
+   "icon": {
+    "value": {
+     "name": "",
+     "unicode": "",
+     "fontFamily": "",
+     "color": "var(--black)"
+    }
+   },
+   "name": "button",
+   "link": {
+    "value": "#secure-your-future"
+   }
+  },
+  "class": {
+   "buttonBgStyle": {
+    "value": "custom"
+   },
+   "buttonVp": {
+    "value": "btn-vp"
+   },
+   "buttonHp": {
+    "value": "btn-hp"
+   },
+   "hoverAnimation": {
+    "value": null
+   },
+   "entranceAnimation": {
+    "value": null
+   },
+   "animationScale": {
+    "value": 1
+   },
+   "animationDuration": {
+    "value": 1
+   },
+   "animationDelay": {
+    "value": 0
+   },
+   "animationEasing": {
+    "value": "linear"
+   }
+  },
+  "styles": {
+   "backgroundColor": {
+    "value": "#1A2E35"
+   },
+   "color": {
+    "value": "#FFFFFF"
+   },
+   "secondaryColor": {
+    "value": "var(--white)"
+   },
+   "paddingTop": {
+    "value": 18,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 18,
+    "unit": "px"
+   },
+   "paddingLeft": {
+    "value": 48,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 48,
+    "unit": "px"
+   },
+   "fontWeight": {
+    "value": "600",
+    "desktop": "600"
+   },
+   "fontWeightSub": {
+    "desktop": "400",
+    "value": ""
+   },
+   "borderColor": {
+    "value": "var(--white)"
+   },
+   "borderWidth": {
+    "value": "0px"
+   },
+   "borderStyle": {
+    "value": "none"
+   },
+   "borderRadius": {
+    "value": 6,
+    "unit": "px"
+   },
+   "letterSpacing": {
+    "value": 0,
+    "unit": "px"
+   },
+   "textTransform": {
+    "value": "none"
+   },
+   "width": {
+    "value": "auto"
+   },
+   "boxShadow": {
+    "value": "none"
+   },
+   "textShadow": {
+    "value": "none"
+   },
+   "iconColor": {
+    "value": "var(--white)"
+   },
+   "typography": {
+    "value": "var(--contentfont)"
+   },
+   "linkTextColor": {
+    "value": "#FFFFFF"
+   },
+   "display": {
+    "value": "inline-block"
+   },
+   "marginLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginRight": {
+    "value": "auto"
+   }
+  },
+  "wrapper": {
+   "marginTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "textAlign": {
+    "value": "right"
+   },
+   "width": {
+    "value": "auto",
+    "unit": ""
+   },
+   "height": {
+    "value": "auto",
+    "unit": ""
+   }
+  },
+  "mobileWrapper": {
+   "textAlign": {
+    "value": "center"
+   }
+  },
+  "customCss": [],
+  "id": "button-_3vfCeiA8Q",
+  "mobileStyles": {
+   "paddingTop": {
+    "value": 16,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 24,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 16,
+    "unit": "px"
+   },
+   "paddingLeft": {
+    "value": 24,
+    "unit": "px"
+   }
+  },
+  "type": "element",
+  "child": [],
+  "meta": "button",
+  "tagName": "c-button",
+  "title": "Button"
+ },
+ "navigation-menu": {
+  "extra": {
+   "nodeId": "cnav-menu-v2-rSJFkcZVuK",
+   "visibility": {
+    "value": {
+     "hideDesktop": false,
+     "hideMobile": false
+    }
+   },
+   "menuItems": {
+    "value": [
+     {
+      "id": "1",
+      "title": "Why Trustist",
+      "openInNewTab": false,
+      "goTo": "url",
+      "url": "#section-bJbzmSpqOp",
+      "goToId": "",
+      "megaMenu": false,
+      "childs": []
+     },
+     {
+      "id": "2",
+      "title": "Features",
+      "openInNewTab": false,
+      "goTo": "url",
+      "url": "#section-Gxz0DLAZeb",
+      "goToId": "",
+      "megaMenu": false,
+      "childs": []
+     },
+     {
+      "id": "3",
+      "title": "Process",
+      "openInNewTab": false,
+      "goTo": "url",
+      "url": "#section-sxZQFdhQgh",
+      "goToId": "",
+      "megaMenu": false,
+      "childs": []
+     },
+     {
+      "id": "4",
+      "title": "Testimonials",
+      "openInNewTab": false,
+      "goTo": "url",
+      "url": "#section-_msYJKRcwK",
+      "goToId": "",
+      "megaMenu": false,
+      "childs": []
+     },
+     {
+      "id": "5",
+      "title": "FAQ",
+      "openInNewTab": false,
+      "goTo": "url",
+      "url": "#section-jEFBPtLySq",
+      "goToId": "",
+      "megaMenu": false,
+      "childs": []
+     }
+    ]
+   },
+   "enableCustomerLogin": {
+    "value": false
+   },
+   "cacItems": {
+    "value": [
+     {
+      "id": "1",
+      "title": "My Orders",
+      "goTo": "cacPage",
+      "url": "",
+      "goToId": "",
+      "goToCacPage": "orders",
+      "openInNewTab": true,
+      "childs": [],
+      "megaMenu": false
+     },
+     {
+      "id": "2",
+      "title": "Logout",
+      "goTo": "logout",
+      "url": "",
+      "goToId": "",
+      "openInNewTab": false,
+      "childs": [],
+      "megaMenu": false
+     }
+    ]
+   },
+   "imageProperties": {
+    "value": {
+     "width": "auto",
+     "height": "40px",
+     "url": "https://storage.googleapis.com/funnel-ai-production/image-generation/{{LOCATION_ID}}/brand-logo-U3pQUwQO8k.png",
+     "altText": "Trustist Logo",
+     "compression": true
+    }
+   },
+   "imageActions": {
+    "value": "none"
+   },
+   "visitWebsite": {
+    "value": {
+     "url": "",
+     "newTab": false
+    }
+   },
+   "popupId": {
+    "value": ""
+   },
+   "downloadFile": {
+    "value": {
+     "fileUrl": "",
+     "fileName": ""
+    }
+   },
+   "hideElements": {
+    "value": []
+   },
+   "showElements": {
+    "value": []
+   },
+   "scrollToElement": {
+    "value": ""
+   },
+   "phoneNumber": {
+    "value": ""
+   },
+   "emailAddress": {
+    "value": ""
+   },
+   "elementVersion": {
+    "value": 2
+   },
+   "stepPath": {
+    "value": ""
+   },
+   "includeLogoInMenu": {
+    "value": true
+   },
+   "text": {
+    "value": "<p><strong>Trustist</strong></p>"
+   },
+   "includeHeadlineInMenu": {
+    "value": true
+   },
+   "menuLayout": {
+    "value": "horizontal"
+   },
+   "menuWrap": {
+    "value": "nowrap"
+   },
+   "typography": {
+    "value": "var(--contentfont)"
+   },
+   "inlineTypographies": {
+    "value": []
+   },
+   "icon": {
+    "value": {
+     "name": "bars",
+     "unicode": "f0c9",
+     "fontFamily": "Font Awesome 5 Free",
+     "color": "var(--black)"
+    }
+   },
+   "iconEnd": {
+    "value": {
+     "name": "chevron-down",
+     "unicode": "f078",
+     "fontFamily": "Font Awesome 5 Free",
+     "color": "var(--black)"
+    }
+   },
+   "mobileFontSize": {
+    "value": 14,
+    "unit": "px"
+   },
+   "desktopFontSize": {
+    "value": 14,
+    "unit": "px"
+   },
+   "customClass": {
+    "value": []
+   },
+   "showCartIcon": {
+    "value": true
+   },
+   "showSearchbar": {
+    "value": false
+   },
+   "name": "navigation-menu"
+  },
+  "class": {},
+  "styles": {
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "itemPaddingTop": {
+    "unit": "px",
+    "value": 0
+   },
+   "itemPaddingBottom": {
+    "unit": "px",
+    "value": 0
+   },
+   "itemPaddingLeft": {
+    "unit": "px",
+    "value": 16
+   },
+   "itemPaddingRight": {
+    "value": 16,
+    "unit": "px"
+   },
+   "itemMarginTop": {
+    "unit": "px",
+    "value": 0
+   },
+   "itemMarginBottom": {
+    "unit": "px",
+    "value": 0
+   },
+   "itemMarginLeft": {
+    "unit": "px",
+    "value": 0
+   },
+   "itemMarginRight": {
+    "unit": "px",
+    "value": 0
+   },
+   "lineHeight": {
+    "value": 1.3,
+    "unit": "em"
+   },
+   "textTransform": {
+    "value": "none"
+   },
+   "letterSpacing": {
+    "value": 0,
+    "unit": "px"
+   },
+   "textAlign": {
+    "value": "left"
+   },
+   "fontWeight": {
+    "value": "500",
+    "desktop": "500"
+   },
+   "backgroundColor": {
+    "value": "transparent"
+   },
+   "mobileBackgroundColor": {
+    "value": "transparent"
+   },
+   "popupBackgroundColor": {
+    "value": "var(--white)"
+   },
+   "mobilePopupBackgroundColor": {
+    "value": "var(--white)"
+   },
+   "color": {
+    "value": "#111827"
+   },
+   "inlineColors": {
+    "value": []
+   },
+   "hoverBackgroundColor": {
+    "value": "rgba(182,141,64,0.1)"
+   },
+   "hoverTextColor": {
+    "value": "#B68D40"
+   },
+   "boldTextColor": {
+    "value": "var(--black)"
+   },
+   "italicTextColor": {
+    "value": "var(--black)"
+   },
+   "underlineTextColor": {
+    "value": "var(--black)"
+   },
+   "iconColor": {
+    "value": "var(--black)"
+   },
+   "cartIconColor": {
+    "value": "var(--black)"
+   },
+   "userIconColor": {
+    "value": "var(--black)"
+   },
+   "cartIconActiveColor": {
+    "value": "var(--black)"
+   },
+   "submenuBackgroundColor": {
+    "value": "var(--white)"
+   },
+   "submenuMobileBackgroundColor": {
+    "value": "var(--white)"
+   },
+   "submenuColor": {
+    "value": "var(--text-color)"
+   },
+   "submenuHoverBackgroundColor": {
+    "value": "var(--black)"
+   },
+   "submenuHoverTextColor": {
+    "value": "var(--white)"
+   },
+   "navMenuItemSpacingX": {
+    "value": 12,
+    "unit": "px"
+   },
+   "navMenuItemSpacingY": {
+    "value": 0,
+    "unit": "px"
+   },
+   "navMenuAlign": {
+    "value": "left"
+   },
+   "subMenuAlign": {
+    "value": "right"
+   },
+   "subMenuStyle": {
+    "value": "popover"
+   },
+   "borderColor": {
+    "value": "#000000"
+   },
+   "borderStyle": {
+    "value": "none"
+   },
+   "borderWidth": {
+    "value": "0px"
+   },
+   "borderRadius": {
+    "value": "0px"
+   },
+   "itemBorderColor": {
+    "value": "#000000"
+   },
+   "itemBorderStyle": {
+    "value": "solid"
+   },
+   "itemBorderWidth": {
+    "value": "1px"
+   },
+   "itemBorderRadius": {
+    "value": "0px"
+   },
+   "boxShadow": {
+    "value": "none"
+   },
+   "itemBoxShadow": {
+    "value": "none"
+   },
+   "typography": {
+    "value": "var(--contentfont)"
+   },
+   "linkTextColor": {
+    "value": "#111827"
+   }
+  },
+  "wrapper": {
+   "width": {
+    "value": "auto",
+    "unit": ""
+   },
+   "height": {
+    "value": "auto",
+    "unit": ""
+   }
+  },
+  "customCss": [],
+  "id": "nav-menu-v2-ttljwzMu07",
+  "type": "element",
+  "child": [],
+  "mobileStyles": {
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   }
+  },
+  "mobileWrapper": {},
+  "meta": "nav-menu-v2",
+  "tagName": "c-nav-menu-v2",
+  "title": "Navigation Menu"
+ },
+ "custom-code": {
+  "extra": {
+   "nodeId": "ccustom-code-m4MXXJ1k0T",
+   "visibility": {
+    "value": {
+     "hideDesktop": false,
+     "hideMobile": false
+    }
+   },
+   "customCode": {
+    "value": "<style>.legacy-hero-frame{background:#FFFFFF;border:1px solid #EBE9E4;border-radius:6px;position:relative;padding:12px;margin-top:16px;max-width:400px;width:100%;box-shadow:0 10px 30px -10px rgba(26,46,53,0.12);animation:hlFadeUp 0.9s ease-out 0.4s forwards;opacity:0;transform:translateY(20px)}.legacy-hero-inner-frame{border:1px solid #B68D40;border-radius:4px;padding:24px 16px 16px;position:relative;display:flex;justify-content:space-between;align-items:center}.legacy-hero-seal{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:#FFFFFF;padding:0 12px}.legacy-hero-seal svg{width:24px;height:24px;fill:#B68D40}.legacy-badge{text-align:center;font-family:var(--contentfont);font-size:13px;color:#111827;font-weight:600;line-height:1.4;flex:1}</style><div class='legacy-hero-frame'><div class='legacy-hero-inner-frame'><div class='legacy-hero-seal'><svg viewBox='0 0 24 24'><path d='M12 2L15.09 5.09L19.5 5.59L20 10L23.09 13.09L20 16.18L19.5 20.59L15.09 21.09L12 24L8.91 21.09L4.5 20.59L4 16.18L0.91 13.09L4 10L4.5 5.59L8.91 5.09L12 2Z'/></svg></div><div class='legacy-badge'>Bank-Level<br>Security</div><div class='legacy-badge'>Fiduciary<br>Standard</div><div class='legacy-badge'>Legally<br>Binding</div></div></div>"
+   },
+   "customClass": {
+    "value": []
+   },
+   "name": "custom-code"
+  },
+  "class": {},
+  "styles": {
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   }
+  },
+  "wrapper": {
+   "marginTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "width": {
+    "value": "auto",
+    "unit": ""
+   },
+   "height": {
+    "value": "auto",
+    "unit": ""
+   }
+  },
+  "customCss": [],
+  "id": "custom-code-ZWKk0-9MgA",
+  "type": "element",
+  "child": [],
+  "meta": "custom-code",
+  "tagName": "c-custom-code",
+  "title": "Custom Code",
+  "mobileStyles": {
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   }
+  },
+  "mobileWrapper": {}
+ },
+ "paragraph": {
+  "extra": {
+   "nodeId": "cparagraph-_eHB3sQOF7",
+   "visibility": {
+    "value": {
+     "hideDesktop": false,
+     "hideMobile": false
+    }
+   },
+   "text": {
+    "value": "<p>Secure your estate with absolute certainty. We provide the structural peace of mind your family deserves, ensuring your life's work transitions exactly as you intend.</p>"
+   },
+   "mobileFontSize": {
+    "value": 16,
+    "unit": "px"
+   },
+   "desktopFontSize": {
+    "value": 20,
+    "unit": "px"
+   },
+   "typography": {
+    "value": "var(--contentfont)"
+   },
+   "inlineTypographies": {
+    "value": []
+   },
+   "icon": {
+    "value": {
+     "name": "",
+     "unicode": "",
+     "fontFamily": "",
+     "color": "var(--black)"
+    }
+   },
+   "customClass": {
+    "value": []
+   },
+   "elementVersion": {
+    "value": 2
+   },
+   "name": "paragraph"
+  },
+  "class": {
+   "entranceAnimation": {
+    "value": "animate__animated animate__fadeInUp"
+   },
+   "animationScale": {
+    "value": 1
+   },
+   "animationDuration": {
+    "value": 1
+   },
+   "animationDelay": {
+    "value": 0
+   },
+   "animationEasing": {
+    "value": "linear"
+   }
+  },
+  "styles": {
+   "backgroundColor": {
+    "value": "var(--transparent)"
+   },
+   "color": {
+    "value": "#EBE9E4"
+   },
+   "inlineColors": {
+    "value": []
+   },
+   "boldTextColor": {
+    "value": "var(--text-color)"
+   },
+   "italicTextColor": {
+    "value": "var(--text-color)"
+   },
+   "underlineTextColor": {
+    "value": "var(--text-color)"
+   },
+   "linkTextColor": {
+    "value": "#EBE9E4"
+   },
+   "iconColor": {
+    "value": "var(--text-color)"
+   },
+   "fontFamily": {
+    "value": ""
+   },
+   "fontWeight": {
+    "value": "medium",
+    "desktop": "400"
+   },
+   "boxShadow": {
+    "value": "none"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "opacity": {
+    "value": "1"
+   },
+   "textShadow": {
+    "value": "none"
+   },
+   "borderColor": {
+    "value": "var(--black)"
+   },
+   "borderWidth": {
+    "value": "0px"
+   },
+   "borderStyle": {
+    "value": "none"
+   },
+   "borderRadius": {
+    "value": "0px"
+   },
+   "lineHeight": {
+    "value": 1.6
+   },
+   "textTransform": {
+    "value": "none"
+   },
+   "letterSpacing": {
+    "value": 0,
+    "unit": "px"
+   },
+   "textAlign": {
+    "value": "left"
+   },
+   "typography": {
+    "value": "var(--contentfont)"
+   },
+   "maxWidth": {
+    "value": 600,
+    "unit": "px"
+   }
+  },
+  "wrapper": {
+   "marginTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginBottom": {
+    "value": 40,
+    "unit": "px"
+   },
+   "marginLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "width": {
+    "value": "auto",
+    "unit": ""
+   },
+   "height": {
+    "value": "auto",
+    "unit": ""
+   }
+  },
+  "customCss": [],
+  "id": "paragraph-_aVW_3QYq-",
+  "mobileStyles": {
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   }
+  },
+  "mobileWrapper": {
+   "marginTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginBottom": {
+    "value": 40,
+    "unit": "px"
+   }
+  },
+  "type": "element",
+  "child": [],
+  "meta": "paragraph",
+  "tagName": "c-paragraph",
+  "title": "Paragraph"
+ },
+ "headline": {
+  "extra": {
+   "nodeId": "cheading-Iw6y8BmBF_",
+   "visibility": {
+    "value": {
+     "hideDesktop": false,
+     "hideMobile": false
+    }
+   },
+   "text": {
+    "value": "<h3>Loss of Privacy</h3>"
+   },
+   "mobileFontSize": {
+    "value": 22,
+    "unit": "px"
+   },
+   "desktopFontSize": {
+    "value": 24,
+    "unit": "px"
+   },
+   "typography": {
+    "value": "var(--headlinefont)"
+   },
+   "inlineTypographies": {
+    "value": []
+   },
+   "icon": {
+    "value": {
+     "name": "",
+     "unicode": "",
+     "fontFamily": "",
+     "color": "var(--black)"
+    }
+   },
+   "customClass": {
+    "value": []
+   },
+   "elementVersion": {
+    "value": 2
+   },
+   "name": "headline"
+  },
+  "class": {
+   "entranceAnimation": {
+    "value": null
+   },
+   "animationScale": {
+    "value": 1
+   },
+   "animationDuration": {
+    "value": 1
+   },
+   "animationDelay": {
+    "value": 0
+   },
+   "animationEasing": {
+    "value": "linear"
+   }
+  },
+  "styles": {
+   "backgroundColor": {
+    "value": "var(--transparent)"
+   },
+   "color": {
+    "value": "#1A2E35"
+   },
+   "inlineColors": {
+    "value": []
+   },
+   "boldTextColor": {
+    "value": "var(--text-color)"
+   },
+   "italicTextColor": {
+    "value": "var(--text-color)"
+   },
+   "underlineTextColor": {
+    "value": "var(--text-color)"
+   },
+   "linkTextColor": {
+    "value": "#1A2E35"
+   },
+   "iconColor": {
+    "value": "var(--text-color)"
+   },
+   "fontFamily": {
+    "value": ""
+   },
+   "fontWeight": {
+    "value": "400",
+    "desktop": "400"
+   },
+   "boxShadow": {
+    "value": "none"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 12,
+    "unit": "px"
+   },
+   "opacity": {
+    "value": "1"
+   },
+   "textShadow": {
+    "value": "none"
+   },
+   "borderColor": {
+    "value": "var(--black)"
+   },
+   "borderWidth": {
+    "value": "0px"
+   },
+   "borderStyle": {
+    "value": "none"
+   },
+   "borderRadius": {
+    "value": "0px"
+   },
+   "lineHeight": {
+    "value": 1.25
+   },
+   "textTransform": {
+    "value": "none"
+   },
+   "letterSpacing": {
+    "value": 0,
+    "unit": "px"
+   },
+   "textAlign": {
+    "value": "left"
+   },
+   "typography": {
+    "value": "var(--headlinefont)"
+   }
+  },
+  "wrapper": {
+   "marginTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "width": {
+    "value": "auto",
+    "unit": ""
+   },
+   "height": {
+    "value": "auto",
+    "unit": ""
+   }
+  },
+  "customCss": [],
+  "mobileStyles": {
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 12,
+    "unit": "px"
+   }
+  },
+  "mobileWrapper": {},
+  "id": "heading-Tc4ZhxLKX-",
+  "type": "element",
+  "child": [],
+  "meta": "heading",
+  "tagName": "c-heading",
+  "title": "Headline"
+ },
+ "svg": {
+  "extra": {
+   "visibility": {
+    "value": {
+     "hideDesktop": false,
+     "hideMobile": false
+    }
+   },
+   "svgProperties": {
+    "value": {
+     "url": "",
+     "width": 48,
+     "height": 48,
+     "svgCode": "<svg width='48' height='48' viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'><circle cx='24' cy='24' r='24' fill='rgba(182, 141, 64, 0.1)'/><path d='M14 24C14 24 17.5 17 24 17C30.5 17 34 24 34 24C34 24 30.5 31 24 31C17.5 31 14 24 14 24Z' stroke='#B68D40' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><circle cx='24' cy='24' r='3' stroke='#B68D40' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><path d='M12 12L36 36' stroke='#B68D40' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>"
+    }
+   },
+   "svgImageActions": {
+    "value": "none"
+   },
+   "visitWebsite": {
+    "value": {
+     "url": "",
+     "newTab": false
+    }
+   },
+   "downloadFile": {
+    "value": {
+     "fileUrl": "",
+     "fileName": ""
+    }
+   },
+   "popupId": {
+    "value": ""
+   },
+   "customClass": {
+    "value": []
+   },
+   "name": "svg"
+  },
+  "class": {},
+  "styles": {
+   "textAlign": {
+    "value": "left"
+   },
+   "marginTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 20,
+    "unit": "px"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   }
+  },
+  "wrapper": {
+   "width": {
+    "value": "auto",
+    "unit": ""
+   },
+   "height": {
+    "value": "auto",
+    "unit": ""
+   }
+  },
+  "customCss": [],
+  "mobileStyles": {
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 20,
+    "unit": "px"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   }
+  },
+  "mobileWrapper": {},
+  "id": "svg-cNexV4uVhd",
+  "type": "element",
+  "child": [],
+  "meta": "svg",
+  "tagName": "c-svg",
+  "title": "Svg"
+ },
+ "divider": {
+  "extra": {
+   "nodeId": "cdivider-CiM1lpA3AP",
+   "visibility": {
+    "value": {
+     "hideDesktop": false,
+     "hideMobile": false
+    }
+   },
+   "dividerProperties": {
+    "value": {
+     "width": "100%",
+     "height": "1px",
+     "borderStyle": "solid",
+     "align": "center",
+     "color": "var(--gray)"
+    }
+   },
+   "customClass": {
+    "value": []
+   },
+   "name": "divider"
+  },
+  "class": {},
+  "styles": {
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 32,
+    "unit": "px"
+   }
+  },
+  "wrapper": {
+   "marginTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingTop": {
+    "value": 10,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 10,
+    "unit": "px"
+   },
+   "width": {
+    "value": "auto",
+    "unit": ""
+   },
+   "height": {
+    "value": "auto",
+    "unit": ""
+   }
+  },
+  "customCss": [],
+  "id": "divider-_NiQDfsQO_",
+  "type": "element",
+  "child": [],
+  "meta": "divider",
+  "tagName": "c-divider",
+  "title": "Divider",
+  "mobileStyles": {
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 32,
+    "unit": "px"
+   }
+  },
+  "mobileWrapper": {}
+ },
+ "sub-headline": {
+  "extra": {
+   "nodeId": "csub-heading-5FaHultniX",
+   "visibility": {
+    "value": {
+     "hideDesktop": false,
+     "hideMobile": false
+    }
+   },
+   "text": {
+    "value": "<h2>THE PROBATE TRAP</h2>"
+   },
+   "mobileFontSize": {
+    "value": 12,
+    "unit": "px"
+   },
+   "desktopFontSize": {
+    "value": 13,
+    "unit": "px"
+   },
+   "typography": {
+    "value": "var(--contentfont)"
+   },
+   "inlineTypographies": {
+    "value": []
+   },
+   "icon": {
+    "value": {
+     "name": "",
+     "unicode": "",
+     "fontFamily": "",
+     "color": "var(--black)"
+    }
+   },
+   "customClass": {
+    "value": []
+   },
+   "elementVersion": {
+    "value": 2
+   },
+   "name": "sub-headline"
+  },
+  "class": {
+   "entranceAnimation": {
+    "value": null
+   },
+   "animationScale": {
+    "value": 1
+   },
+   "animationDuration": {
+    "value": 1
+   },
+   "animationDelay": {
+    "value": 0
+   },
+   "animationEasing": {
+    "value": "linear"
+   }
+  },
+  "styles": {
+   "backgroundColor": {
+    "value": "var(--transparent)"
+   },
+   "color": {
+    "value": "#B68D40"
+   },
+   "inlineColors": {
+    "value": []
+   },
+   "boldTextColor": {
+    "value": "var(--text-color)"
+   },
+   "italicTextColor": {
+    "value": "var(--text-color)"
+   },
+   "underlineTextColor": {
+    "value": "var(--text-color)"
+   },
+   "linkTextColor": {
+    "value": "#B68D40"
+   },
+   "iconColor": {
+    "value": "var(--text-color)"
+   },
+   "fontFamily": {
+    "value": ""
+   },
+   "fontWeight": {
+    "value": "700",
+    "desktop": "700"
+   },
+   "boxShadow": {
+    "value": "none"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 20,
+    "unit": "px"
+   },
+   "opacity": {
+    "value": "1"
+   },
+   "textShadow": {
+    "value": "none"
+   },
+   "borderColor": {
+    "value": "var(--black)"
+   },
+   "borderWidth": {
+    "value": "0px"
+   },
+   "borderStyle": {
+    "value": "none"
+   },
+   "borderRadius": {
+    "value": "0px"
+   },
+   "lineHeight": {
+    "value": 1.6
+   },
+   "textTransform": {
+    "value": "none"
+   },
+   "letterSpacing": {
+    "value": 2,
+    "unit": "px"
+   },
+   "textAlign": {
+    "value": "left"
+   },
+   "typography": {
+    "value": "var(--contentfont)"
+   }
+  },
+  "wrapper": {
+   "marginTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "width": {
+    "value": "auto",
+    "unit": ""
+   },
+   "height": {
+    "value": "auto",
+    "unit": ""
+   }
+  },
+  "customCss": [],
+  "id": "sub-heading-RP8XtQcB7d",
+  "type": "element",
+  "child": [],
+  "mobileStyles": {
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 20,
+    "unit": "px"
+   }
+  },
+  "mobileWrapper": {},
+  "meta": "sub-heading",
+  "tagName": "c-sub-heading",
+  "title": "Sub Headline"
+ },
+ "image": {
+  "extra": {
+   "nodeId": "cimage-Hh0nm9MrBn",
+   "visibility": {
+    "value": {
+     "hideDesktop": false,
+     "hideMobile": false
+    }
+   },
+   "imageActions": {
+    "value": "none"
+   },
+   "visitWebsite": {
+    "value": {
+     "url": "",
+     "newTab": false
+    }
+   },
+   "downloadFile": {
+    "value": {
+     "fileUrl": "",
+     "fileName": ""
+    }
+   },
+   "imageProperties": {
+    "value": {
+     "width": "",
+     "height": "",
+     "url": "https://storage.googleapis.com/funnel-ai-production/image-generation/{{LOCATION_ID}}/trusted-by-families-JlgzQAjOqy.png",
+     "altText": "A distinguished gentleman in a well-appointed study",
+     "compression": true
+    }
+   },
+   "customClass": {
+    "value": []
+   },
+   "hideElements": {
+    "value": []
+   },
+   "showElements": {
+    "value": []
+   },
+   "scrollToElement": {
+    "value": ""
+   },
+   "phoneNumber": {
+    "value": ""
+   },
+   "emailAddress": {
+    "value": ""
+   },
+   "stepPath": {
+    "value": ""
+   },
+   "popupId": {
+    "value": ""
+   },
+   "elementVersion": {
+    "value": 2
+   },
+   "name": "image"
+  },
+  "mobileExtra": {},
+  "class": {
+   "imageEffects": {
+    "value": "img-effects-none"
+   },
+   "entranceAnimation": {
+    "value": "animate__animated animate__fadeInUp"
+   },
+   "animationScale": {
+    "value": 1
+   },
+   "animationDuration": {
+    "value": 1
+   },
+   "animationDelay": {
+    "value": 0
+   },
+   "animationEasing": {
+    "value": "linear"
+   },
+   "imageRadius": {
+    "value": "img-round-corners"
+   }
+  },
+  "styles": {
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "backgroundColor": {
+    "value": "var(--transparent)"
+   },
+   "opacity": {
+    "value": "1"
+   },
+   "textAlign": {
+    "value": "center"
+   },
+   "boxShadow": {
+    "value": "none"
+   },
+   "width": {
+    "value": "auto",
+    "unit": ""
+   },
+   "height": {
+    "value": "auto",
+    "unit": ""
+   },
+   "borderColor": {
+    "value": "var(--black)"
+   },
+   "borderWidth": {
+    "value": "0px"
+   },
+   "borderStyle": {
+    "value": "none"
+   },
+   "borderRadius": {
+    "value": 6,
+    "unit": "px"
+   }
+  },
+  "wrapper": {
+   "marginTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "width": {
+    "value": "auto",
+    "unit": ""
+   },
+   "height": {
+    "value": "auto",
+    "unit": ""
+   }
+  },
+  "customCss": [],
+  "mobileStyles": {
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "height": {
+    "value": "auto",
+    "unit": ""
+   }
+  },
+  "mobileWrapper": {},
+  "id": "image-bTsjFej1WK",
+  "type": "element",
+  "child": [],
+  "meta": "image",
+  "tagName": "c-image",
+  "title": "Image"
+ },
+ "faq": {
+  "extra": {
+   "nodeId": "cfaq-m51ZTC6xzs",
+   "faqType": {
+    "value": "separated"
+   },
+   "faqList": {
+    "value": [
+     {
+      "id": 1,
+      "heading": "<h4>Myth: Estate planning is too expensive.</h4>",
+      "text": "<p>Reality: Unlike traditional law firms that bill by the hour, Trustist operates on a transparent, fixed-pricing model. You know exactly what your legacy protection costs before we begin, with no surprise invoices or hidden fees.</p>",
+      "showImage": false,
+      "image": "https://storage.googleapis.com/msgsndr/{{OBJECT_ID}}/media/62beef4f9f43b0c53e585a8f.jpeg",
+      "active": false,
+      "compression": true
+     },
+     {
+      "id": 2,
+      "heading": "<h4>Myth: The process is overwhelmingly complex.</h4>",
+      "text": "<p>Reality: We have distilled decades of legal expertise into a streamlined, guided experience. Our proprietary platform and dedicated advisors handle the heavy lifting, turning a daunting task into a clear, manageable path.</p>",
+      "showImage": false,
+      "image": "https://storage.googleapis.com/msgsndr/{{OBJECT_ID}}/media/62beef4f9f43b0c53e585a8f.jpeg",
+      "active": false,
+      "compression": true
+     },
+     {
+      "id": 3,
+      "heading": "<h4>Myth: My estate details will become public record.</h4>",
+      "text": "<p>Reality: Unlike a standard will that must pass through probate\u2014a public, time-consuming process\u2014a properly structured trust keeps your assets and family details entirely private, protecting your loved ones from unnecessary exposure.</p>",
+      "showImage": false,
+      "image": "https://storage.googleapis.com/msgsndr/{{OBJECT_ID}}/media/62beef4f9f43b0c53e585a8f.jpeg",
+      "active": false,
+      "compression": true
+     }
+    ]
+   },
+   "typography": {
+    "value": "var(--contentfont)"
+   },
+   "inlineTypographies": {
+    "value": []
+   },
+   "faqCustomOptions": {
+    "value": {
+     "openIcon": {
+      "color": "var(--black)",
+      "fontFamily": "Font Awesome 5 Free",
+      "name": "chevron-down",
+      "unicode": "f078"
+     },
+     "closeIcon": {
+      "color": "var(--black)",
+      "fontFamily": "Font Awesome 5 Free",
+      "name": "chevron-up",
+      "unicode": "f077"
+     },
+     "iconPosition": "right",
+     "lineHeight": "1.5",
+     "showImagePopup": true,
+     "expandAllToggle": false,
+     "expandAll": true,
+     "firstItemOpen": false
+    }
+   },
+   "featureHeadlineDesktopFontSize": {
+    "value": 16,
+    "unit": "px"
+   },
+   "featureHeadlineMobileFontSize": {
+    "value": 15,
+    "unit": "px"
+   },
+   "desktopFontSize": {
+    "value": 15,
+    "unit": "px"
+   },
+   "mobileFontSize": {
+    "value": 12,
+    "unit": "px"
+   },
+   "visibility": {
+    "value": {
+     "hideDesktop": false,
+     "hideMobile": false
+    }
+   },
+   "customClass": {
+    "value": []
+   },
+   "elementVersion": {
+    "value": 2
+   },
+   "name": "faq"
+  },
+  "mobileExtra": {},
+  "class": {},
+  "styles": {
+   "faqOpenTitleTextColor": {
+    "value": "#111827"
+   },
+   "faqOpenTitleBackgroundColor": {
+    "value": "#FFFFFF"
+   },
+   "faqDividerColor": {
+    "value": "#EBE9E4"
+   },
+   "faqContentTextColor": {
+    "value": "#4B5563"
+   },
+   "faqOpenBackgroundColor": {
+    "value": "#FFFFFF"
+   },
+   "faqClosedTitleTextColor": {
+    "value": "#1A2E35"
+   },
+   "faqClosedTitleBackgroundColor": {
+    "value": "#FFFFFF"
+   },
+   "faqExpandAllButtonTextColor": {
+    "value": "var(--cobalt)"
+   },
+   "faqExpandAllButtonBorderColor": {
+    "value": "var(--cobalt)"
+   },
+   "faqExpandAllButtonBackgroundColor": {
+    "value": "var(--white)"
+   },
+   "linkTextColor": {
+    "value": "var(--cobalt)"
+   },
+   "faqHeadingFontFamily": {
+    "value": "var(--headlinefont)"
+   },
+   "faqContentFontFamily": {
+    "value": "var(--contentfont)"
+   },
+   "inlineColors": {
+    "value": []
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "boxShadow": {
+    "value": "none"
+   },
+   "borderColor": {
+    "value": "var(--black)"
+   },
+   "borderWidth": {
+    "value": "0px"
+   },
+   "borderStyle": {
+    "value": "none"
+   },
+   "borderRadius": {
+    "value": "0px"
+   },
+   "fontWeight": {
+    "value": "",
+    "desktop": "400"
+   },
+   "fontWeightSub": {
+    "desktop": "400"
+   }
+  },
+  "wrapper": {
+   "width": {
+    "value": "auto",
+    "unit": ""
+   },
+   "height": {
+    "value": "auto",
+    "unit": ""
+   }
+  },
+  "customCss": [],
+  "id": "faq-Um9y2WsMFr",
+  "version": 2,
+  "type": "element",
+  "child": [],
+  "meta": "faq",
+  "tagName": "c-faq",
+  "title": "FAQ",
+  "mobileStyles": {
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   }
+  },
+  "mobileWrapper": {}
+ },
+ "social-icons": {
+  "extra": {
+   "nodeId": "csocial-icons-T57IxREeyF",
+   "socials": {
+    "value": [
+     {
+      "id": "linkedIn",
+      "label": "LinkedIn",
+      "link": "#",
+      "newWindow": true,
+      "nofollow": false
+     },
+     {
+      "id": "x",
+      "label": "X",
+      "link": "#",
+      "newWindow": true,
+      "nofollow": false
+     },
+     {
+      "id": "facebook",
+      "label": "Facebook",
+      "link": "#",
+      "newWindow": true,
+      "nofollow": false
+     }
+    ]
+   },
+   "displayType": {
+    "value": "icon"
+   },
+   "theme": {
+    "value": "square"
+   },
+   "align": {
+    "value": "center"
+   },
+   "iconSize": {
+    "value": {
+     "height": 20,
+     "width": 20
+    }
+   },
+   "customClass": {
+    "value": []
+   },
+   "visibility": {
+    "value": {
+     "hideDesktop": false,
+     "hideMobile": false
+    }
+   },
+   "color": {
+    "value": "var(--text-color)"
+   },
+   "icon": {
+    "value": {
+     "name": "",
+     "unicode": "",
+     "fontFamily": "",
+     "color": "var(--black)"
+    }
+   },
+   "name": "social-icons"
+  },
+  "class": {},
+  "styles": {
+   "fontFamily": {
+    "value": "Inter"
+   },
+   "fontSize": {
+    "value": 12,
+    "unit": "px"
+   },
+   "fontWeight": {
+    "value": 500,
+    "desktop": "Normal"
+   },
+   "color": {
+    "value": "var(--text-color)"
+   },
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 20,
+    "unit": "px"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginTop": {
+    "unit": "px",
+    "value": 10
+   },
+   "marginBottom": {
+    "unit": "px",
+    "value": 10
+   },
+   "marginRight": {
+    "unit": "px",
+    "value": 0
+   },
+   "marginLeft": {
+    "unit": "px",
+    "value": 0
+   },
+   "iconColor": {
+    "value": "rgba(255,255,255,0.6)"
+   },
+   "textAlign": {
+    "value": "center"
+   }
+  },
+  "wrapper": {
+   "marginTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginBottom": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "marginRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "width": {
+    "value": "auto",
+    "unit": ""
+   },
+   "height": {
+    "value": "auto",
+    "unit": ""
+   }
+  },
+  "mobileStyles": {
+   "paddingTop": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingBottom": {
+    "value": 20,
+    "unit": "px"
+   },
+   "paddingLeft": {
+    "value": 0,
+    "unit": "px"
+   },
+   "paddingRight": {
+    "value": 0,
+    "unit": "px"
+   },
+   "iconColor": {
+    "value": "rgba(255,255,255,0.6)"
+   },
+   "textAlign": {
+    "value": "center"
+   }
+  },
+  "mobileWrapper": {},
+  "mobileExtra": {},
+  "customCss": [],
+  "id": "social-icons-p5Uf2UD4mA",
+  "version": 2,
+  "type": "element",
+  "child": [],
+  "meta": "social-icons",
+  "tagName": "c-social-icons",
+  "title": "Social Icons"
+ },
+ "form": {
+  "extra": {
+   "nodeId": "cform-UhVGmKvXzP",
+   "visibility": {
+    "value": {
+     "hideDesktop": false,
+     "hideMobile": false
+    }
+   },
+   "formId": {
+    "value": "GmgplKVeUCzKzoLOJoMO",
+    "text": "90 minute webinar script optin"
+   },
+   "action": {
+    "value": "go-to-next-funnel-step"
+   },
+   "visitWebsite": {
+    "value": {
+     "url": "",
+     "newTab": false
+    }
+   },
+   "customClass": {
+    "value": []
+   }
+  },
+  "class": {},
+  "customCss": [],
+  "id": "form-UhVGmKvXzP",
+  "type": "element",
+  "child": [],
+  "meta": "form",
+  "tagName": "c-form",
+  "title": "Form",
+  "tag": "",
+  "formData": {
+   "name": "90 minute webinar script optin",
+   "autoResponder": false,
+   "emailNotifications": false,
+   "form": {
+    "address": {
+     "autoCompleteEnabled": true,
+     "children": [],
+     "label": "Address",
+     "placeholder": "Search address",
+     "required": true
+    },
+    "autoResponderConfig": null,
+    "company": {
+     "domain": "app.billionaire-marketing.com",
+     "logoURL": "https://example.com/placeholder.png",
+     "name": "Runway Billionaire Marketing llc "
+    },
+    "conditionalLogic": null,
+    "contactAssociationSettings": null,
+    "customStyle": "@charset \"UTF-8\";\n.form-UhVGmKvXzP #_builder-form { /* Hide native icons ONLY inside name/email/phone fields */ }\n.form-UhVGmKvXzP #_builder-form .name-input svg,\n.form-UhVGmKvXzP #_builder-form .email-input svg,\n.form-UhVGmKvXzP #_builder-form .phone-input svg,\n.form-UhVGmKvXzP #_builder-form #form-full_name svg {\n  display: none !important;\n  visibility: hidden !important;\n}\n.form-UhVGmKvXzP #_builder-form {\n  /* Normalize ONLY name/email/phone wrappers */\n}\n.form-UhVGmKvXzP #_builder-form .name-input,\n.form-UhVGmKvXzP #_builder-form .email-input,\n.form-UhVGmKvXzP #_builder-form .phone-input,\n.form-UhVGmKvXzP #_builder-form #form-full_name {\n  width: 100% !important;\n  height: auto !important;\n  min-height: auto !important;\n  background: transparent !important;\n}\n.form-UhVGmKvXzP #_builder-form {\n  /* Master input rule \u2014 only text/email/phone fields */\n}\n.form-UhVGmKvXzP #_builder-form .name-input input,\n.form-UhVGmKvXzP #_builder-form .email-input input,\n.form-UhVGmKvXzP #_builder-form .phone-input input,\n.form-UhVGmKvXzP #_builder-form #form-full_name input,\n.form-UhVGmKvXzP #_builder-form input[name=full_name],\n.form-UhVGmKvXzP #_builder-form input[name=email],\n.form-UhVGmKvXzP #_builder-form input[name=phone],\n.form-UhVGmKvXzP #_builder-form input[name=phone_number],\n.form-UhVGmKvXzP #_builder-form input[type=email].form-control,\n.form-UhVGmKvXzP #_builder-form input[type=tel].form-control {\n  display: block !important;\n  width: 100% !important;\n  box-sizing: border-box !important;\n  padding: 10px 52px 10px 16px !important;\n  margin: 0 !important;\n  border: 1.5px solid #ddd !important;\n  border-radius: 12px !important;\n  background-color: #ffffff !important;\n  background-image: none !important;\n  color: #333 !important;\n  font-size: 16px !important;\n  line-height: 1.4 !important;\n  height: auto !important;\n  min-height: 45px !important;\n  background-repeat: no-repeat !important;\n  background-position: right 16px center !important;\n  background-size: 22px !important;\n  appearance: none !important;\n  -webkit-appearance: none !important;\n  box-shadow: none !important;\n  -webkit-box-shadow: none !important;\n}\n.form-UhVGmKvXzP #_builder-form {\n  /* Full Name icon */\n}\n.form-UhVGmKvXzP #_builder-form #form-full_name input,\n.form-UhVGmKvXzP #_builder-form input[name=full_name] {\n  background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23999999' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E\") !important;\n}\n.form-UhVGmKvXzP #_builder-form {\n  /* Email icon */\n}\n.form-UhVGmKvXzP #_builder-form input[name=email],\n.form-UhVGmKvXzP #_builder-form input[type=email].form-control {\n  background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23999999' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='4' width='20' height='16' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E\") !important;\n}\n.form-UhVGmKvXzP #_builder-form {\n  /* Phone icon */\n}\n.form-UhVGmKvXzP #_builder-form input[name=phone],\n.form-UhVGmKvXzP #_builder-form input[name=phone_number],\n.form-UhVGmKvXzP #_builder-form input[type=tel].form-control {\n  background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23999999' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='2' width='14' height='20' rx='2' ry='2'/%3E%3Cpath d='M12 18h.01'/%3E%3C/svg%3E\") !important;\n}\n.form-UhVGmKvXzP #_builder-form {\n  /* Placeholder \u2014 only for name/email/phone */\n}\n.form-UhVGmKvXzP #_builder-form .name-input input::placeholder,\n.form-UhVGmKvXzP #_builder-form .email-input input::placeholder,\n.form-UhVGmKvXzP #_builder-form .phone-input input::placeholder,\n.form-UhVGmKvXzP #_builder-form #form-full_name input::placeholder,\n.form-UhVGmKvXzP #_builder-form input[name=full_name]::placeholder,\n.form-UhVGmKvXzP #_builder-form input[name=email]::placeholder,\n.form-UhVGmKvXzP #_builder-form input[name=phone]::placeholder,\n.form-UhVGmKvXzP #_builder-form input[name=phone_number]::placeholder {\n  color: #8f8f8f !important;\n  opacity: 1 !important;\n}\n.form-UhVGmKvXzP #_builder-form {\n  /* =========================\n     DEEP GREEN GLOW BUTTON\n  ========================= */\n}\n@keyframes borderGlow {\n  0% {\n    box-shadow: 0 0 6px 2px rgba(24, 124, 54, 0.28), 0 0 0 3px rgba(24, 124, 54, 0.14);\n  }\n  50% {\n    box-shadow: 0 0 18px 6px rgba(24, 124, 54, 0.55), 0 0 0 3px rgba(24, 124, 54, 0.25);\n  }\n  100% {\n    box-shadow: 0 0 6px 2px rgba(24, 124, 54, 0.28), 0 0 0 3px rgba(24, 124, 54, 0.14);\n  }\n}\n@keyframes shimmerSweep {\n  0% {\n    left: -75%;\n  }\n  100% {\n    left: 125%;\n  }\n}\n.form-UhVGmKvXzP #_builder-form button[type=submit] {\n  width: 100% !important;\n  background: #187c36 !important;\n  color: #ffffff !important;\n  font-size: 16px !important;\n  font-weight: 900 !important;\n  padding: 20px 24px 10px !important;\n  border: 3px solid #2fb45b !important;\n  border-radius: 50px !important;\n  cursor: pointer !important;\n  display: flex !important;\n  flex-direction: column !important;\n  align-items: center !important;\n  line-height: 1.3 !important;\n  animation: borderGlow 2s ease-in-out infinite !important;\n  position: relative !important;\n  overflow: hidden !important;\n  transition: transform 0.2s ease !important;\n}\n.form-UhVGmKvXzP #_builder-form button[type=submit]::before {\n  content: \"\";\n  position: absolute;\n  top: 0;\n  left: -75%;\n  width: 50%;\n  height: 100%;\n  background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.22) 50%, transparent 100%);\n  animation: shimmerSweep 2.5s ease-in-out infinite;\n  border-radius: 50px;\n  pointer-events: none;\n}\n.form-UhVGmKvXzP #_builder-form button[type=submit]:hover {\n  transform: scale(1.02) !important;\n  background: #12642b !important;\n}\n.form-UhVGmKvXzP #_builder-form button[type=submit]::after {\n  content: \"Seats Are Filling Fast!\";\n  font-size: 11px !important;\n  font-weight: 400 !important;\n  color: rgba(255, 255, 255, 0.85) !important;\n  display: block;\n  margin-top: 4px;\n}",
+    "desktopImageLayout": "topFixed",
+    "emailNotificationsConfig": null,
+    "enableTimezone": true,
+    "fbPixelId": "",
+    "fieldCSS": "@import url('https://fonts.googleapis.com/css?family=roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Inter:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i');\n\n  #_builder-form .form-builder--item input[type=text][class=form-control],#_builder-form .form-builder--item .date-picker-custom-style,#_builder-form .form-builder--item input[type=number]{\n    background-color: #F7FAFC !important;\n    color: #undefined !important;\n    border: 0px none #FFFFFF !important;\n    border-radius: 5px !important;\n    padding: 15px 20px 15px 20px !important;\n    box-shadow: 0px 0px 0px 0px #FFFFFF;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n    background-clip: inherit !important;\n  }\n  #_builder-form textarea {\n    background-color: #F7FAFC !important;\n    color: #undefined !important;\n    border: 0px none #FFFFFF !important;\n    border-radius: 5px !important;\n    padding: 15px 20px 15px 20px !important;\n    box-shadow: 0px 0px 0px 0px #FFFFFF !important;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n    background-clip: inherit !important;\n  }\n  #_builder-form input[type=tel],#_builder-form input[type=email],#_builder-form .multiselect .multiselect__tags{\n    background-color: #F7FAFC !important;\n    color: #undefined !important;\n    border: 0px none #FFFFFF !important;\n    border: 0px none #FFFFFF !important;\n    border-radius: 5px !important;\n    padding: 15px 20px 15px 20px !important;\n    box-shadow: 0px 0px 0px 0px #FFFFFF;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n    background-clip: inherit !important;\n  }\n  #_builder-form .multi_select_form {\n    border-radius: 5px !important;\n  }\n  #_builder-form .iti--allow-dropdown input, .iti--allow-dropdown input[type=tel]{\n    padding-left: 50px !important;\n  }\n  #_builder-form .countryphone {\n    height: inherit;\n  }\n\n\n  #_builder-form .form-builder--item .date-picker-custom-style input[type=text],  #_builder-form .form-builder--item .multiselect .multiselect__placeholder {\n    padding:0;\n    background-color: #F7FAFC;\n    color: #undefined;\n    font-size: 14px;\n  }\n  #_builder-form .form-builder--item .multiselect .multiselect__input{\n    background-color: #F7FAFC !important;\n  }\n  #_builder-form .form-builder--item .multiselect .multiselect__select{\n    background: transparent;\n    z-index:10;\n  }\n  #_builder-form .form-builder--item .multiselect ,.multiselect__single{\n    padding:0 !important;\n    margin:0 !important;\n    min-height: 24px;\n    color:  #undefined !important;\n    background-color: #F7FAFC !important;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n  }\n  #_builder-form .form-builder--item  .multiselect__placeholder {\n    padding:0 !important;\n    margin:0 !important;\n    min-height: 24px;\n    color: #AFB8BC !important;\n    background-color: #F7FAFC !important;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n  }\n  #_builder-form .field-container{\n    width:100%;\n    max-width: 516px;\n  }\n  #_builder-form ::-webkit-input-placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */\n    color: #AFB8BC;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n    opacity: 1; /* Firefox */\n  }\n  #_builder-form ::placeholder, .signature-placeholder {\n    color: #AFB8BC !important;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n  }\n\n  #_builder-form .input-icon {\n    color: #AFB8BC;\n  }\n    \n  #_builder-form :-ms-input-placeholder { /* Internet Explorer 10-11 */\n    color: #AFB8BC !important;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n  }\n  #_builder-form ::-ms-input-placeholder { /* Microsoft Edge */\n    color: #AFB8BC !important;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n  }\n\n  #_builder-form label{\n    color: #000000;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n  }\n  #_builder-form label * {\n    color: #000000;\n    font-family: 'roboto';\n  }\n  #_builder-form .text-element * {\n    color: inherit;\n    font-family: 'roboto';\n  }\n  #_builder-form .short-label{\n    color: #464d5f;\n    font-family: 'Roboto';\n    font-size: 12px;\n    font-weight: 300;\n    -webkit-font-smoothing: auto;\n  }\n  #_builder-form .form-builder--item .payment-suggestion-tag-container {\n    background-color: #F7FAFC;\n    color: #undefined !important;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n      box-shadow: 0px 0px 0px 0px #FFFFFF;\n  }\n  #_builder-form .product-summary-amount-large, #order-confirmation .product-summary-amount-large {\n    color: #000000;\n    font-size: 18px;\n    font-weight: 600;\n    font-family: roboto;\n    line-height: 1.5rem;\n  }\n  #_builder-form .product-summary-amount-normal, #order-confirmation .product-summary-amount-normal {\n    color: #000000;\n    font-size: 14px;\n    font-weight: 500;\n    font-family: roboto;\n    line-height: 1.5rem;\n  }\n  #_builder-form .product-summary-label-bold, #order-confirmation .product-summary-label-bold{\n    color: #000000;\n    font-size: 14px;\n    font-weight: 600;\n    font-family: roboto;\n    line-height: 1.5rem;\n  }\n  #_builder-form .crossed-amount {\n    color: #000000;\n    font-size: 16px;\n    font-weight: 500;\n    font-family: roboto;\n    line-height: 1.5rem;\n  }\n  #_builder-form .product-summary-label-large, #order-confirmation .product-summary-label-large{\n    color: #000000;\n    font-size: 16px;\n    font-weight: 500;\n    font-family: roboto;\n    line-height: 1.575rem;\n  }\n  #_builder-form .product-summary-label-normal, #order-confirmation .product-summary-label-normal{\n    color: #000000;\n    font-size: 14px;\n    font-weight: 400;\n    font-family: roboto;\n    line-height: 1.575rem;\n  }\n  #_builder-form .product-summary-label-small, #order-confirmation .product-summary-label-small{\n    color: #000000;\n    font-size: 12px;\n    font-weight: 400;\n    font-family: roboto;\n    line-height: 1.575rem;\n  }\n  #_builder-form .variant-tag {\n    color: #000000;\n    font-size: 13px;\n    font-weight: 400;\n    font-family: roboto;\n    line-height: 1.5rem;\n  }\n  #_builder-form .selected-tag {\n    background-color: #009ef426 !important;\n  }\n  #_builder-form .payment-tag, #_builder-form .quantity-container-counter {\n    box-shadow: 0px 0px 0px 0px #FFFFFF;\n    background-color : #F7FAFC;\n  }\n  #_builder-form .quantity-container-counter  {\n    padding-top: 13px !important;\n    padding-bottom:  13px !important;\n  }\n  #_builder-form .quantity-text {\n    font-size: 14px !important;\n  }\n  .bubble-label, .bubble-checkbox-label {\n    background-color: #F7FAFC !important;\n    color: #AFB8BC !important;\n    font-family: 'roboto' !important;\n    font-size: 14px !important;\n    font-weight: 400 !important;\n  }\n  .bubble-container, .bubble-checkbox-container {\n    border: 0px none #FFFFFF !important;\n    border-radius: 12px !important;\n    /* Small horizontal gap between bubbles */\n    margin-left: 2px !important;\n    margin-right: 2px !important;\n    padding: 15px 20px 15px 20px !important;\n    box-shadow: 0px 0px 0px 0px #FFFFFF;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n    background-clip: inherit !important;\n  }\n  .vdpHeadCellContent {\n    word-wrap: normal;\n    }\n\n  \n  ",
+    "fieldStyle": {
+     "activeTagBgColor": "009ef426",
+     "bgColor": "F7FAFC",
+     "border": {
+      "border": 0,
+      "color": "FFFFFF",
+      "radius": 5,
+      "type": "none"
+     },
+     "labelAlignment": "top",
+     "labelColor": "000000",
+     "labelFontFamily": "roboto",
+     "labelFontSize": "14",
+     "labelFontWeight": "400",
+     "labelWidth": 200,
+     "padding": {
+      "bottom": 15,
+      "left": 20,
+      "right": 20,
+      "top": 15
+     },
+     "placeholderColor": "AFB8BC",
+     "placeholderFontFamily": "roboto",
+     "placeholderFontSize": "14",
+     "placeholderFontWeight": "400",
+     "shadow": {
+      "blur": 0,
+      "color": "FFFFFF",
+      "horizontal": 0,
+      "spread": 0,
+      "vertical": 0
+     },
+     "shortLabel": {
+      "color": "464d5f",
+      "fontFamily": "Roboto",
+      "fontSize": 12,
+      "fontWeight": 300
+     },
+     "width": 516
+    },
+    "fields": [
+     {
+      "active": false,
+      "fieldWidthPercentage": 100,
+      "hidden": false,
+      "hiddenFieldQueryKey": "full_name",
+      "label": "Full Name",
+      "placeholder": "Full Name",
+      "required": true,
+      "standard": true,
+      "tag": "full_name",
+      "type": "text"
+     },
+     {
+      "active": false,
+      "fieldWidthPercentage": 100,
+      "hiddenFieldQueryKey": "email",
+      "label": "Email",
+      "placeholder": "Email",
+      "required": true,
+      "standard": true,
+      "tag": "email",
+      "type": "email"
+     },
+     {
+      "active": false,
+      "enableCountryPicker": false,
+      "fieldWidthPercentage": 100,
+      "hiddenFieldQueryKey": "phone",
+      "label": "Phone",
+      "placeholder": "Phone",
+      "required": true,
+      "standard": true,
+      "tag": "phone",
+      "type": "text"
+     },
+     {
+      "active": true,
+      "align": "left",
+      "bgColor": "069622FF",
+      "border": 0,
+      "borderColor": "FFFFFF",
+      "borderType": "none",
+      "color": "FFFAFAFF",
+      "fieldWidthPercentage": 100,
+      "fontFamily": "roboto",
+      "fontSize": 16,
+      "fullwidth": true,
+      "hiddenFieldQueryKey": "button",
+      "label": "<p style=\"text-align: center\"><strong>SAVE MY FREE SPOT</strong></p>",
+      "padding": {
+       "bottom": 11,
+       "left": 11,
+       "right": 11,
+       "top": 11
+      },
+      "placeholder": "Button",
+      "shadow": {
+       "blur": 0,
+       "color": "FFFFFF",
+       "horizontal": 0,
+       "spread": 0,
+       "vertical": 0
+      },
+      "standard": true,
+      "subTextColor": "FBF8F8FF",
+      "subTextFontFamily": "roboto",
+      "subTextFontSize": 16,
+      "subTextWeight": 200,
+      "submitSubText": "<p></p>",
+      "tag": "button",
+      "type": "submit",
+      "weight": 500
+     }
+    ],
+    "formAction": {
+     "actionType": "2",
+     "headerImageSrc": "",
+     "mobileHeaderImageSrc": "",
+     "mobileHeaderImageSrcDeleted": false,
+     "redirectUrl": "",
+     "thankyouText": "<p style='font-family: Inter, sans-serif; font-size: 18px; font-weight: 600; line-height: 28px; text-align: center; margin: 0;'>\ud83d\ude0a</p><p style='font-family: Inter, sans-serif; font-size: 16px; font-weight: 600; line-height: 24px; text-align: center; margin: 4px 0 0; color: #101828;'>We appreciate your feedback!</p><p style='font-family: Inter, sans-serif; font-size: 12px; font-weight: 400; line-height: 18px; text-align: center; margin: 4px 0 0; color: #101828;'>Thank you for taking the time to complete this form.</p>"
+    },
+    "formLabelVisible": false,
+    "formSubmissionEvent": "SubmitApplication",
+    "fullScreenMode": false,
+    "generateSubmissionDocument": false,
+    "height": 400,
+    "imageCornerRadius": 0,
+    "imageFieldSpacing": 24,
+    "imageFocusPoint": {
+     "x": 50,
+     "y": 50
+    },
+    "inputStyleType": "box",
+    "isGDPRCompliant": false,
+    "layout": 1,
+    "mobileFieldCSS": "@import url('https://fonts.googleapis.com/css?family=roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Inter:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i');\n\n  #_builder-form .form-builder--item input[type=text][class=form-control],#_builder-form .form-builder--item .date-picker-custom-style,#_builder-form .form-builder--item input[type=number]{\n    background-color: #F7FAFC !important;\n    color: #undefined !important;\n    border: 0px none #FFFFFF !important;\n    border-radius: 5px !important;\n    padding: 15px 20px 15px 20px !important;\n    box-shadow: 0px 0px 0px 0px #FFFFFF;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n    background-clip: inherit !important;\n  }\n  #_builder-form textarea {\n    background-color: #F7FAFC !important;\n    color: #undefined !important;\n    border: 0px none #FFFFFF !important;\n    border-radius: 5px !important;\n    padding: 15px 20px 15px 20px !important;\n    box-shadow: 0px 0px 0px 0px #FFFFFF !important;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n    background-clip: inherit !important;\n  }\n  #_builder-form input[type=tel],#_builder-form input[type=email],#_builder-form .multiselect .multiselect__tags{\n    background-color: #F7FAFC !important;\n    color: #undefined !important;\n    border: 0px none #FFFFFF !important;\n    border: 0px none #FFFFFF !important;\n    border-radius: 5px !important;\n    padding: 15px 20px 15px 20px !important;\n    box-shadow: 0px 0px 0px 0px #FFFFFF;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n    background-clip: inherit !important;\n  }\n  #_builder-form .multi_select_form {\n    border-radius: 5px !important;\n  }\n  #_builder-form .iti--allow-dropdown input, .iti--allow-dropdown input[type=tel]{\n    padding-left: 50px !important;\n  }\n  #_builder-form .countryphone {\n    height: inherit;\n  }\n\n\n  #_builder-form .form-builder--item .date-picker-custom-style input[type=text],  #_builder-form .form-builder--item .multiselect .multiselect__placeholder {\n    padding:0;\n    background-color: #F7FAFC;\n    color: #undefined;\n    font-size: 14px;\n  }\n  #_builder-form .form-builder--item .multiselect .multiselect__input{\n    background-color: #F7FAFC !important;\n  }\n  #_builder-form .form-builder--item .multiselect .multiselect__select{\n    background: transparent;\n    z-index:10;\n  }\n  #_builder-form .form-builder--item .multiselect ,.multiselect__single{\n    padding:0 !important;\n    margin:0 !important;\n    min-height: 24px;\n    color:  #undefined !important;\n    background-color: #F7FAFC !important;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n  }\n  #_builder-form .form-builder--item  .multiselect__placeholder {\n    padding:0 !important;\n    margin:0 !important;\n    min-height: 24px;\n    color: #AFB8BC !important;\n    background-color: #F7FAFC !important;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n  }\n  #_builder-form .field-container{\n    width:100%;\n    max-width: 516px;\n  }\n  #_builder-form ::-webkit-input-placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */\n    color: #AFB8BC;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n    opacity: 1; /* Firefox */\n  }\n  #_builder-form ::placeholder, .signature-placeholder {\n    color: #AFB8BC !important;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n  }\n\n  #_builder-form .input-icon {\n    color: #AFB8BC;\n  }\n    \n  #_builder-form :-ms-input-placeholder { /* Internet Explorer 10-11 */\n    color: #AFB8BC !important;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n  }\n  #_builder-form ::-ms-input-placeholder { /* Microsoft Edge */\n    color: #AFB8BC !important;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n  }\n\n  #_builder-form label{\n    color: #000000;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n  }\n  #_builder-form label * {\n    color: #000000;\n    font-family: 'roboto';\n  }\n  #_builder-form .text-element * {\n    color: inherit;\n    font-family: 'roboto';\n  }\n  #_builder-form .short-label{\n    color: #464d5f;\n    font-family: 'Roboto';\n    font-size: 12px;\n    font-weight: 300;\n    -webkit-font-smoothing: auto;\n  }\n  #_builder-form .form-builder--item .payment-suggestion-tag-container {\n    background-color: #F7FAFC;\n    color: #undefined !important;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n      box-shadow: 0px 0px 0px 0px #FFFFFF;\n  }\n  #_builder-form .product-summary-amount-large, #order-confirmation .product-summary-amount-large {\n    color: #000000;\n    font-size: 18px;\n    font-weight: 600;\n    font-family: roboto;\n    line-height: 1.5rem;\n  }\n  #_builder-form .product-summary-amount-normal, #order-confirmation .product-summary-amount-normal {\n    color: #000000;\n    font-size: 14px;\n    font-weight: 500;\n    font-family: roboto;\n    line-height: 1.5rem;\n  }\n  #_builder-form .product-summary-label-bold, #order-confirmation .product-summary-label-bold{\n    color: #000000;\n    font-size: 14px;\n    font-weight: 600;\n    font-family: roboto;\n    line-height: 1.5rem;\n  }\n  #_builder-form .crossed-amount {\n    color: #000000;\n    font-size: 16px;\n    font-weight: 500;\n    font-family: roboto;\n    line-height: 1.5rem;\n  }\n  #_builder-form .product-summary-label-large, #order-confirmation .product-summary-label-large{\n    color: #000000;\n    font-size: 16px;\n    font-weight: 500;\n    font-family: roboto;\n    line-height: 1.575rem;\n  }\n  #_builder-form .product-summary-label-normal, #order-confirmation .product-summary-label-normal{\n    color: #000000;\n    font-size: 14px;\n    font-weight: 400;\n    font-family: roboto;\n    line-height: 1.575rem;\n  }\n  #_builder-form .product-summary-label-small, #order-confirmation .product-summary-label-small{\n    color: #000000;\n    font-size: 12px;\n    font-weight: 400;\n    font-family: roboto;\n    line-height: 1.575rem;\n  }\n  #_builder-form .variant-tag {\n    color: #000000;\n    font-size: 13px;\n    font-weight: 400;\n    font-family: roboto;\n    line-height: 1.5rem;\n  }\n  #_builder-form .selected-tag {\n    background-color: #009ef426 !important;\n  }\n  #_builder-form .payment-tag, #_builder-form .quantity-container-counter {\n    box-shadow: 0px 0px 0px 0px #FFFFFF;\n    background-color : #F7FAFC;\n  }\n  #_builder-form .quantity-container-counter  {\n    padding-top: 13px !important;\n    padding-bottom:  13px !important;\n  }\n  #_builder-form .quantity-text {\n    font-size: 14px !important;\n  }\n  .bubble-label, .bubble-checkbox-label {\n    background-color: #F7FAFC !important;\n    color: #AFB8BC !important;\n    font-family: 'roboto' !important;\n    font-size: 14px !important;\n    font-weight: 400 !important;\n  }\n  .bubble-container, .bubble-checkbox-container {\n    border: 0px none #FFFFFF !important;\n    border-radius: 12px !important;\n    /* Small horizontal gap between bubbles */\n    margin-left: 2px !important;\n    margin-right: 2px !important;\n    padding: 15px 20px 15px 20px !important;\n    box-shadow: 0px 0px 0px 0px #FFFFFF;\n    font-family: 'roboto';\n    font-size: 14px;\n    font-weight: 400;\n    background-clip: inherit !important;\n  }\n  .vdpHeadCellContent {\n    word-wrap: normal;\n    }\n\n  \n  ",
+    "mobileImageLayout": "header",
+    "mobileLayout": 1,
+    "opportunitySettings": null,
+    "pageViewEvent": "PageView",
+    "payment": null,
+    "showImage": false,
+    "showSubmissionInConversationsFeed": false,
+    "stickyContact": false,
+    "style": {
+     "acBranding": false,
+     "background": "00000000",
+     "bgImage": "",
+     "border": {
+      "border": 1,
+      "color": "00000000",
+      "radius": 4,
+      "style": "dashed"
+     },
+     "fieldSpacing": 16,
+     "margin": {
+      "bottom": "auto",
+      "left": "auto",
+      "right": "auto",
+      "top": 0
+     },
+     "mobileBgImage": "",
+     "mobileBgImageDeleted": false,
+     "mobileMargin": {
+      "bottom": "auto",
+      "left": "auto",
+      "right": "auto",
+      "top": "auto"
+     },
+     "mobilePadding": {
+      "bottom": 30,
+      "extraPaddingComputingProcessed": true,
+      "left": 20,
+      "right": 20,
+      "top": 30
+     },
+     "padding": {
+      "bottom": 10,
+      "extraPaddingComputingProcessed": true,
+      "left": 0,
+      "right": 0,
+      "top": 0
+     },
+     "shadow": {
+      "blur": 0,
+      "color": "00000000",
+      "horizontal": 0,
+      "spread": 0,
+      "vertical": 0
+     }
+    },
+    "submitMessageStyle": {
+     "bgColor": "FFFFFF",
+     "color": "000000",
+     "cornerRadius": 10,
+     "fontFamily": "roboto",
+     "fontSize": 18,
+     "fontWeight": 400,
+     "isEnabled": true,
+     "margin": {
+      "bottom": "auto",
+      "left": "auto",
+      "right": "auto",
+      "top": "auto"
+     },
+     "mobileBgColor": "FFFFFF",
+     "mobileFontWeight": 400,
+     "mobileMargin": {
+      "bottom": "auto",
+      "left": "auto",
+      "right": "auto",
+      "top": "auto"
+     },
+     "mobilePadding": {
+      "bottom": 48,
+      "left": 48,
+      "right": 48,
+      "top": 48
+     },
+     "padding": {
+      "bottom": 48,
+      "left": 48,
+      "right": 48,
+      "top": 48
+     }
+    },
+    "surveyImageSettings": {
+     "slideSettings": {},
+     "surveyDefault": {
+      "desktopImageLayout": "topFixed",
+      "headerImageSrc": "",
+      "imageCornerRadius": 0,
+      "imageFieldSpacing": 24,
+      "imageFocusPoint": {
+       "x": 50,
+       "y": 50
+      },
+      "mobileHeaderImageSrc": "",
+      "mobileHeaderImageSrcDeleted": false,
+      "mobileImageLayout": "header",
+      "showImage": false
+     }
+    },
+    "width": 548
+   },
+   "language": "en-US",
+   "parentFolderId": "",
+   "parentFolderName": "",
+   "recurringProductCurrency": "USD",
+   "recurringProductId": null,
+   "recurringProducts": [],
+   "lastUpdatedAt": "2026-07-06T20:04:10.419Z",
+   "locationId": "{{LOCATION_ID}}",
+   "country": "US",
+   "companyId": "{{OBJECT_ID}}"
+  }
+ }
+}
