@@ -166,7 +166,7 @@ text the client can read and edit in the builder.
 
 ## 6. Two things not to reproduce
 
-**False scarcity on an evergreen funnel.** "Spots are capped" is false when the
+**False scarcity on an evergreen funnel.** A capped-seats claim is false when the
 session runs on a loop, and every visitor who registers twice can see that it is
 false. If the funnel is evergreen, the honest urgency is the replay window — and only
 if the replay window is real.

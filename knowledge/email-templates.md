@@ -189,7 +189,7 @@ The one construction that works everywhere is a padded `<a>` inside a `bgcolor`'
 
 ```html
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center"><tr>
-  <td align="center" bgcolor="#DBA49E" style="background-color:#DBA49E;border-radius:2px;">
+  <td align="center" bgcolor="#B8865F" style="background-color:#B8865F;border-radius:2px;">
     <a href="{{custom_values.offer_url}}"
        style="display:inline-block;padding:16px 38px;font-family:Georgia,serif;
               font-size:12px;font-weight:700;letter-spacing:.2em;

@@ -25,6 +25,15 @@ shipping something that returns `200 OK` and does nothing.
 | find out how something works | [`methodology/discovery.md`](methodology/discovery.md) |
 | know whether it actually worked | [`methodology/verification.md`](methodology/verification.md) |
 | avoid the traps | [`methodology/failure-modes.md`](methodology/failure-modes.md) |
+| **know what content to put in** — brief → capture → spec → page | [`methodology/producing-the-work.md`](methodology/producing-the-work.md) |
+| stop it looking templated | [`methodology/design-quality.md`](methodology/design-quality.md) |
+| write the words | [`methodology/writing-copy.md`](methodology/writing-copy.md) |
+
+The last three are the newest and the least like anything else you have read. The rest
+of this repository teaches mechanism — how a page is shaped, where behaviour lives, how
+to write to it. **None of that stops you shipping something generic.** You can run every
+script here correctly and still produce a page nobody was ever going to be moved by.
+That is what `methodology/producing-the-work.md` and the two files after it are for.
 
 ---
 
@@ -63,7 +72,8 @@ garbage id — and now that the MCP server exists, ask the catalogue instead of 
 knowledge/     the platform: auth, API map, MCP server, pages, emails,
                workflows, custom values
 methodology/   how to work: discovery, verification, failure modes,
-               delegating to other agents
+               delegating to other agents — and how to produce the
+               content itself: specs, design quality, copy
 tools/         runnable scripts: token capture, MCP client, page injection,
                CSS emission, workflow deploy
 patterns/      architectures that worked, and why
