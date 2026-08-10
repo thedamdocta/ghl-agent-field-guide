@@ -28,6 +28,7 @@ shipping something that returns `200 OK` and does nothing.
 | understand what you're dealing with | [`knowledge/api-map.md`](knowledge/api-map.md) |
 | authenticate anything | [`knowledge/auth.md`](knowledge/auth.md) |
 | **get the internal token (do it yourself)** | [`knowledge/getting-the-token.md`](knowledge/getting-the-token.md) |
+| **there is no API for it — drive the browser yourself** | [`knowledge/driving-the-ui.md`](knowledge/driving-the-ui.md) |
 | **embed a form on your OWN site** | [`knowledge/forms-and-external-embeds.md`](knowledge/forms-and-external-embeds.md) |
 | **style a funnel page — and find out why your CSS loses** | [`knowledge/page-css-and-classes.md`](knowledge/page-css-and-classes.md) |
 | stop guessing endpoint names | [`knowledge/mcp-server.md`](knowledge/mcp-server.md) |

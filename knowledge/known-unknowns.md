@@ -14,6 +14,12 @@ Three categories, and the distinction matters:
 - **UNTESTED** — plausibly works; nobody has checked. Treat as unknown, not as true.
 - **UNEXPLORED** — never looked at. No opinion offered.
 
+**"No API" is not "impossible."** Several BLOCKED entries below are blocked *as API
+calls* and are perfectly doable by driving the browser — which you can do yourself, no
+human required. Each one says so and points at
+[`driving-the-ui.md`](driving-the-ui.md), which carries the setup, the cross-origin
+iframe rules and the quirks table. Read it before you conclude anything here is a wall.
+
 ---
 
 ## BLOCKED — tried, no route found
@@ -26,21 +32,31 @@ also loads as a cross-origin iframe that resisted automation.
 
 If you need memberships, assume you are starting from zero and budget accordingly.
 Begin by capturing what the UI does (`performance.getEntriesByType('resource')`) and
-expect a third auth scheme.
+expect a third auth scheme. If you fall back to driving that iframe,
+[`driving-the-ui.md`](driving-the-ui.md) is the starting point — but note this is the
+one builder where the iframe rules there were **not** enough on their own.
 
 ### Workflow triggers
 No API found. A workflow can be created, populated and updated programmatically, but
-**attaching a trigger is UI-only.** It has been done by driving the builder with
-Playwright; there is no endpoint.
+**attaching a trigger has no endpoint.** Blocked as an API call — **not blocked as
+work.** It has been done repeatedly by driving the builder with Playwright, and the
+full pattern (acquire the iframe, dismiss the modal, `dispatchEvent` the picker item
+that renders below the fold, save, verify) is written out in
+[`driving-the-ui.md`](driving-the-ui.md). Do it yourself; do not hand it back.
 
 ### Publishing a workflow
-Same. The Draft → Published toggle is UI-only. Detect state via `aria-checked` on the
-`[role="switch"]` — `body.innerText.includes('Draft')` returns true even when
-published, because the word appears elsewhere in the builder chrome.
+Same — no endpoint, and the same answer: **flip the toggle in the browser.** Verified
+working; step-by-step in [`driving-the-ui.md`](driving-the-ui.md), which is the worked
+example on that page. Two things that cost hours if you improvise: detect state via
+`aria-checked` on the `[role="switch"]` (`body.innerText.includes('Draft')` returns
+true even when published, because the word appears elsewhere in the builder chrome),
+and **click Save after toggling** — the toggle alone only sets local Vue state.
 
 ### Creating a funnel
-No public create-funnel endpoint found. Funnel *steps* and *pages* can be created;
-the funnel itself is a manual step, once per project.
+No public create-funnel endpoint found. Funnel *steps* and *pages* can be created; the
+funnel object itself is a UI step, once per project. **UNVERIFIED** whether the
+list → row → iframe pattern in [`driving-the-ui.md`](driving-the-ui.md) automates it —
+nobody has tried. It has always been done by hand because it happens once.
 
 ### Snapshots
 Agency-level only. A sub-account PIT gets 401. Untested from an agency token.
@@ -117,7 +133,9 @@ before you spend an afternoon.
 ## How to use this page
 
 **Before starting anything, check whether it is listed here.** If it is BLOCKED, do
-not spend the afternoon rediscovering that; go straight to the UI-driving approach. If
+not spend the afternoon rediscovering that; go straight to the UI-driving approach in
+[`driving-the-ui.md`](driving-the-ui.md) — BLOCKED means "no endpoint", and for most of
+these it does not mean "cannot be done." If
 it is UNTESTED, budget a verification step. If it is UNEXPLORED, you are the first —
 which mostly means: expect a different host and a different auth scheme, and read
 [`../methodology/how-to-learn-ghl.md`](../methodology/how-to-learn-ghl.md) first.
