@@ -1,5 +1,9 @@
 # Building from scratch on an empty account
 
+> **Don't have `GHL_PIT` / `GHL_LOCATION_ID` / a funnel id yet?**
+> Start at [`step-zero-credentials-and-ids.md`](step-zero-credentials-and-ids.md).
+> It covers where each one comes from and which of them need a human (two of four).
+
 **Nothing here requires a donor form, a reference funnel, or a page to clone.**
 Everything you need ships in this repo.
 

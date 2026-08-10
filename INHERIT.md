@@ -56,7 +56,9 @@ A reasonable import:
 
 Work through this. It is short and it prevents the expensive category of mistake.
 
-- [ ] Do you have a Private Integration Token and a location id? (`knowledge/auth.md`)
+- [ ] Do you have a Private Integration Token and a location id? If not, start at
+      [`knowledge/step-zero-credentials-and-ids.md`](knowledge/step-zero-credentials-and-ids.md)
+      — it says exactly what to ask a human for, and what you can get yourself.
 - [ ] Do you know which of the two hosts your task lives on, and therefore which auth
       scheme applies? Getting this wrong looks exactly like a bad credential.
 - [ ] Writing pages, forms, funnel steps or workflows? You need the internal token,
