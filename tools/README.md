@@ -265,6 +265,11 @@ exists.
 
 Nothing is created without `--apply`.
 
+> **Styling it:** [`form-styles.starter.css`](form-styles.starter.css) ships
+> paste-ready with the full selector map (the submit button is `.ghl-submit-btn`,
+> dropdowns need eight rules, everything needs `!important`). Load it into
+> `formData.form.fieldCSS`.
+
 ### 7. `create_form.py` — give the funnel its own form
 
 ```bash

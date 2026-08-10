@@ -1,0 +1,191 @@
+/* ============================================================================
+   GHL form — starter stylesheet
+   ============================================================================
+
+   Paste-ready. Change the tokens at the top; leave the selectors alone until
+   something misbehaves.
+
+   HOW IT GETS APPLIED
+     Not by your site's stylesheet. A GHL form renders in its own document
+     (an iframe when embedded on a third-party site), so nothing you write on
+     the host page reaches it. This CSS goes INTO the form record:
+
+       POST backend.leadconnectorhq.com/forms/{formId}
+       { "name": "<name>", "formData": { "form": { ..., "fieldCSS": "<this>" } } }
+
+     See knowledge/forms-and-external-embeds.md §5.
+
+   WHY EVERY RULE IS !important
+     GHL ships its own stylesheet inside that document and it loads after
+     yours. Equal specificity therefore loses on source order. `!important` is
+     not laziness here — without it roughly half of these silently do nothing.
+
+   THE SELECTOR NAMES ARE NOT GUESSABLE
+     The submit button is `.ghl-submit-btn`, NOT `button[type=submit]`.
+     Text inputs are `.form-control` inside `.form-builder--item`.
+     Dropdowns are a vue-multiselect widget with eight of their own classes.
+     This map was assembled by inspecting a live form; it is the part of this
+     file worth keeping.
+   ========================================================================= */
+
+:root {
+  --f-ground:      #0f1115;   /* field background                          */
+  --f-text:        #e9e6e1;   /* text the visitor types                    */
+  --f-placeholder: #8b8781;   /* placeholder + empty dropdown label        */
+  --f-line:        #3a3f47;   /* resting border                            */
+  --f-line-focus:  #b0895e;   /* border on focus                           */
+  --f-accent:      #b0895e;   /* submit fill                               */
+  --f-accent-ink:  #14161a;   /* text ON the submit button                 */
+  --f-error:       #d98c86;
+  --f-radius:      2px;
+  --f-font:        Georgia, 'Times New Roman', serif;
+  --f-size:        16px;      /* 16px floor — iOS zooms the page below it  */
+}
+
+/* ── text, email, phone, textarea ─────────────────────────────────────────── */
+#_builder-form .form-builder--item .form-control {
+  background: var(--f-ground) !important;
+  border: 1px solid var(--f-line) !important;
+  border-radius: var(--f-radius) !important;
+  color: var(--f-text) !important;
+  font-family: var(--f-font) !important;
+  font-size: var(--f-size) !important;
+  padding: 15px 17px !important;
+  box-shadow: none !important;
+  transition: border-color .18s ease !important;
+}
+
+#_builder-form .form-builder--item .form-control:focus {
+  border-color: var(--f-line-focus) !important;
+  outline: none !important;
+}
+
+#_builder-form .form-builder--item input::placeholder {
+  color: var(--f-placeholder) !important;
+  opacity: 1 !important;      /* Firefox dims placeholders by default */
+}
+
+/* Field labels. Often hidden via formLabelVisible:false — style anyway, so the
+   form does not break when someone turns them on. */
+#_builder-form label {
+  color: var(--f-text) !important;
+  font-family: var(--f-font) !important;
+  font-size: 13px !important;
+  letter-spacing: .04em !important;
+}
+
+/* The country-code prefix that appears beside a phone field. */
+#_builder-form .form-builder--item span[class*="prefix"] {
+  color: var(--f-placeholder) !important;
+  font-family: var(--f-font) !important;
+}
+
+/* ── dropdowns (vue-multiselect) ──────────────────────────────────────────────
+   A whole widget with its own class family. Style the container AND the tag
+   wrapper AND the inner input, or you get three different backgrounds stacked. */
+#_builder-form .form-builder--item .multiselect,
+#_builder-form .form-builder--item .multiselect .multiselect__tags {
+  background: var(--f-ground) !important;
+  border: 1px solid var(--f-line) !important;
+  border-radius: var(--f-radius) !important;
+  color: var(--f-text) !important;
+  font-family: var(--f-font) !important;
+  min-height: 0 !important;
+}
+
+#_builder-form .form-builder--item .multiselect input[type="text"].multiselect__input,
+#_builder-form .form-builder--item .multiselect__single {
+  background: transparent !important;
+  color: var(--f-text) !important;
+  font-family: var(--f-font) !important;
+  font-size: var(--f-size) !important;
+}
+
+#_builder-form .form-builder--item .multiselect__placeholder,
+#_builder-form .form-builder--item .multiselect__placeholder:empty::before {
+  color: var(--f-placeholder) !important;
+  font-family: var(--f-font) !important;
+}
+
+/* The open menu is a separate layer — miss it and the list is white-on-white. */
+#_builder-form .form-builder--item .multiselect__content-wrapper {
+  background: var(--f-ground) !important;
+  border: 1px solid var(--f-line) !important;
+  color: var(--f-text) !important;
+}
+
+#_builder-form .form-builder--item .multiselect__option--highlight {
+  background: var(--f-line) !important;
+  color: var(--f-text) !important;
+}
+
+#_builder-form .form-builder--item .multiselect__select::before {
+  border-color: var(--f-placeholder) transparent transparent !important;
+}
+
+/* ── consent checkbox + terms block ───────────────────────────────────────────
+   The `*` is deliberate: the terms text arrives as author-controlled HTML with
+   its own inline colours, and a single rule on the container will not reach it. */
+#_builder-form .checkbox-container,
+#_builder-form .terms-and-conditions,
+#_builder-form .terms-and-conditions .terms-text-container * {
+  color: var(--f-placeholder) !important;
+  font-family: var(--f-font) !important;
+  font-size: 12.5px !important;
+  line-height: 1.6 !important;
+}
+
+#_builder-form .terms-and-conditions a {
+  color: var(--f-line-focus) !important;
+  text-decoration: underline !important;
+}
+
+/* ── validation ───────────────────────────────────────────────────────────── */
+#_builder-form .error-message {
+  color: var(--f-error) !important;
+  font-family: var(--f-font) !important;
+  font-size: 12px !important;
+}
+
+/* ── submit ───────────────────────────────────────────────────────────────────
+   `.ghl-submit-btn`, not button[type=submit].
+
+   This button lives inside the form's document, where your page CSS cannot
+   reach it. If the page has its own call-to-action button, match it HERE by
+   hand — otherwise the funnel ships with two different button styles and only
+   one of them is the one you designed. */
+#_builder-form .ghl-submit-btn {
+  display: inline-block !important;
+  width: auto !important;
+  max-width: none !important;
+  background: var(--f-accent) !important;
+  color: var(--f-accent-ink) !important;
+  border: 0 !important;
+  border-radius: var(--f-radius) !important;
+  font-family: var(--f-font) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: .18em !important;
+  text-transform: uppercase !important;
+  line-height: 1.15 !important;
+  padding: 15px 32px !important;
+  min-height: 46px !important;
+  height: auto !important;
+  box-sizing: border-box !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  transition: background-color .18s ease !important;
+}
+
+#_builder-form .ghl-submit-btn:hover {
+  filter: brightness(1.08) !important;
+}
+
+/* ── TRAP: do not do this ─────────────────────────────────────────────────────
+   #_builder-form .form-builder--item:last-child { display: flex; }
+
+   It reads as "the submit row". Every field is an only child of its own
+   .form-builder--item, so :last-child matches ALL of them. In production this
+   threw validation messages sideways and squeezed every input from 338px to
+   138px. Target .ghl-submit-btn instead.
+   ========================================================================= */

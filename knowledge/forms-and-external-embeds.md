@@ -99,16 +99,57 @@ entirely. A ~2KB `fieldCSS` written this way persisted cleanly and completely.
 **UNVERIFIED: whether a large (8KB+) payload survives the API path.** Test before
 relying on it, and read the value back rather than trusting the response.
 
-Target the builder's own ids — the form document uses `#_builder-form`:
+### The method, end to end
 
-```css
-#_builder-form .form-builder--item input { … }
-#_builder-form button[type=submit] { … }
+**1. Start from the shipped stylesheet.**
+[`../tools/form-styles.starter.css`](../tools/form-styles.starter.css) is paste-ready
+and carries the full selector map. Change the tokens at the top; leave the selectors
+alone until something misbehaves.
+
+**2. Know that every rule needs `!important`.** GHL ships its own stylesheet inside
+the form document and it loads *after* yours, so an equal-specificity rule loses on
+source order. Without `!important`, roughly half of your rules silently do nothing.
+
+**3. The class names are not guessable.** This map cost real time to assemble:
+
+| what you want to style | selector |
+|---|---|
+| text / email / phone / textarea | `#_builder-form .form-builder--item .form-control` |
+| focus state | `… .form-control:focus` |
+| placeholder | `… input::placeholder` (set `opacity:1` — Firefox dims it) |
+| **submit button** | `#_builder-form .ghl-submit-btn` — **not** `button[type=submit]` |
+| field labels | `#_builder-form label` |
+| validation text | `#_builder-form .error-message` |
+| consent + terms | `.checkbox-container`, `.terms-and-conditions`, and `.terms-text-container *` |
+| phone country prefix | `.form-builder--item span[class*="prefix"]` |
+| dropdowns | the `.multiselect` family — **eight** separate selectors |
+
+Two that catch people. A dropdown is a vue-multiselect widget: style the container,
+the tag wrapper, the inner input **and** `.multiselect__content-wrapper`, or the open
+menu renders white-on-white. And the terms block arrives as author-controlled HTML
+with its own inline colours, so it needs the `*` descendant rule to be reached at all.
+
+**4. Match the submit button to your page by hand.** It renders inside the form's
+document where your page CSS cannot reach it. If the page has its own CTA, replicate
+those values here — otherwise the funnel ships with two different button styles and
+only one is the one you designed.
+
+**5. Write it, then VERIFY IT APPLIED.** A 200 on the write is not evidence:
+
+```bash
+# load the form's own widget document and read a computed style
+open "https://api.leadconnectorhq.com/widget/form/{formId}"
 ```
 
-> Watch for a trap here: a rule like `.form-builder--item:last-child { display:flex }`
-> looks like it targets the submit row. Every field is an only child of its own
-> wrapper, so `:last-child` matches **all of them**.
+Read the stored value back too (`GET backend…/forms/{formId}` →
+`formData.form.fieldCSS`) and compare its length to what you sent. **Silent
+truncation is the failure mode here**, so a length mismatch is the signal.
+
+> **The trap that cost the most.** A rule like
+> `#_builder-form .form-builder--item:last-child { display: flex }` reads as "the
+> submit row". Every field is an only child of its own `.form-builder--item`, so
+> `:last-child` matches **all of them** — in production it threw validation messages
+> sideways and squeezed every input from 338px to 138px. Target `.ghl-submit-btn`.
 
 ## 6. Seeding the first form on an empty account
 
