@@ -44,7 +44,14 @@ Every node carries two ids and they are not interchangeable:
 | id | what it governs |
 |---|---|
 | `node.id` | the **authoring** id. Section- and row-level layout keys off it. |
-| `node.extra.nodeId` | the **rendered** id, conventionally `c`-prefixed. Element-level styling — button fills, heading typography, nav items — keys off **this** one. |
+| `node.extra.nodeId` | the **rendered** id, `c`-prefixed. Element-level styling — button fills, heading typography, nav items — keys off **this** one. |
+
+**They are independent ids, not one id with a prefix.** Verified: on a real
+builder-authored page `extra.nodeId` equalled `"c" + id` for **0 of 78** nodes — same
+type prefix, different random suffix. So a hand-written stylesheet must match the
+*type prefix* (`[class*=cbutton-]`), never an exact id, and code that reconstructs one
+id from the other works on pages you generated and breaks on pages you captured. Full
+detail in [`../knowledge/page-css-and-classes.md`](../knowledge/page-css-and-classes.md).
 
 GHL's own builder emits rules for both. If you emit only the authoring id, your
 sections lay out correctly and every button, heading and nav item renders in default
@@ -105,9 +112,39 @@ stylesheet applied through custom code. Because it sits at a different level fro
 id-scoped rules, it needs `!important` on almost everything to impose itself. That
 looks alarming and is correct here: you are deliberately overriding a generated
 stylesheet you do not own. Write it once, ordered
-`containment → layout → type → components → ornament → hero → motion`, and treat any
+`containment → layout → type → components → roles → motion → mobile`, and treat any
 rule that has to be added later as evidence the system is incomplete rather than as a
 patch.
+
+> **You do not have to write it from scratch.**
+> [`../tools/page-styles.starter.css`](../tools/page-styles.starter.css) is a working,
+> brand-neutral version of exactly that stylesheet — tokens at the top, every selector
+> verified against builder output — and
+> [`../tools/page_shell.py`](../tools/page_shell.py) attaches it as a `custom-code`
+> element with the script and font links wired correctly, then `--check`s that it is.
+> Change the tokens; leave the selectors alone until something misbehaves.
+
+**`!important` alone is not enough, and this is the part that costs a day.** The
+emitter *forces* four properties — `background-color`, `color`, `padding-top`,
+`padding-bottom` — at `(0,2,0)` with `!important`, and it is injected after your
+stylesheet. So a page-level section rule at `(0,2,0)` ties and loses its padding, and a
+`.hl_page-preview--content h1{color:…!important}` at `(0,1,1)` loses its colour to
+whatever `styles.color` the element carries. That is how a source file that plainly
+says "warm off-white" ships black text on a black ground. Raise section rules to
+`(0,3,0)` by chaining a role class, and type-colour rules to `(0,2,1)` by adding a
+descendant step. Worse still, GHL itself emits **ID-selector** rules at `(1,1,0)` for
+element margins and widths, which no class-based rule can outrank — see the full
+specificity ladder in
+[`../knowledge/page-css-and-classes.md`](../knowledge/page-css-and-classes.md).
+
+**Semantic section classes have to be applied at runtime.** A design system needs to
+say "the hero breathes more than the footer", and GHL gives you no verified way to put
+your own class on a section from the authoring tree (`extra.customClass` exists but was
+empty on all 158 nodes of the captured corpus — **UNVERIFIED**). The route that shipped
+is a small script in the same custom-code block that tags each section from its
+**content** — does it hold an `h1`, a form, the copyright line — never from its
+position. A positional list is wrong the moment a page has a different number of
+sections. `page_shell.py` ships that script.
 
 **Custom-code block rules that are not documented anywhere:**
 
@@ -253,15 +290,19 @@ Two qualifications:
 1. define tokens in one module
 2. build the element tree (authoring ids without the c prefix,
    extra.nodeId set to the c-prefixed form)
-3. emit sectionStyles for every section, BOTH namespaces, root vars at :root
-4. attach the page-level system stylesheet as a custom-code block
-5. inject → expect 201
-6. verify on the rendered preview, at the real viewport, in both orientations
-7. for email: build tables, inline everything, raster the SVG onto its ground,
+3. attach the page-level system stylesheet as a custom-code block
+   (page_shell.py --attach) — BEFORE step 4, so the shell section is
+   styled too and does not ship 130px of empty page under the footer
+4. emit sectionStyles for every section, BOTH namespaces, root vars at :root
+5. page_shell.py --check — one shell, script wired, no styled-but-unassigned class
+6. inject → expect 201
+7. verify on the rendered preview, at the real viewport, in both orientations,
+   reading COMPUTED style — a losing rule looks exactly like a missing one
+8. for email: build tables, inline everything, raster the SVG onto its ground,
    upload to the platform CDN, push as editorType html, send a real test
 ```
 
-Step 6 is not optional and step 7's last clause is the one that gets skipped. A `200`
+Step 7 is not optional and step 8's last clause is the one that gets skipped. A `200`
 is not a result on this platform; see `methodology/verification.md`.
 
 ---

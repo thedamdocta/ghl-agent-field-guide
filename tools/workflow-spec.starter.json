@@ -1,0 +1,436 @@
+[
+  {
+    "_readme": "A COMPLETE four-workflow lifecycle campaign in deploy_workflow.py spec format. Every value is a placeholder. Replace every REPLACE_ME_* string, then: python3 deploy_workflow.py --spec workflow-spec.starter.json  (validate)  then --deploy. Keys starting with _ are annotations and are stripped before deploy. Triggers are NOT deployable — the trigger field is a note for the human/browser step.",
+    "_action_types_covered": "add_contact_tag, remove_contact_tag, event_start_date, email, wait (elapsed AND event-anchored), if_else (with real then/else branches), remove_from_workflow, add_to_workflow, remove_from_all_workflows, sms, add_notes, internal_notification, create_opportunity, update_contact_field, dnd_contact, goto",
+    "name": "REPLACE_ME_PREFIX · 1 Registered",
+    "trigger": "Form submitted — the registration form. SET THIS IN THE UI; there is no trigger API.",
+    "steps": [
+      {
+        "_note": "This workflow is the PRODUCER of the 'registered' tag that WF4 triggers on. Every tag a condition reads needs a producer somewhere or the branch is decoration.",
+        "type": "add_contact_tag",
+        "name": "Tag: registered",
+        "cat": "actions",
+        "attributes": { "tags": ["registered"] }
+      },
+      {
+        "_note": "THE ANCHOR. Sets the clock for every event-anchored wait below. If this custom value is blank or unparseable the anchor never resolves and BOTH reminders below silently never send. Highest-consequence empty string in the build.",
+        "type": "event_start_date",
+        "name": "Event Start Date",
+        "cat": "actions",
+        "attributes": {
+          "type": "event_start_date",
+          "event_start_type": "custom_field",
+          "value": "{{ custom_values.event_datetime_iso }}"
+        }
+      },
+      {
+        "_note": "template_id + templatesource:'email-builder' is the join to a saved template. Create templates FIRST; a pointer to nothing sends nothing.",
+        "type": "email",
+        "name": "E1 Confirmation",
+        "cat": "actions",
+        "attributes": {
+          "subject": "{{contact.first_name}}, you're registered",
+          "template_id": "REPLACE_ME_TEMPLATE_ID",
+          "templatesource": "email-builder",
+          "from_email": "{{custom_values.support_email}}",
+          "from_name": "{{custom_values.business_name}}",
+          "attachments": []
+        }
+      },
+      {
+        "_note": "EVENT-ANCHORED wait: type is 'appointment' (NOT 'time'), value is in MINUTES, and it counts BACKWARD from the anchor. appointmentCondition 'skip' means a late registrant skips this reminder instead of receiving it after the fact. startAfter is deliberately absent — anchored timing lives in appointmentStartAfter.",
+        "type": "wait",
+        "name": "1 day before the event",
+        "cat": "conditions",
+        "attributes": {
+          "type": "appointment",
+          "appointmentStartAfter": {
+            "when": "before",
+            "type": "minutes",
+            "value": 1440,
+            "distributed": { "months": 0, "days": 1, "hours": 0, "minutes": 0 }
+          },
+          "appointmentCondition": "skip"
+        }
+      },
+      {
+        "type": "email",
+        "name": "E2 Reminder T-24h",
+        "cat": "actions",
+        "attributes": {
+          "subject": "Tomorrow",
+          "template_id": "REPLACE_ME_TEMPLATE_ID",
+          "templatesource": "email-builder",
+          "from_email": "{{custom_values.support_email}}",
+          "from_name": "{{custom_values.business_name}}",
+          "attachments": []
+        }
+      },
+      {
+        "type": "wait",
+        "name": "3 hours before the event",
+        "cat": "conditions",
+        "attributes": {
+          "type": "appointment",
+          "appointmentStartAfter": {
+            "when": "before",
+            "type": "minutes",
+            "value": 180,
+            "distributed": { "months": 0, "days": 0, "hours": 3, "minutes": 0 }
+          },
+          "appointmentCondition": "skip"
+        }
+      },
+      {
+        "type": "email",
+        "name": "E3 Reminder T-3h",
+        "cat": "actions",
+        "attributes": {
+          "subject": "We begin in three hours",
+          "template_id": "REPLACE_ME_TEMPLATE_ID",
+          "templatesource": "email-builder",
+          "from_email": "{{custom_values.support_email}}",
+          "from_name": "{{custom_values.business_name}}",
+          "attachments": []
+        }
+      },
+      {
+        "_note": "update_contact_field writes a per-CONTACT custom FIELD. Not the same thing as a per-ACCOUNT custom VALUE.",
+        "type": "update_contact_field",
+        "name": "Stamp registration source",
+        "cat": "actions",
+        "attributes": {
+          "type": "update_contact_field",
+          "actionType": "update_field_data",
+          "fields": [{ "field_id": "REPLACE_ME_CUSTOM_FIELD_ID", "value": "webinar" }]
+        }
+      }
+    ]
+  },
+  {
+    "_readme": "Post-event, no-show path. Demonstrates sibling exclusion and a REAL branch.",
+    "name": "REPLACE_ME_PREFIX · 2 Did not attend",
+    "trigger": "Tag added — did-not-attend. NOTE: nothing in this spec produces that tag; your webinar platform or an attendance-inference workflow must.",
+    "steps": [
+      {
+        "_note": "COLD START: workflow_id must be a REAL id, which does not exist until WF1 has been deployed once. Deploy once to mint ids (they land in --state), paste them here, deploy again. An empty or placeholder id deploys with a 200 and does nothing at all.",
+        "type": "remove_from_workflow",
+        "name": "Remove from WF1 Registered",
+        "cat": "actions",
+        "attributes": {
+          "type": "remove_from_workflow",
+          "workflow_id": "REPLACE_ME_WF1_ID",
+          "includeCurrent": false
+        }
+      },
+      {
+        "type": "email",
+        "name": "E4 Replay ready",
+        "cat": "actions",
+        "attributes": {
+          "subject": "Here is the replay",
+          "template_id": "REPLACE_ME_TEMPLATE_ID",
+          "templatesource": "email-builder",
+          "from_email": "{{custom_values.support_email}}",
+          "from_name": "{{custom_values.business_name}}",
+          "attachments": []
+        }
+      },
+      {
+        "_note": "ELAPSED wait: type 'time', counts forward from the moment the contact reaches this step. Correct here because the entry tag is applied right after the session.",
+        "type": "wait",
+        "name": "wait 24 hours",
+        "cat": "conditions",
+        "attributes": {
+          "type": "time",
+          "startAfter": { "when": "after", "type": "hours", "value": 24 },
+          "windowCondition": { "field": "", "operator": "", "value": "" }
+        }
+      },
+      {
+        "_note": "A REAL BRANCH. 'then' and 'else' compile to the three-node shape GHL actually stores: this condition-node plus a branch-yes and a branch-no node, with each path hanging off its branch node. Listing these emails AFTER the if_else instead would make both of them run for everybody. The branch is inert until something applies 'watched-replay' — e.g. a link-click trigger on the replay button.",
+        "type": "if_else",
+        "name": "Watched the replay?",
+        "cat": "conditions",
+        "nodeType": "condition-node",
+        "comments": [],
+        "attributes": {
+          "branches": [
+            {
+              "id": "",
+              "name": "Watched",
+              "operator": "and",
+              "showErrors": false,
+              "segments": [
+                {
+                  "operator": "and",
+                  "conditions": [
+                    {
+                      "conditionType": "contact_detail",
+                      "conditionSubType": "tags",
+                      "conditionOperator": "index-of-true",
+                      "conditionValue": ["watched-replay"],
+                      "isWait": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "operator": "and",
+          "if": true,
+          "conditionName": "Watched the replay?",
+          "version": 2,
+          "noneBranchName": "Not watched"
+        },
+        "then": [
+          {
+            "_note": "Copy here may assert 'you watched the replay'. Match every message to the state its branch proves.",
+            "type": "email",
+            "name": "E7 Watched, did not act",
+            "cat": "actions",
+            "attributes": {
+              "subject": "Can I ask what's holding you up?",
+              "template_id": "REPLACE_ME_TEMPLATE_ID",
+              "templatesource": "email-builder",
+              "from_email": "{{custom_values.support_email}}",
+              "from_name": "{{custom_values.business_name}}",
+              "attachments": []
+            }
+          },
+          {
+            "type": "add_notes",
+            "name": "Note: watched replay",
+            "cat": "actions",
+            "attributes": {
+              "type": "add_notes",
+              "html": "Watched the replay, no purchase yet."
+            }
+          }
+        ],
+        "else": [
+          {
+            "type": "email",
+            "name": "E8 Not opened yet",
+            "cat": "actions",
+            "attributes": {
+              "subject": "You haven't opened the replay yet",
+              "template_id": "REPLACE_ME_TEMPLATE_ID",
+              "templatesource": "email-builder",
+              "from_email": "{{custom_values.support_email}}",
+              "from_name": "{{custom_values.business_name}}",
+              "attachments": []
+            }
+          },
+          {
+            "_note": "sms carries its copy inline — there is no template pointer, unlike email. Include an opt-out.",
+            "type": "sms",
+            "name": "SMS nudge",
+            "cat": "actions",
+            "attributes": {
+              "body": "The replay is still up: {{custom_values.replay_url}} — reply STOP to opt out.",
+              "attachments": []
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "_readme": "Attended path. Removes from BOTH siblings so the three post-event states stay mutually exclusive.",
+    "name": "REPLACE_ME_PREFIX · 3 Attended",
+    "trigger": "Tag added — attended. Producer: your webinar platform.",
+    "steps": [
+      {
+        "type": "remove_from_workflow",
+        "name": "Remove from WF1 Registered",
+        "cat": "actions",
+        "attributes": {
+          "type": "remove_from_workflow",
+          "workflow_id": "REPLACE_ME_WF1_ID",
+          "includeCurrent": false
+        }
+      },
+      {
+        "type": "remove_from_workflow",
+        "name": "Remove from WF2 Did not attend",
+        "cat": "actions",
+        "attributes": {
+          "type": "remove_from_workflow",
+          "workflow_id": "REPLACE_ME_WF2_ID",
+          "includeCurrent": false
+        }
+      },
+      {
+        "type": "wait",
+        "name": "wait 2 hours",
+        "cat": "conditions",
+        "attributes": {
+          "type": "time",
+          "startAfter": { "when": "after", "type": "hours", "value": 2 },
+          "windowCondition": { "field": "", "operator": "", "value": "" }
+        }
+      },
+      {
+        "type": "email",
+        "name": "E5 Was there something I didn't answer?",
+        "cat": "actions",
+        "attributes": {
+          "subject": "Was there something I didn't answer?",
+          "template_id": "REPLACE_ME_TEMPLATE_ID",
+          "templatesource": "email-builder",
+          "from_email": "{{custom_values.support_email}}",
+          "from_name": "{{custom_values.business_name}}",
+          "attachments": []
+        }
+      },
+      {
+        "_note": "Both pipeline ids are REQUIRED and are not discoverable from this tool — read them from the pipelines API or the builder URL. An empty one deploys and creates nothing.",
+        "type": "create_opportunity",
+        "name": "Open an opportunity",
+        "cat": "actions",
+        "attributes": {
+          "type": "create_opportunity",
+          "opportunity_name": "{{contact.first_name}} — attended",
+          "pipeline_id": "REPLACE_ME_PIPELINE_ID",
+          "pipeline_stage_id": "REPLACE_ME_PIPELINE_STAGE_ID",
+          "opportunity_source": "Webinar",
+          "monetary_value": 0,
+          "fields": [],
+          "allow_backward": false
+        }
+      },
+      {
+        "_note": "internal_notification goes to your TEAM, not the contact.",
+        "type": "internal_notification",
+        "name": "Tell the team",
+        "cat": "actions",
+        "attributes": {
+          "type": "email",
+          "email": {
+            "to": "{{custom_values.support_email}}",
+            "subject": "Live attendee: {{contact.first_name}}",
+            "body": "{{contact.first_name}} attended the session."
+          }
+        }
+      }
+    ]
+  },
+  {
+    "_readme": "Closing path. Demonstrates purchase suppression, add_to_workflow, dnd_contact and goto.",
+    "name": "REPLACE_ME_PREFIX · 4 Closing",
+    "trigger": "Tag added — registered. Producer: WF1 above.",
+    "steps": [
+      {
+        "type": "wait",
+        "name": "T+48h",
+        "cat": "conditions",
+        "attributes": {
+          "type": "time",
+          "startAfter": { "when": "after", "type": "hours", "value": 48 },
+          "windowCondition": { "field": "", "operator": "", "value": "" }
+        }
+      },
+      {
+        "_note": "Purchase suppresses everything. Nothing in this spec produces 'purchased' — wire it to the order form or payment trigger, or this branch never takes the 'then' path.",
+        "type": "if_else",
+        "name": "Purchased?",
+        "cat": "conditions",
+        "nodeType": "condition-node",
+        "comments": [],
+        "attributes": {
+          "branches": [
+            {
+              "id": "",
+              "name": "Purchased",
+              "operator": "and",
+              "showErrors": false,
+              "segments": [
+                {
+                  "operator": "and",
+                  "conditions": [
+                    {
+                      "conditionType": "contact_detail",
+                      "conditionSubType": "tags",
+                      "conditionOperator": "index-of-true",
+                      "conditionValue": ["purchased"],
+                      "isWait": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "operator": "and",
+          "if": true,
+          "conditionName": "Purchased?",
+          "version": 2,
+          "noneBranchName": "Not purchased"
+        },
+        "then": [
+          {
+            "_note": "includeCurrent false keeps THIS workflow running so the steps below still execute. Set true to stop everything including this one.",
+            "type": "remove_from_all_workflows",
+            "name": "Suppress all marketing",
+            "cat": "actions",
+            "attributes": {
+              "type": "remove_from_all_workflows",
+              "includeCurrent": false
+            }
+          },
+          {
+            "type": "remove_contact_tag",
+            "name": "Untag: registered",
+            "cat": "actions",
+            "attributes": { "tags": ["registered"] }
+          },
+          {
+            "_note": "Stop all outbound for this contact. 'enable' turns DND ON.",
+            "type": "dnd_contact",
+            "name": "Do not disturb",
+            "cat": "actions",
+            "attributes": { "type": "dnd_contact", "dnd_contact": "disable" }
+          },
+          {
+            "_note": "Hand off to an onboarding workflow. Same empty-id trap as remove_from_workflow.",
+            "type": "add_to_workflow",
+            "name": "Add to onboarding",
+            "cat": "actions",
+            "attributes": {
+              "type": "add_to_workflow",
+              "workflow_id": "REPLACE_ME_ONBOARDING_WF_ID",
+              "input_trigger_params": false
+            }
+          }
+        ],
+        "else": [
+          {
+            "id": "00000000-0000-4000-8000-000000000009",
+            "_note": "This step pins its own id so the goto below can target it. Any step may pin an id; ids left out are minted as uuid4 at compile time.",
+            "type": "email",
+            "name": "E9 Closing this one out",
+            "cat": "actions",
+            "attributes": {
+              "subject": "Closing this one out",
+              "template_id": "REPLACE_ME_TEMPLATE_ID",
+              "templatesource": "email-builder",
+              "from_email": "{{custom_values.support_email}}",
+              "from_name": "{{custom_values.business_name}}",
+              "attachments": []
+            }
+          },
+          {
+            "_note": "goto is the ONLY way two branches rejoin — targetNodeId must be a step id in THIS workflow. The linter checks that; the API does not. Point it at a real step before deploying; this self-reference is only here to keep the starter valid.",
+            "type": "goto",
+            "name": "Jump",
+            "cat": "actions",
+            "attributes": {
+              "type": "goto",
+              "targetNodeId": "00000000-0000-4000-8000-000000000009"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -207,6 +207,11 @@ Native fallbacks when the platform will not report attendance:
 The split is about timing and routing. These are about the messages themselves, and
 they matter as much.
 
+> **Building the messages:** start from `tools/email-template.starter.html` (a
+> complete paste-ready document) and push them with `tools/push_emails.py`, which
+> records the template **ids** the workflow steps below need. The construction rules
+> and the verified API mechanics are in `knowledge/email-templates.md`.
+
 **Match each message to the state its copy asserts.** Every email in a lifecycle
 sequence makes a factual claim about the recipient — *you registered*, *you didn't
 show*, *you watched but didn't act*. That claim is either true when it arrives or the
@@ -250,6 +255,14 @@ exception.
   invisible at every layer. Raise rather than emit an empty id.
 - **Conditions with `segments: []` deploy successfully too**, and match nothing.
   Assert on the contents, not the presence, of every condition you generate.
+- **A branch is more than the condition step.** On this platform an `if_else` is
+  stored as *three* nodes — the condition plus one node per path — and each path's
+  steps hang off its own branch node. Emit only the condition step and list the
+  "yes" and "no" messages after it and you have written a straight line: every
+  contact receives both. It deploys cleanly and reads plausibly in a JSON dump.
+  That is the three-emails-in-six-minutes failure reached from the other direction,
+  so assert on the branch nodes, not just on the condition.
+  See `knowledge/workflows.md` §4.
 - **Trigger configuration and publishing may have no API.** Both were done through the
   builder UI. When detecting published state from the DOM, key off the switch's
   `aria-checked` attribute — a text search for "Draft" returns a false positive,

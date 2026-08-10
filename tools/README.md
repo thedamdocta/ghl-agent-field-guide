@@ -1,6 +1,6 @@
 # GHL agent tools
 
-Eleven standalone Python scripts for building on GoHighLevel programmatically.
+Standalone Python scripts for building on GoHighLevel programmatically.
 Production-verified against a real account, then stripped of every client
 identifier. Nothing here is hardcoded to any location, funnel, page, form, or
 template — everything comes from arguments or environment variables.
@@ -235,7 +235,61 @@ It also handles the trap underneath the trap: **two id namespaces.** Every node
 has an authoring id (`node.id`) and a rendered id (`node.extra.nodeId`).
 Section-level layout keys off the first; element-level styling — button fills,
 nav typography — keys off the second. Emit only one and half your CSS lands on a
-selector that matches nothing, which reads as "my CSS is ignored".
+selector that matches nothing, which reads as "my CSS is ignored". The two are
+**independent ids**, not one id with a `c` in front — verified, they matched on 0
+of 78 nodes of a real builder-authored page — so read the pair off `extra.nodeId`
+and never reconstruct one from the other.
+
+This tool is per-**element**. The design **system** is a different file.
+
+### 5b. `page_shell.py` + `page-styles.starter.css` — the design system
+
+```bash
+python3 page_shell.py --emit                                 # print the block
+python3 page_shell.py --attach page.json --out page.json     # BEFORE css_emitter.py
+python3 page_shell.py --check page.json                      # prove it is wired
+```
+
+`sectionStyles` is the right home for "this heading is 76px" and the wrong home for
+a type scale, a spacing scale, one button treatment and component classes. Those
+belong in a page-level `<style>` riding in a `custom-code` element — and three
+undocumented rules make that block ship inert: the payload field is
+**`extra.customCode`**, the `<script>` must **not** be nested inside a `<div>`, and
+it must wait for GHL's **`hydrationDone`** with page settings' "Optimise JavaScript"
+turned **off**. `page_shell.py` emits a payload that satisfies all three and appends
+it as a final section.
+
+> **The stylesheet:** [`page-styles.starter.css`](page-styles.starter.css) ships
+> paste-ready with tokens at the top and the full page selector map — the button
+> wrapper is `div.c-button` and the button itself is `button[class*=cbutton]`, the
+> inline form is `.ghl-form-wrap` (inline in the page document, *not* an iframe,
+> unlike an external embed), and GHL's flex box inside every section and column is
+> `> .inner`. Change the tokens; leave the selectors alone until something
+> misbehaves.
+
+Run `--attach` **before** `css_emitter.py`, or the shell section gets no
+`sectionStyles` of its own and the page ends in roughly 130px of empty space beneath
+the footer.
+
+`--check` is a static check: exactly one shell, script wired, `<script>` not nested,
+and every `gp-*` class the stylesheet targets is one the runtime script actually
+assigns. A rule that styles a class nobody sets is invisible in review and does
+nothing on the page — the same failure as a misspelled selector.
+
+**Why there is a script at all:** a design system needs semantic section classes,
+and GHL gives you no verified way to set one from the authoring tree
+(`extra.customClass` exists but was empty on all 158 nodes of the captured corpus —
+**UNVERIFIED**). The script tags each section from its **content** — an `h1` makes a
+hero, a form makes a form plate — never from its position, because a positional list
+is wrong the moment a page has a different number of sections.
+
+**Read [`../knowledge/page-css-and-classes.md`](../knowledge/page-css-and-classes.md)
+before changing any selector.** It carries the verified specificity ladder, which is
+what actually decides whether your CSS applies: `css_emitter.py` *forces*
+`background-color`, `color`, `padding-top` and `padding-bottom` at `(0,2,0)` and is
+injected **after** your stylesheet, so an equal-specificity rule of yours ties and
+loses; and GHL itself emits **ID-selector** rules at `(1,1,0)` for element margins
+and widths, which no class-based rule can outrank.
 
 ### 6. `create_steps.py` — create somewhere to inject into
 
@@ -305,11 +359,22 @@ reaches its submit button.
 ### 8. `create_custom_values.py` — create every slot before anything references it
 
 ```bash
+python3 create_custom_values.py --surfaces --scan page.json --scan email.html
 python3 create_custom_values.py --values values.json              # report only
 python3 create_custom_values.py --scan page.json --scan email.html
 python3 create_custom_values.py --values values.json --apply
 python3 create_custom_values.py --values values.json --apply --overwrite
 ```
+
+**Run `--surfaces` first, before you create anything.** A custom value earns its
+place only when the same string appears on **more than one surface** (one page or one
+email template = one surface); everything else should be literal text the client can
+read and edit in the builder. `--surfaces` counts distinct surfaces per key and lists
+the single-surface ones — the measurement that decision needs. Pure local analysis:
+no credentials, no account access, writes nothing. On one real build it showed 59 of
+75 slots on exactly one surface, each a silent-failure site that bought nothing. The
+exception it flags but cannot judge: copy whose only surface is a raw-HTML email
+template is usually better left as a slot.
 
 **GHL resolves an unknown `{{custom_values.x}}` to the empty string. Silently.** A
 live email once shipped reading "Grab the now" for exactly this reason and nothing
@@ -363,13 +428,84 @@ And make it a short distinctive phrase from your copy, not markup — GHL
 
 `--dry-run` validates and reports the version it would write.
 
-### 10. `deploy_workflow.py` — create and update workflows
+### 10. `push_emails.py` — build email templates and prove they arrived
 
 ```bash
-python3 deploy_workflow.py --emit-example > workflows.json   # see the schemas
-python3 deploy_workflow.py --spec workflows.json             # validate only
+cp email-template.starter.html emails/01-welcome.html        # START HERE
+python3 push_emails.py --emit-example > emails.manifest.json
+python3 push_emails.py --manifest emails.manifest.json --check     # offline lint
+python3 push_emails.py --manifest emails.manifest.json --dry-run   # payloads, no network
+python3 push_emails.py --manifest emails.manifest.json --apply --verify
+python3 push_emails.py --archive "SEQ 03" --apply
+```
+
+**Email is the easy surface in GHL.** `editorType:"html"` stores `editorContent`
+**verbatim** — round-trip byte-identical, verified — unlike funnel pages, which GHL
+recompiles at save time. Whatever you author is what sends. GHL adds exactly two
+things: an outlook-fixes comment and MSO font-colour fallbacks.
+
+**[`email-template.starter.html`](email-template.starter.html) is the artifact to
+edit.** A complete paste-ready dark-ground document — table-based, inline-styled,
+Outlook-safe — with masthead, stage label, headline, body, optional image, one
+button, secondary link, signature and footer, and a six-token neutral palette
+documented in a header block that also explains how it is applied and how it is
+verified. Do not assemble one from fragments.
+
+`--check`, `--dry-run` and `--emit-example` need neither credentials nor a network,
+and **a lint failure refuses the write**. The lint is not style policing; every rule
+is a client that renders your email wrong: a `<div>` background or a `float` Outlook
+ignores outright, a missing `bgcolor` attribute beside an inline `background-color`,
+an `<img>` with no `alt` when Outlook blocks images by default, a `.svg` Gmail will
+not render, a text node with no explicit colour that a dark-mode client inverts to
+invisible, body copy under the 16px floor that makes iOS Mail rescale the whole
+message. It also prints every `{{custom_values.x}}` the templates reference, to feed
+straight into `create_custom_values.py`.
+
+Three API facts it is built around:
+
+- **Writes require an `idempotencyKey`**, and this one is derived from a **hash of
+  the content**, not the clock. A timestamped key is the obvious first
+  implementation and it defeats the purpose: every retry becomes a new logical
+  write. Content-addressed means a retry is the same write, while a genuine edit
+  still gets a new key and is not swallowed as a duplicate.
+- **The PIT cannot DELETE** — 401 "token is not authorized for this scope".
+  `--archive` retires a template with `archived: true` instead.
+- **Match by name.** There is no other natural key, so a re-run without matching
+  creates a second `SEQ 01` every time, forever.
+
+**`--verify` is the point.** The write response carries `data.previewUrl`, a
+Firebase-hosted rendering of the *stored* template; `--verify` fetches it and
+confirms a distinctive phrase from your copy is really in there. A `200` is not
+proof. The results file also records every template **id** — a hard dependency of
+the workflow build below.
+
+### 11. `deploy_workflow.py` — create and update workflows
+
+```bash
+cp workflow-spec.starter.json workflows.json                 # START HERE
+python3 deploy_workflow.py --emit-example > workflows.json   # or generate one
+python3 deploy_workflow.py --spec workflows.json             # validate + lint
 python3 deploy_workflow.py --spec workflows.json --deploy    # write
 ```
+
+**`workflow-spec.starter.json` is the artifact to edit.** A complete four-workflow
+lifecycle campaign — registered / did-not-attend / attended / closing — covering 16
+action types, with two real branches, sibling exclusion, both wait shapes, and every
+trap annotated inline via `_note` keys (keys starting with `_` are stripped before
+deploy). Every value is a placeholder.
+
+**Branching.** An `if_else` may carry `then` and `else`, each a nested list of steps.
+That compiles to the three-node shape GHL actually stores — a condition node plus
+`branch-yes` and `branch-no` nodes, with each path hanging off its branch node.
+Listing steps *after* an `if_else` instead builds a straight line in which every
+contact runs them whatever the condition said; the compiler refuses that rather than
+deploying it.
+
+**The linter runs on every spec** and blocks `--deploy` on an error. It catches the
+failures that return 200 and then do nothing: empty `workflow_id` or `template_id`,
+`branches: []`, `segments: []`, a blank event anchor, a `goto` to a nonexistent step,
+a dangling `next`/`parentKey`, and tag conditions whose tag nothing in the spec
+produces.
 
 The public API has no `create-workflow`, which makes workflows look hand-built.
 They are not — the internal API has full CRUD. POST mints an empty workflow and
@@ -398,7 +534,7 @@ schema prevents:
 **Not done when this exits:** triggers and publishing are still UI steps. A
 deployed workflow with no trigger never runs.
 
-### 11. `scrub_secrets.py` — the gate before anything is published
+### 12. `scrub_secrets.py` — the gate before anything is published
 
 ```bash
 python3 scrub_secrets.py . --env-file ../project/.env --secret "Client Name"
@@ -421,14 +557,18 @@ scanner cannot know them, and they are the ones that matter.
  4. capture_funnel.py <url> --exemplars ex.json  # READ a real page first
  5. get_token.py                               # internal token, for 6-11
  6. ghl_generator.py --spec ... --out page.json  # BUILD the tree
- 7. css_emitter.py page.json                   # emit sectionStyles (or nothing styles)
+ 7. page_shell.py --attach page.json           # the design system, BEFORE the emitter
+    css_emitter.py page.json                   # emit sectionStyles (or nothing styles)
+    page_shell.py --check page.json            # one shell, wired, no orphan classes
  8. create_steps.py --funnel-id ... --apply    # somewhere to inject into
     create_form.py --name ... --apply          # the funnel's own form
     create_custom_values.py --values ... --apply   # every slot, before it is referenced
  9. inject_page.py --expect "..."              # write the page
 10. verify: sites.leadconnectorhq.com/preview/<pageId> — the ONLY proof
-11. ghl_mcp.py execute create-email-template   # emails (before workflows)
-12. deploy_workflow.py --spec ... --deploy     # workflows reference those templates
+11. cp email-template.starter.html emails/01.html   # emails (before workflows)
+    push_emails.py --manifest ... --check           # offline; refuses a bad write
+    push_emails.py --manifest ... --apply --verify  # writes, then proves on previewUrl
+12. deploy_workflow.py --spec ... --deploy     # workflows reference those template ids
 13. UI: set workflow triggers, publish, publish the funnel
 ```
 
@@ -444,7 +584,8 @@ Two ordering rules that are not negotiable:
 
 **Create email templates before deploying workflows.** `workflowData.templates` is
 the list of *steps*, not email templates — but an email *step* references a template
-by id, so the template must already exist.
+by id, so the template must already exist. `push_emails.py` writes those ids to its
+results file precisely so the workflow spec can consume them.
 
 ---
 

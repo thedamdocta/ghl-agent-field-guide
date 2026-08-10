@@ -1,0 +1,620 @@
+/* ============================================================================
+   GHL funnel page — starter stylesheet
+   ============================================================================
+
+   Paste-ready. Change the tokens at the top; leave the selectors alone until
+   something misbehaves. This is the page-level counterpart to
+   `form-styles.starter.css` — that one goes INSIDE a form record, this one goes
+   ON a funnel page.
+
+   HOW IT GETS APPLIED
+     Not through `styles` on your elements. GHL does not compile an element's
+     `styles` dict into CSS (knowledge/funnel-pages.md §4). Two stylesheets
+     actually reach the browser and you author both:
+
+       1. `section.general.sectionStyles` — one id-scoped CSS STRING per section,
+          written by `css_emitter.py`. Per-element, generated, not hand-edited.
+       2. THIS FILE — the design SYSTEM: type scale, spacing, buttons,
+          components. It rides in a `custom-code` element whose payload field is
+          `extra.customCode`, wrapped in a `<style>` tag.
+
+     `tools/page_shell.py` builds that block for you and attaches it:
+
+       python3 page_shell.py --attach page.json --out page.json
+       python3 css_emitter.py page.json          # then emit sectionStyles
+       python3 inject_page.py --page-data page.styled.json ...
+
+     Read knowledge/page-css-and-classes.md before changing any selector here.
+
+   WHY EVERY RULE IS !important — AND WHY THAT IS NOT ENOUGH
+     GHL injects `sectionStyles` AFTER this stylesheet. Source order decides
+     every specificity TIE and GHL always wins the ties, so a plain rule of
+     yours at equal specificity loses silently.
+
+     `!important` ranks you against NON-important rules. It does nothing against
+     a later same-specificity important rule. So this file does two things at
+     once: `!important` to clear GHL's base sheet, and a specificity FLOOR above
+     what the emitter writes.
+
+     Verified specificity ladder, read off a real builder-generated page:
+
+       .heading-<authoringId>                              (0,1,0)  GHL
+       .hl_page-preview--content .c<type>-<renderedId>      (0,2,0)  GHL + emitter
+       .hl_page-preview--content div[class*=...]            (0,2,1)  beats the above
+       .hl_page-preview--content #<type>-<authoringId>      (1,1,0)  GHL — beats ALL
+
+     That last row is the one that costs a day. GHL emits 77 ID-selector rules on
+     a single 9-section page, carrying `margin`, `width` and `height` on element
+     WRAPPERS. No class-based rule of yours can outrank one. If a margin or width
+     will not move, you are fighting an `#id` rule: match it with an `#id` of
+     your own, or move the property onto the emitter (which writes into the same
+     tier), or change the element's `styles` so the emitter writes what you want.
+
+   THE SELECTOR NAMES ARE NOT GUESSABLE
+     GHL renders every node with a class built from its id, and there are TWO
+     ids per node with DIFFERENT random suffixes (see the doc). You therefore
+     target them by TYPE PREFIX with substring matching, never by exact id:
+
+       [class*=section-]  [class*=row-]  [class*=column-]
+       [class*=heading-]  [class*=paragraph-]  [class*=sub-heading-]
+       div.c-button (wrapper)      button[class*=cbutton] (the real button)
+       .ghl-form-wrap  .hl_form-builder--main  .form-builder--wrap (inline form)
+       > .inner  (GHL's flex box inside every section and column)
+
+     Verified against builder-generated CSS, not guessed. The `gp-*` classes are
+     OURS — `page_shell.py`'s script tags each section with a role at runtime,
+     because GHL gives you no reliable way to put your own class on a section
+     from the authoring tree.
+
+   VERIFY
+     Fetch https://sites.leadconnectorhq.com/preview/<pageId> and read COMPUTED
+     style, not the stylesheet. A rule that is present and losing looks exactly
+     like a rule that is absent. Check at a real viewport in both orientations.
+   ========================================================================= */
+
+:root {
+  /* ── palette. Neutral on purpose — replace all six with your own. ───────── */
+  --gp-ground:     #ffffff;  /* the page ground. ONE ground, not three.       */
+  --gp-ink:        #16181d;  /* headings                                      */
+  --gp-body:       #3c4048;  /* body copy — 9.4:1 on #ffffff                  */
+  --gp-muted:      #6b7078;  /* labels, legal — 4.9:1 on #ffffff             */
+  --gp-line:       #dcdee2;  /* hairlines, borders                            */
+  --gp-accent:     #2f4858;  /* the one saturated colour: buttons, marks      */
+  --gp-accent-ink: #ffffff;  /* text ON the accent — check contrast if you    */
+                             /* change --gp-accent; this pair is 9.7:1        */
+
+  /* ── type. Two families max. Keep the display/text distinction real. ───── */
+  --gp-display: Georgia, 'Times New Roman', serif;
+  --gp-text:    Georgia, 'Times New Roman', serif;
+
+  /* ── scale. Extreme contrast is the cheapest way to look designed; five
+        near-neighbours is what reads as templated. This runs 76/38/25/17/11. */
+  --gp-h1: clamp(38px, 5.4vw, 76px);
+  --gp-h2: clamp(27px, 3.0vw, 38px);
+  --gp-h3: clamp(21px, 1.9vw, 25px);
+  --gp-p:  17px;
+  --gp-label: 11px;
+
+  /* ── rhythm. Keyed to viewport WIDTH only. A `vh`-keyed step changes when
+        browser chrome appears or disappears, which reads as the page breathing
+        for no reason. */
+  --gp-step:   clamp(72px, 8.5vw, 132px);
+  --gp-gutter: clamp(20px, 5vw, 64px);
+
+  --gp-measure: 46ch;   /* body measure — never let a paragraph run wider */
+  --gp-radius:  2px;
+  --gp-ease:    cubic-bezier(.16, 1, .3, 1);
+}
+
+/* ── 1. CONTAINMENT — the page must never scroll sideways ──────────────────
+   GHL ships off-canvas furniture (`.drawer__content`) and the form's reCAPTCHA
+   badge outside the content box. On a production page those were the entire
+   60px of horizontal overflow. Clip them; do not let them widen the document.
+   If you hide the badge you MUST show Google's attribution as text somewhere —
+   that is their stated condition for hiding it. */
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  background: var(--gp-ground) !important;
+}
+
+.hl_page-preview--content {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  background: var(--gp-ground) !important;
+  position: relative;
+}
+
+.drawer__content,
+.grecaptcha-badge,
+.grecaptcha-logo,
+.grecaptcha-error { max-width: 100vw !important; }
+
+/* ── 2. LAYOUT — one measure, one rail, everywhere ─────────────────────────
+   `[class*=section-]` matches BOTH id namespaces (`section-x` and `csection-x`)
+   in one selector. That is why substring matching is used throughout rather
+   than exact ids: you cannot know either id at stylesheet-authoring time.
+
+   THE COLLISION, and it is not theoretical — it was caught by running this file
+   through css_emitter.py on a real tree. `css_emitter.py` FORCES four properties
+   per element: background-color, color, padding-top, padding-bottom. Those land
+   at (0,2,0) with !important and are injected AFTER this file. A section rule
+   here at (0,2,0) therefore TIES AND LOSES, and a `padding` shorthand collides
+   on two of the four.
+
+   Two fixes, both correct:
+     (a) raise to (0,3,0) by chaining a second class — every section carries a
+         `gp-*` role from the runtime script, so `[class*=section-][class*=gp-]`
+         adds exactly one class and no assumptions. Used below.
+     (b) leave the property out of the element's `styles` dict entirely, so the
+         emitter never writes it and there is nothing to fight.
+
+   The (0,2,0) base rule is kept as well, so a page whose script never ran still
+   gets gutters instead of edge-to-edge text. */
+.hl_page-preview--content [class*=section-] {
+  padding: var(--gp-step) var(--gp-gutter) !important;
+  position: relative;
+  background-clip: padding-box;
+}
+
+/* (0,3,0) — this is the one that actually wins against the emitter. */
+.hl_page-preview--content [class*=section-][class*=gp-] {
+  padding-top: var(--gp-step) !important;
+  padding-bottom: var(--gp-step) !important;
+  padding-left: var(--gp-gutter) !important;
+  padding-right: var(--gp-gutter) !important;
+}
+
+.hl_page-preview--content [class*=row-] {
+  max-width: 1080px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+}
+
+.hl_page-preview--content [class*=column-] { margin: 0 auto !important; }
+
+/* GHL wraps section and column content in a `.inner` flex box and drives it
+   from ID-selector rules — `#column-<id> > .inner{flex-direction:column;…}` at
+   (1,1,1). Verified in builder output. Matching that shape is the only way to
+   change how a column stacks from this file. */
+.hl_page-preview--content [class*=column-] > .inner { gap: 0; }
+
+/* ── 3. TYPE — a real scale, applied to the elements GHL actually renders ──
+   GHL keeps font size on `extra.desktopFontSize`, NOT in `styles`, and the
+   emitter turns it into a per-element `font-size`. That rule lands in the same
+   tier as this one and later in source order, so a per-element size WILL beat
+   an unqualified rule here. Either declare sizes in ONE place (here, and leave
+   `extra.desktopFontSize` unset) or make the two agree — a source file that
+   declares 40px while a clamp caps it at 25px is a lie about what shipped. */
+.hl_page-preview--content h1,
+.hl_page-preview--content h2,
+.hl_page-preview--content h3 {
+  font-family: var(--gp-display) !important;
+  font-weight: 400 !important;
+  color: var(--gp-ink) !important;
+  text-wrap: balance !important;
+}
+
+.hl_page-preview--content h1 {
+  font-size: var(--gp-h1) !important;
+  line-height: 1.03 !important;
+  letter-spacing: -.02em !important;
+  max-width: 15ch !important;
+  margin-bottom: 24px !important;
+}
+
+.hl_page-preview--content h2 {
+  font-size: var(--gp-h2) !important;
+  line-height: 1.12 !important;
+  letter-spacing: -.012em !important;
+  max-width: 20ch !important;
+  margin-bottom: 18px !important;
+}
+
+.hl_page-preview--content h3 {
+  font-size: var(--gp-h3) !important;
+  line-height: 1.22 !important;
+  max-width: 24ch !important;
+  margin-bottom: 12px !important;
+}
+
+.hl_page-preview--content p,
+.hl_page-preview--content li {
+  font-family: var(--gp-text) !important;
+  font-size: var(--gp-p) !important;
+  line-height: 1.7 !important;
+  color: var(--gp-body) !important;
+  max-width: var(--gp-measure) !important;
+  text-wrap: pretty !important;
+}
+
+/* COLOUR IS NOT OWNED BY THIS FILE BY DEFAULT — and this is the rule people
+   delete because it looks redundant. `color` is one of the four the emitter
+   FORCES, at (0,2,0) !important, on the element's own rendered class. The type
+   rules above are `.hl_page-preview--content h1` = (0,1,1), so the emitter wins
+   and every heading takes whatever `styles.color` its element carries. On a
+   dark ground that is how you get black text on a black section from a source
+   file that clearly says otherwise.
+
+   Adding one descendant step takes these to (0,2,1) and the ownership comes
+   back here. Delete this block only if you would rather set colour per element
+   in the tree — which is a legitimate choice, but make it deliberately. */
+.hl_page-preview--content [class*=section-] h1,
+.hl_page-preview--content [class*=section-] h2,
+.hl_page-preview--content [class*=section-] h3 { color: var(--gp-ink) !important; }
+
+.hl_page-preview--content [class*=section-] p,
+.hl_page-preview--content [class*=section-] li { color: var(--gp-body) !important; }
+
+/* The lead tier. Without it the scale jumps 38 -> 17 and the gap reads as
+   "thin page" rather than "large heading". */
+.hl_page-preview--content .gp-lead,
+.hl_page-preview--content p.gp-lead {
+  font-size: clamp(19px, 1.6vw, 23px) !important;
+  line-height: 1.5 !important;
+  max-width: 42ch !important;
+  margin: 0 auto 32px !important;
+  text-wrap: balance !important;
+}
+
+/* Small caps label. One class, used for every eyebrow on the page. */
+.hl_page-preview--content .gp-label {
+  font-family: var(--gp-text) !important;
+  font-size: var(--gp-label) !important;
+  letter-spacing: .3em !important;
+  text-transform: uppercase !important;
+  color: var(--gp-muted) !important;
+}
+
+.hl_page-preview--content .gp-legal,
+.hl_page-preview--content .gp-legal p {
+  font-size: 11.5px !important;
+  line-height: 1.6 !important;
+  color: var(--gp-muted) !important;
+  max-width: 52ch !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.hl_page-preview--content .gp-legal a {
+  color: var(--gp-accent) !important;
+  text-decoration: underline !important;
+}
+
+/* ── 4. BUTTONS — ONE definition, and mind the wrapper ─────────────────────
+   A GHL button is TWO nodes: an outer `div.c-button` carrying the authoring id
+   (`button-<id>`) and the real `<button class="cbutton-<id>">` inside it.
+   Verified in builder output: the wrapper gets margin/width/height/text-align,
+   the inner button gets background/colour/padding/type.
+
+   THE TRAP THIS FILE FIXES: `css_emitter.py` writes each node's `styles` to
+   BOTH ids, which is correct and necessary — but a button fill declared in
+   `styles` therefore also paints the WRAPPER. While the wrapper hugs the
+   button that is invisible; the moment it spans the row you get a full-width
+   slab of accent colour. The fill belongs to the button alone, so the wrapper
+   is forced transparent below. Keep that rule when you restyle. */
+.hl_page-preview--content a[class*=button],
+.hl_page-preview--content button[class*=cbutton],
+.hl_page-preview--content button[type=submit],
+.hl_page-preview--content .btn.button-element {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  height: 56px !important;
+  min-height: 56px !important;
+  padding: 0 44px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  font-family: var(--gp-text) !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: .18em !important;
+  text-transform: uppercase !important;
+  background: var(--gp-accent) !important;
+  color: var(--gp-accent-ink) !important;
+  border: 0 !important;
+  border-radius: var(--gp-radius) !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  transition: background-color .2s var(--gp-ease) !important;
+}
+
+.hl_page-preview--content a[class*=button]:hover,
+.hl_page-preview--content button[class*=cbutton]:hover,
+.hl_page-preview--content button[type=submit]:hover { filter: brightness(1.1) !important; }
+
+/* The wrapper. `div.c-button` is (0,2,1) — one tag qualifier above the emitter's
+   (0,2,0) id rule, which is what lets it win despite being injected first. */
+.hl_page-preview--content div.c-button {
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  height: auto !important;
+  margin-top: clamp(28px, 3.2vw, 48px) !important;
+}
+
+/* GHL wraps the button LABEL in its own <p>/<span>, whose default margins add
+   roughly 15px of height. That is why a submit button measures taller than the
+   page buttons you matched it to. */
+.hl_page-preview--content a[class*=button] p,
+.hl_page-preview--content button[class*=cbutton] p,
+.hl_page-preview--content button[type=submit] p,
+.hl_page-preview--content .btn.button-element p,
+.hl_page-preview--content .btn.button-element span {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  font-size: inherit !important;
+  letter-spacing: inherit !important;
+  color: inherit !important;
+}
+
+/* Focus ring, sized so it is visible on both grounds. Do not delete this to
+   make a design look cleaner — it is the only keyboard affordance on the page. */
+.hl_page-preview--content a:focus-visible,
+.hl_page-preview--content button:focus-visible {
+  outline: 2px solid var(--gp-accent) !important;
+  outline-offset: 6px !important;
+}
+
+/* ── 5. THE INLINE FORM ────────────────────────────────────────────────────
+   VERIFIED: a GHL form placed on a GHL funnel page renders INLINE in the page
+   document, not in an iframe (`.ghl-form-wrap` is present in the main frame).
+   So page CSS reaches it and the submit button is unified by the button rules
+   above. This is the opposite of the same form embedded on a third-party site,
+   which IS iframed and needs `form-styles.starter.css` instead. Ship both: the
+   form record's `fieldCSS` also drives the builder preview and any external
+   embed, so keeping the two in agreement is what stops the funnel shipping two
+   different button styles.
+
+   SPECIFICITY: the tag qualifiers (`div.`, `section.`) are load-bearing. A
+   plain `[class*=cform-]` ties with the emitter's per-element `width` at
+   (0,2,0) and loses on source order — verified: a form stayed 333px wide
+   against a 440px rule and `!important` did not save it. */
+.hl_page-preview--content div.ghl-form-wrap,
+.hl_page-preview--content section.hl_form-builder--main,
+.hl_page-preview--content div[class*=cform-] {
+  width: 100% !important;
+  max-width: 440px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+}
+
+/* GHL's form BUILDER outline leaks into the rendered page: `.form-builder--wrap`
+   ships a 1px dashed light-blue border. On any non-white ground it reads as a
+   debug rectangle. */
+.hl_page-preview--content .form-builder--wrap,
+.hl_page-preview--content .hl_form-builder--main,
+.hl_page-preview--content .ghl-form-wrap {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+.hl_page-preview--content .form-builder--item,
+.hl_page-preview--content div.ghl-form-wrap input,
+.hl_page-preview--content div.ghl-form-wrap .form-control {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.hl_page-preview--content div.ghl-form-wrap input,
+.hl_page-preview--content div.ghl-form-wrap .form-control {
+  background: transparent !important;
+  border: 1px solid var(--gp-line) !important;
+  border-radius: var(--gp-radius) !important;
+  color: var(--gp-ink) !important;
+  font-family: var(--gp-text) !important;
+  font-size: 16px !important;   /* 16px floor — iOS zooms the page below it */
+  text-align: left !important;
+  padding: 14px 16px !important;
+}
+
+/* Validation text. Left un-styled it floats and can throw the field widths. */
+.hl_page-preview--content .form-builder--item > .error,
+.hl_page-preview--content .error {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 7px 0 0 !important;
+  padding: 0 !important;
+  float: none !important;
+  text-align: left !important;
+  font-size: 12px !important;
+  font-family: var(--gp-text) !important;
+  line-height: 1.35 !important;
+}
+
+.hl_page-preview--content iframe {
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  display: block !important;
+}
+
+/* ── 6. SECTION ROLES — the part you tune per page ─────────────────────────
+   These `gp-*` classes are applied at RUNTIME by page_shell.py's script, from
+   each section's CONTENT (does it hold an h1? a form? the copyright line?),
+   never from its position. Position-based section selectors are a trap: on a
+   page with a different number of sections the same index is a different
+   section, and `[class*=section-]:nth-of-type(2)` matches on element TYPE
+   rather than on the attribute selector, so it can silently target a wrapper.
+
+   Rhythm lives here. Eight sections at identical padding is the single loudest
+   "generated page" tell; varying the step is what gives a page cadence.
+
+   Every one of these is written as `[class*=section-].gp-role` = (0,3,0), NOT
+   as a bare `.gp-role` = (0,1,0). See §2: the emitter's forced padding is
+   (0,2,0) !important and lands later. A bare role class loses to it silently
+   and the page renders with eight identical sections — which looks like the
+   rules were never written rather than like they were outranked. */
+.hl_page-preview--content [class*=section-].gp-hero {
+  padding-top: calc(var(--gp-step) * .55) !important;
+  padding-bottom: calc(var(--gp-step) * .8) !important;
+}
+
+.hl_page-preview--content [class*=section-].gp-close {
+  padding-top: calc(var(--gp-step) * 1.4) !important;
+  padding-bottom: calc(var(--gp-step) * 1.4) !important;
+}
+
+.hl_page-preview--content [class*=section-].gp-foot {
+  padding-top: calc(var(--gp-step) * .55) !important;
+  padding-bottom: calc(var(--gp-step) * .55) !important;
+  border-top: 1px solid var(--gp-line) !important;
+}
+
+.hl_page-preview--content [class*=section-].gp-bar {
+  padding-top: 13px !important;
+  padding-bottom: 13px !important;
+  min-height: 0 !important;
+}
+
+/* The section that carries this stylesheet has no visible content. Without
+   this rule it reserves its full `--gp-step` of padding — plus whatever padding
+   the exemplar it was cloned from carried, which the emitter then forces — and
+   the page ends in a hundred-odd pixels of nothing under the footer. */
+.hl_page-preview--content [class*=section-].gp-tail {
+  padding: 0 !important;
+  border: 0 !important;
+  min-height: 0 !important;
+}
+
+/* A form section framed as a plate rather than a bought template. */
+.hl_page-preview--content .gp-form-plate [class*=row-] {
+  max-width: 560px !important;
+  padding: clamp(28px, 3.2vw, 44px) clamp(20px, 3vw, 40px) !important;
+  border: 1px solid var(--gp-line) !important;
+  border-radius: var(--gp-radius) !important;
+}
+
+/* Multi-column bands. Rules between columns beat boxes around them. */
+.hl_page-preview--content .gp-cols [class*=row-]:last-child { display: flex !important; align-items: stretch !important; }
+.hl_page-preview--content .gp-cols [class*=row-]:last-child [class*=column-] {
+  padding: 0 clamp(18px, 2.6vw, 38px) !important;
+  border-left: 1px solid var(--gp-line) !important;
+}
+.hl_page-preview--content .gp-cols [class*=row-]:last-child [class*=column-]:first-child { border-left: 0 !important; }
+
+/* ── 7. MOTION — content visible by DEFAULT, animation opt-in ──────────────
+   Everything animated is hidden until `.gp-ready` is on <html>, which the
+   script only sets once it runs. If the script never runs the page is still
+   fully readable. Reverse that and a JS failure ships a blank page.
+
+   The stagger is driven by `--i`, set per element in JS. `nth-child()` cannot
+   work here: GHL wraps every element in its own div, so each one is
+   `:nth-child(1)` and every delay resolves to 0ms. Verified. */
+.gp-ready .gp-anim { opacity: 0; transform: translateY(14px); }
+
+.gp-ready .gp-in .gp-anim,
+.gp-ready .gp-in.gp-anim {
+  opacity: 1;
+  transform: none;
+  transition: opacity .6s var(--gp-ease) calc(var(--i, 0) * .07s),
+              transform .6s var(--gp-ease) calc(var(--i, 0) * .07s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gp-ready .gp-anim {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ── 8. MOBILE — stack, don't shrink ───────────────────────────────────────
+   Note the breakpoint: 768px, chosen for layout. It is NOT the same as the
+   emitter's `@media screen and (min-width:0px) and (max-width:480px)`, which
+   exists to match the builder's own string verbatim so the two stylesheets do
+   not interleave unpredictably. Do not merge them. */
+@media (max-width: 768px) {
+  .hl_page-preview--content [class*=section-]:not(.gp-tail):not(.gp-bar) {
+    padding: 60px 18px !important;
+  }
+  /* (0,4,0) and (0,3,0) — a media query adds NO specificity, so a bare
+     `.gp-tail` in here loses to the emitter exactly as it would outside. */
+  .hl_page-preview--content [class*=section-].gp-tail { padding: 0 !important; min-height: 0 !important; }
+  .hl_page-preview--content [class*=section-].gp-bar  { padding: 12px 18px !important; }
+
+  /* A 390px phone leaves ~354px of usable width. A 15ch measure resolves to
+     about 190px there and shatters a headline into ragged fragments. Let every
+     measure fill on mobile. */
+  .hl_page-preview--content h1 { font-size: 38px !important; max-width: 100% !important; line-height: 1.06 !important; }
+  .hl_page-preview--content h2 { font-size: 28px !important; max-width: 100% !important; }
+  .hl_page-preview--content h3 { font-size: 22px !important; max-width: 100% !important; }
+  .hl_page-preview--content p,
+  .hl_page-preview--content .gp-lead { max-width: 100% !important; }
+
+  .hl_page-preview--content .gp-cols [class*=row-]:last-child { display: block !important; }
+  .hl_page-preview--content .gp-cols [class*=row-]:last-child [class*=column-] {
+    border-left: 0 !important;
+    border-top: 1px solid var(--gp-line) !important;
+    padding: 28px 0 !important;
+  }
+  .hl_page-preview--content .gp-cols [class*=row-]:last-child [class*=column-]:first-child { border-top: 0 !important; }
+
+  .hl_page-preview--content div.ghl-form-wrap,
+  .hl_page-preview--content section.hl_form-builder--main,
+  .hl_page-preview--content div[class*=cform-],
+  .hl_page-preview--content .gp-form-plate [class*=row-] {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  .hl_page-preview--content .gp-form-plate [class*=row-] { padding: 24px 18px !important; }
+
+  /* A 141px CTA is under a comfortable thumb target. */
+  .hl_page-preview--content a[class*=button],
+  .hl_page-preview--content button[class*=cbutton],
+  .hl_page-preview--content button[type=submit] {
+    min-width: 240px !important;
+    height: 50px !important;
+  }
+}
+
+/* ── TRAPS: things that look right and are not ─────────────────────────────
+
+   1.  .hl_page-preview--content [class*=cform-]{max-width:440px!important}
+       Ties with the emitter's per-element `width` at (0,2,0) and LOSES on
+       source order. `!important` does not help. Add a tag qualifier.
+
+   2.  Styling a button by its authoring id (`button-<id>`) and expecting the
+       fill to appear. The fill belongs to `cbutton-<id>`; the authoring id is
+       the wrapper. Both get the rule from the emitter, which is why the
+       wrapper has to be forced transparent above.
+
+   3.  Deriving one id from the other. `extra.nodeId` is NOT `"c" + id` on
+       builder-authored pages — verified, 0 of 78 nodes matched. Both ids share
+       the TYPE prefix and have different random suffixes. Substring-match the
+       prefix; never reconstruct an id.
+
+   4.  Fighting an `#id` rule with a class. It cannot be done. See the
+       specificity ladder at the top.
+
+   5.  `@import` for webfonts. It serialises the font fetch behind the
+       stylesheet parse and delays first paint. Use <link rel="preconnect"> +
+       <link rel="stylesheet"> in the same custom-code block, as siblings of
+       the <style> tag. page_shell.py emits that for you with --font-css.
+
+   6.  Writing a section rule as a bare `.gp-hero`. It is (0,1,0) against the
+       emitter's (0,2,0) forced padding and loses. Every section rule in this
+       file is `[class*=section-].gp-role` for that reason. The failure is
+       silent and looks like the rule was never written.
+
+   7.  Putting this file in GHL's page-settings "custom CSS" box and expecting
+       the role classes to work. The classes come from the SCRIPT, which ships
+       in the same custom-code block. Split them and half this file matches
+       nothing.
+   ========================================================================= */

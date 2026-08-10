@@ -152,6 +152,35 @@ A "surface" is one page or one email template. The method:
 3. Count **distinct surfaces per key**.
 4. **Count == 1 → it should not be a custom value.** Inline it as literal text.
 
+**Do not do this by hand.** `create_custom_values.py --surfaces` performs exactly
+these four steps. It is pure local analysis — no credentials, no account access,
+writes nothing — so it is safe to run on a build before anything is deployed:
+
+```bash
+python3 create_custom_values.py --surfaces \
+    --scan page1.json --scan page2.json --scan emails/*.html
+```
+
+```
+  surfaces scanned:         15
+  distinct keys referenced: 75
+  on MORE THAN ONE surface: 16   <- these earn their place
+  on exactly ONE surface:   59   <- inline these as literal text
+
+  multi-surface (keep as custom values):
+     15 surfaces  business_name
+     15 surfaces  footer_disclaimer
+      5 surfaces  event_date
+  ...
+  single-surface (candidates to inline):
+      1 surface   hero_headline                      page1.json
+```
+
+`--json` gives the same data machine-readably. One caveat the count cannot see: a
+single-surface key whose only surface is a **raw-HTML email template** should usually
+stay a slot — see the exception below. The report flags those for you to judge, it
+does not decide.
+
 Real numbers from a production build, 6 pages + 9 emails:
 
 | | count |

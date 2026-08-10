@@ -45,7 +45,13 @@ PUBLIC_CONSTANTS = {
     "2021-07-28",
 }
 
+# A brand palette is an identifier too. This was learned the hard way: the client's
+# accent hex shipped inside an HTML example and the scan missed it because only ONE
+# of their colours was on the secret list. If you are sanitising work done for a
+# client, pass EVERY colour in their palette with --secret, not just the obvious one.
 PATTERNS = {
+    "brand palette hex (pass yours via --secret)":
+        r"(?i)#(?:0B0B0D|B08A5E|17131A|DBA49E|EDE6DF|837C74|2A2226)\b",
     "private integration token":
         r"pit-[0-9a-f]{8}-[0-9a-f-]{4,}",
     "JWT / bearer token":

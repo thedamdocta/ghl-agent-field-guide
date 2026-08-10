@@ -215,6 +215,24 @@ def parse_pairs(pairs: list) -> dict:
     return out
 
 
+def scan_surfaces(paths: list) -> dict:
+    """Map every {{custom_values.x}} reference to the SURFACES it appears on.
+
+    A "surface" is one page or one email template — i.e. one input file. Keeping
+    the per-file breakdown (rather than flattening to a set of keys) is what makes
+    the design rule measurable: a key on exactly one surface should usually be
+    literal text instead. See --surfaces.
+    """
+    surfaces: dict = {}
+    for raw in paths:
+        path = pathlib.Path(raw).expanduser()
+        if not path.is_file():
+            raise SystemExit(f"FATAL: --scan file not found: {path}")
+        for key in set(KEY_RE.findall(path.read_text(errors="ignore"))):
+            surfaces.setdefault(key, set()).add(path.name)
+    return surfaces
+
+
 def scan_for_keys(paths: list) -> set:
     """Collect every {{custom_values.x}} referenced by the given files.
 
@@ -222,13 +240,55 @@ def scan_for_keys(paths: list) -> set:
     spec. This is the check that catches the silent failure — every key found
     here must exist in the account, with a non-blank value, before launch.
     """
-    keys = set()
-    for raw in paths:
-        path = pathlib.Path(raw).expanduser()
-        if not path.is_file():
-            raise SystemExit(f"FATAL: --scan file not found: {path}")
-        keys |= set(KEY_RE.findall(path.read_text(errors="ignore")))
-    return keys
+    return set(scan_surfaces(paths))
+
+
+def surface_report(surfaces: dict, files: list, as_json: bool = False) -> int:
+    """Count distinct surfaces per key and flag the single-surface ones.
+
+    THE DESIGN RULE: a custom value earns its place only when the same string must
+    appear on MORE THAN ONE surface. Everything else should be literal text the
+    client can read and edit in the WYSIWYG builder, because every slot is a
+    silent-failure site — an unknown or emptied key renders as EMPTY STRING with
+    no error anywhere.
+
+    The exception the count cannot see: copy that lives only in an email template
+    built as raw HTML. There a slot is friendlier than asking someone to edit
+    markup. Judge single-surface EMAIL keys by hand; the report marks them.
+    """
+    by_count: dict = {}
+    for key, where in surfaces.items():
+        by_count.setdefault(len(where), []).append(key)
+    single = sorted(by_count.get(1, []))
+    multi = sorted(k for k, w in surfaces.items() if len(w) > 1)
+
+    if as_json:
+        json.dump({"surfaces_scanned": len(files),
+                   "keys": len(surfaces),
+                   "multi_surface": multi,
+                   "single_surface": {k: sorted(surfaces[k]) for k in single},
+                   "counts": {k: len(v) for k, v in sorted(surfaces.items())}},
+                  sys.stdout, indent=2)
+        print()
+        return 0
+
+    print(f"  surfaces scanned:         {len(files)}")
+    print(f"  distinct keys referenced: {len(surfaces)}")
+    print(f"  on MORE THAN ONE surface: {len(multi)}   <- these earn their place")
+    print(f"  on exactly ONE surface:   {len(single)}   <- inline these as literal text")
+    if multi:
+        print("\n  multi-surface (keep as custom values):")
+        for key in sorted(multi, key=lambda k: -len(surfaces[k])):
+            print(f"    {len(surfaces[key]):>3} surfaces  {key}")
+    if single:
+        print("\n  single-surface (candidates to inline):")
+        for key in single:
+            print(f"      1 surface   {key:<34} {next(iter(surfaces[key]))}")
+        print("\n  Each of these buys nothing and costs a silent-failure site: a typo or "
+              "\n  a blank renders as an empty string, and the client cannot read their "
+              "\n  own copy in the builder. EXCEPTION: copy that only ever lives in a "
+              "\n  raw-HTML email template is better as a slot — judge those by hand.")
+    return 0
 
 
 def main() -> int:
@@ -257,9 +317,21 @@ def main() -> int:
     ap.add_argument("--env-file", default=".env",
                     help="Where to read GHL_PIT / GHL_LOCATION_ID (default .env). "
                          "Real environment variables win.")
+    ap.add_argument("--surfaces", action="store_true",
+                    help="Count how many SURFACES (files) reference each "
+                         "{{custom_values.x}} key and flag the single-surface ones, "
+                         "which should usually be literal text instead. Pure local "
+                         "analysis: needs --scan, no credentials, writes nothing.")
     ap.add_argument("--json", dest="as_json", action="store_true",
                     help="Print a machine-readable report instead of prose.")
     args = ap.parse_args()
+
+    # Offline, credential-free, and never touches the account.
+    if args.surfaces:
+        if not args.scan:
+            ap.error("--surfaces needs --scan FILE (repeatable) — one file per "
+                     "surface, e.g. --scan page1.json --scan email1.html")
+        return surface_report(scan_surfaces(args.scan), args.scan, args.as_json)
 
     # `explicit` is what you ASKED for (--values / --set). Keys that only turn up
     # via --scan are a different class: we ensure they EXIST, but we never touch

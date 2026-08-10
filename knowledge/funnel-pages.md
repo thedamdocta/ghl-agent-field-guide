@@ -300,8 +300,24 @@ renders transparent and the page flattens to a single colour.
 Inside an authoring element, **`extra.nodeId` carries the RENDERED id**. So:
 authoring `id` ↔ rendered `extra.nodeId`.
 
-- When minting new elements, use authoring ids **without** the `c`.
-- When copying ids scraped from a live page, **strip the leading `c` first**.
+**The two ids are INDEPENDENT — do not derive one from the other.** Verified on a real
+builder-authored page: `extra.nodeId` equalled `"c" + id` for **0 of 78** nodes. They
+share the *type prefix* and carry **different random suffixes**:
+
+```
+id = button-bM3DE444_E      nodeId = cbutton-hXqqMDg5w8
+id = paragraph-_aVW_3QYq-   nodeId = cparagraph-_eHB3sQOF7
+```
+
+- When minting new elements, use authoring ids **without** the `c`. Setting
+  `nodeId = "c" + id` is a fine minting *convention* (it only has to be unique and
+  `c`-prefixed) and `ghl_generator.py` does exactly that — but it is a convention of
+  this repo, not a fact about GHL.
+- When correlating ids scraped from a live page back to authoring nodes, **read the
+  pair off `extra.nodeId`**. Stripping the leading `c` gives you a string that matches
+  nothing.
+- In a hand-written stylesheet, never target an exact id. Match the type prefix:
+  `[class*=section-]`, `[class*=cbutton-]`.
 - **Emit each CSS rule against BOTH selectors** — element-level styling (button
   fills, nav type) is keyed off the rendered id:
 
@@ -310,6 +326,19 @@ sel = f".hl_page-preview--content .{node['id']}"
 rendered = node.get("extra", {}).get("nodeId")
 sels = sel if not rendered else f"{sel},.hl_page-preview--content .{rendered}"
 ```
+
+**The cost of getting this right:** the rule now paints both nodes. For a button that
+means the wrapper `div.c-button` gets the fill as well as the `<button>`, which is
+invisible while the wrapper hugs the button and a full-width slab of colour the moment
+it does not. See
+[`page-css-and-classes.md` §3](page-css-and-classes.md#3-the-two-ids-are-independent--do-not-derive-one-from-the-other).
+
+> **Where the rest of the page CSS story lives.** This section covers what the emitter
+> writes. What the rendered DOM looks like, which selectors reach it, how the
+> page-level system stylesheet is attached, and why a present rule loses on
+> specificity are in
+> [`page-css-and-classes.md`](page-css-and-classes.md). A working, brand-neutral page
+> stylesheet ships at [`../tools/page-styles.starter.css`](../tools/page-styles.starter.css).
 
 ---
 
@@ -445,11 +474,15 @@ funnel builder itself uses, so it is safe to reference from page CSS.
 3. Build the authoring tree: `section → row → col → element`, every value wrapped,
    authoring ids **without** the `c` prefix, `extra.nodeId` set to the `c`-prefixed
    form.
-4. **Emit `section.general.sectionStyles` for every section**, for BOTH id
+4. **Attach the page-level system stylesheet** as a `custom-code` element
+   (`extra.customCode`) in a final section — `page_shell.py --attach`. Do this
+   *before* step 5 so the shell section gets styles emitted for it too.
+5. **Emit `section.general.sectionStyles` for every section**, for BOTH id
    namespaces. Skip the internal-hint keys. Force the small background/colour/padding
    set.
-5. Wire buttons using the correct per-action field.
-6. Put form submit behaviour on the **page element**.
-7. `POST /funnels/builder/autosave/{pageId}` → expect **201**.
-8. **Verify at `sites.leadconnectorhq.com/preview/{pageId}`.** Grep for your literal
-   strings. A 201 is not a result.
+6. Wire buttons using the correct per-action field.
+7. Put form submit behaviour on the **page element**.
+8. `POST /funnels/builder/autosave/{pageId}` → expect **201**.
+9. **Verify at `sites.leadconnectorhq.com/preview/{pageId}`.** Grep for your literal
+   strings, and read **computed** style for anything you styled. A 201 is not a
+   result, and neither is a rule being present in the stylesheet.

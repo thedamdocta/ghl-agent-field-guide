@@ -76,6 +76,17 @@ Work through this. It is short and it prevents the expensive category of mistake
 
 ---
 
+## Before you assume something is possible — or impossible
+
+[`knowledge/known-unknowns.md`](knowledge/known-unknowns.md) is the map of the edges:
+what was tried and BLOCKED (memberships run on a different vendor's domain entirely;
+workflow triggers and publishing have no API), what is UNTESTED, and what is simply
+UNEXPLORED. Check it before spending an afternoon rediscovering a wall — and when you
+break through one, delete the entry and write what you found.
+
+[`methodology/how-to-learn-ghl.md`](methodology/how-to-learn-ghl.md) is how to find
+the next thing when nothing here covers it. It is the most portable file in the repo.
+
 ## How to work once you start
 
 **Watch the platform do it before you guess.** The single highest-leverage discovery

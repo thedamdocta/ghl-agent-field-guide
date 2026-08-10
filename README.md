@@ -25,6 +25,8 @@ shipping something that returns `200 OK` and does nothing.
 | **get the internal token (do it yourself)** | [`knowledge/getting-the-token.md`](knowledge/getting-the-token.md) |
 | **embed a form on your OWN site** | [`knowledge/forms-and-external-embeds.md`](knowledge/forms-and-external-embeds.md) |
 | stop guessing endpoint names | [`knowledge/mcp-server.md`](knowledge/mcp-server.md) |
+| **learn the platform yourself** | [`methodology/how-to-learn-ghl.md`](methodology/how-to-learn-ghl.md) |
+| **what nobody here has cracked yet** | [`knowledge/known-unknowns.md`](knowledge/known-unknowns.md) |
 | find out how something works | [`methodology/discovery.md`](methodology/discovery.md) |
 | know whether it actually worked | [`methodology/verification.md`](methodology/verification.md) |
 | avoid the traps | [`methodology/failure-modes.md`](methodology/failure-modes.md) |

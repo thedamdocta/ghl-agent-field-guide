@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en" style="background-color:#0e1013;">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="dark">
+<meta name="supported-color-schemes" content="dark">
+<title>Email template — starter</title>
+
+<!-- ============================================================================
+     GHL email template — starter document
+     ============================================================================
+
+     Paste-ready. Change the tokens below; leave the table structure alone until
+     something misbehaves. This is a complete, valid document — not a fragment to
+     assemble. Copy the file, swap the tokens and the copy, push it.
+
+     HOW IT GETS APPLIED
+       Not by pasting into the drag-and-drop email builder. This whole document
+       becomes the `editorContent` string on a template record:
+
+         POST services.leadconnectorhq.com/emails/locations/{locationId}/templates
+         { "name": "...", "editorType": "html", "editorContent": "<this file>",
+           "subjectLine": "...", "previewText": "...", "fromName": "..." }
+
+       `editorType:"html"` stores `editorContent` VERBATIM — round-trip
+       byte-identical (verified), unlike funnel pages, which GHL recompiles at
+       save time. Whatever you author here is what sends. GHL adds exactly two
+       things: an "outlook-fixes-applied" HTML comment and MSO font-colour
+       fallbacks. Nothing is re-nested and no attribute is stripped.
+
+       (Never write a literal comment-close sequence inside a block comment like
+       this one. It ends the comment early and everything after it becomes live
+       markup — a failure `push_emails.py --check` catches and the eye does not.)
+
+       Writes REQUIRE an `idempotencyKey`. Omit it and you get a 400 that names
+       the field. Use `tools/push_emails.py`, which supplies one derived from the
+       content, so a retry updates instead of duplicating.
+
+     HOW YOU VERIFY — AND THIS IS NOT OPTIONAL
+       A create/update response carries `data.previewUrl`, a Firebase-hosted
+       rendering of the STORED template. That URL is the verification surface; a
+       200 on the write is not proof. Two checks, in this order:
+
+         python3 push_emails.py --manifest m.json --check     # offline, no network
+         python3 push_emails.py --manifest m.json --verify    # fetches previewUrl
+
+       `--check` lints this document for the constructions below. `--verify`
+       confirms your copy survived into what GHL actually serves.
+
+     THE TOKENS — FIND AND REPLACE, BECAUSE VARIABLES DO NOT WORK HERE
+       CSS custom properties (`var(--x)`) DO NOT resolve in Outlook, and inline
+       styles cannot reference them reliably in any client. There is no token
+       mechanism in email. So the palette is a find-and-replace table, and these
+       literals appear throughout the document:
+
+         #0e1013   ground      page + sheet background (one ground, no second black)
+         #e8e5e0   text        body copy on the ground
+         #8f8b85   muted       legal, footer, secondary only
+         #7d8fb3   accent      the button fill and the masthead rule — used TWICE
+         #12141a   accent-ink  the ONLY text that sits on the accent fill
+         #262a31   hairline    dividers
+
+       These are deliberately neutral placeholders. Swap all six, then re-run
+       `--check`: it inventories every distinct hex in the file and warns when the
+       palette grows past a handful. One accent used twice beats four accents.
+
+       Every text node carries an EXPLICIT colour. A node that inherits its colour
+       on a dark ground is one client-side inversion away from black-on-black.
+       That is not theoretical — it has shipped.
+
+     WHY TABLES AND INLINE STYLES
+       Outlook on Windows renders through the Word engine. It ignores CSS
+       backgrounds on `div`s, ignores `float`, and ignores most positioning. So
+       every load-bearing box is a `<table>` and carries its background TWICE — as
+       the `bgcolor` ATTRIBUTE and as an inline `style`. Drop either one and it is
+       wrong in some client. `role="presentation"` on every layout table, or a
+       screen reader announces your layout as a data table.
+
+     THE 16PX FLOOR
+       Body copy is 16px and does not go below it. Below 16px, iOS Mail zooms the
+       message to fit and your 600px sheet stops being 600px; small type also
+       fails contrast for a meaningful share of any list. Labels, legal and the
+       footer legitimately go smaller — the floor is for copy people READ.
+       `--check` lists every declared size under 16px so the exceptions stay
+       deliberate. Give the document a real scale (34/18/16/11 here); a single
+       size for everything is what makes an email read as one grey block.
+
+     WEBFONTS NEED A REAL FALLBACK
+       Outlook will not load a webfont, ever, and several other clients are
+       unreliable about it. So the fallback is doing the actual work for a large
+       share of your audience. If you add a webfont, pick a fallback genuinely
+       close in colour and width to the display face — not a token `sans-serif`:
+
+         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=...">
+         font-family:'Your Display Face',Georgia,'Times New Roman',serif;
+
+       Declare the family ONCE per text node and do not override it downstream. A
+       real observed failure: a sequence declared a webfont at the top, then
+       overrode every span to Arial, so the declared face never applied anywhere.
+
+     SVG CANNOT TRAVEL INTO EMAIL
+       SVG does not render in Gmail. Any vector mark must be rastered to PNG,
+       hosted at a stable URL — use the client's own GHL media library
+       (`POST /medias/upload-file?locationId={locationId}`), not a CDN that can
+       disappear — and rendered ON the ground colour rather than transparent. A
+       transparent PNG in a client that force-inverts lands as the wrong colour on
+       the wrong field and falls apart. `--check` fails on any `.svg` in a `src`.
+
+       Outlook blocks images by default, so `alt` text is load-bearing and the
+       masthead below is set in LIVE TYPE rather than baked into a raster. A
+       raster masthead buys total art direction and costs three things: it is
+       invisible when images are blocked, it does not reflow on a phone, and every
+       campaign needs a new file.
+
+     MERGE TAGS
+       `{{custom_values.slot}}` — per-deployment strings. `{{contact.first_name}}`
+       and `{{right_now.year}}` are verified working in templates.
+       GHL RESOLVES AN UNKNOWN `{{custom_values.x}}` TO EMPTY STRING, SILENTLY. A
+       typo'd slot produces a sentence with a hole in it and no error anywhere.
+       `--check` prints every tag this file references; feed that list to
+       `create_custom_values.py --scan` and create every slot BEFORE first send.
+       UNVERIFIED: `{{unsubscribe_link}}` was used in production markup but never
+       confirmed to resolve. Give it one real test send.
+
+     DELETING
+       You probably cannot. The PIT returns 401 "token is not authorized for this
+       scope" on delete. Retire a template by updating it with `archived: true` —
+       `push_emails.py --archive` does exactly that.
+
+     Delete this comment block before your first send if you care about the ~5KB
+     it adds to every message. GHL stores it verbatim either way.
+     ========================================================================= -->
+
+<style>
+  :root { color-scheme: dark; supported-color-schemes: dark; }
+  body,table,td,p,h1,a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+  img { -ms-interpolation-mode:bicubic; border:0; outline:none; text-decoration:none; }
+  a { text-decoration:none; }
+  /* The only responsive mechanism you can rely on. Gmail honours a media query in
+     the head. `.pad` is on CONTENT cells only — a blanket `.sheet td` rule also
+     hits the button and hairline cells and pulls them apart. */
+  @media only screen and (max-width:620px) {
+    .sheet { width:100% !important; }
+    .sheet .pad { padding-left:24px !important; padding-right:24px !important; }
+    .sheet h1 { font-size:27px !important; line-height:1.24 !important; }
+  }
+</style>
+</head>
+
+<body bgcolor="#0e1013" style="margin:0;padding:0;background-color:#0e1013;">
+
+<!-- Preheader: the inbox preview line. Hidden in the body, read by the client.
+     Leave it empty and the client scrapes your first sentence instead. -->
+<div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;color:#0e1013;">{{custom_values.email_preview_line}}</div>
+
+<!-- Full-bleed ground -->
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="#0e1013" style="background-color:#0e1013;margin:0;padding:0;">
+<tr><td align="center" style="padding:0;">
+
+<!-- The 600px sheet. 600 is the durable content width; wider is clipped somewhere. -->
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" class="sheet" bgcolor="#0e1013" style="width:600px;max-width:600px;background-color:#0e1013;">
+
+  <!-- ── MASTHEAD ── live type, not a raster: survives image-blocking and reflows -->
+  <tr><td align="center" class="pad" style="padding:38px 40px 0;">
+    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:16px;line-height:1;letter-spacing:.36em;text-transform:uppercase;color:#e8e5e0;">{{custom_values.business_name}}</p>
+  </td></tr>
+
+  <!-- accent rule: use 1 of 2 -->
+  <tr><td align="center" class="pad" style="padding:14px 40px 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" width="54"><tr>
+      <td height="1" bgcolor="#7d8fb3" style="background-color:#7d8fb3;font-size:0;line-height:0;">&nbsp;</td>
+    </tr></table>
+  </td></tr>
+
+  <!-- ── STAGE LABEL ── tells the reader where they are in the sequence -->
+  <tr><td align="center" class="pad" style="padding:30px 40px 0;">
+    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:11px;line-height:1;letter-spacing:.42em;text-transform:uppercase;color:#8f8b85;">STAGE LABEL</p>
+  </td></tr>
+
+  <!-- ── HEADLINE ── the masthead carries the promise; the body never repeats it -->
+  <tr><td align="center" class="pad" style="padding:22px 40px 0;">
+    <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:34px;line-height:1.22;font-weight:400;color:#e8e5e0;text-align:center;">The one thing this email says.</h1>
+  </td></tr>
+
+  <!-- ── LEAD ── one sentence of status. No hedging. -->
+  <tr><td align="center" class="pad" style="padding:20px 40px 0;">
+    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:18px;line-height:1.62;color:#e8e5e0;text-align:center;">Where you stand, {{contact.first_name}}, in one sentence.</p>
+  </td></tr>
+
+  <!-- ── BODY ── 16px floor. Two short paragraphs is usually the whole email. -->
+  <tr><td align="center" class="pad" style="padding:18px 40px 0;">
+    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:16px;line-height:1.72;color:#e8e5e0;text-align:center;">What they are about to get, and nothing else. Body copy does status, then preview, then action &#8212; it does not re-state the offer the masthead already made.</p>
+  </td></tr>
+
+  <!-- ── OPTIONAL IMAGE ── PNG/JPG only. Width and height as ATTRIBUTES as well as
+       inline styles, because Outlook reads the attributes. `display:block` kills
+       the baseline gap under the image. Delete this row if you have no asset. -->
+  <tr><td align="center" class="pad" style="padding:30px 40px 0;">
+    <img src="{{custom_values.email_banner_url}}" width="300" height="34" alt="{{custom_values.email_banner_alt}}" border="0" style="display:block;width:300px;height:34px;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;">
+  </td></tr>
+
+  <!-- ── ACTION ── ONE filled button per email. A padded <a> inside a bgcolor'd
+       <td> is the one construction that works everywhere. No VML needed at a 2px
+       radius; VML is only worth adding for a pill, where Outlook's square corners
+       would be conspicuous. UNVERIFIED: the VML pill fallback is not built here. -->
+  <tr><td align="center" class="pad" style="padding:32px 40px 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center"><tr>
+      <td align="center" bgcolor="#7d8fb3" style="background-color:#7d8fb3;border-radius:2px;">
+        <a href="{{custom_values.offer_url}}" style="display:inline-block;padding:16px 38px;font-family:Georgia,'Times New Roman',serif;font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#12141a;text-decoration:none;">{{custom_values.cta_label}}</a>
+      </td>
+    </tr></table>
+  </td></tr>
+
+  <!-- ── SECONDARY ── a repeat CTA is demoted to a ruled link. Two filled buttons
+       compete; four are noise. -->
+  <tr><td align="center" class="pad" style="padding:24px 40px 0;">
+    <a href="{{custom_values.add_to_calendar_url}}" style="font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#7d8fb3;text-decoration:none;border-bottom:1px solid #262a31;padding-bottom:3px;">Secondary action</a>
+  </td></tr>
+
+  <!-- ── SIGNATURE ── -->
+  <tr><td align="center" class="pad" style="padding:34px 40px 0;">
+    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:16px;line-height:1.72;color:#e8e5e0;text-align:center;">&#8212;&nbsp;{{custom_values.sender_name}}</p>
+  </td></tr>
+
+  <!-- ── FOOTER ── spacing does the work of dividers; this is the one hairline. -->
+  <tr><td align="center" class="pad" style="padding:44px 40px 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" width="100%"><tr>
+      <td height="1" bgcolor="#262a31" style="background-color:#262a31;font-size:0;line-height:0;">&nbsp;</td>
+    </tr></table>
+  </td></tr>
+
+  <tr><td align="center" class="pad" style="padding:22px 40px 0;">
+    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:11px;line-height:1.7;letter-spacing:.14em;text-transform:uppercase;color:#8f8b85;text-align:center;">{{custom_values.business_name}} &nbsp;&middot;&nbsp; All rights reserved {{right_now.year}}</p>
+  </td></tr>
+
+  <tr><td align="center" class="pad" style="padding:14px 40px 0;">
+    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:11px;line-height:1.66;color:#8f8b85;text-align:center;">{{custom_values.footer_disclaimer}}</p>
+  </td></tr>
+
+  <tr><td align="center" class="pad" style="padding:14px 40px 46px;">
+    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:11px;line-height:1.7;color:#8f8b85;text-align:center;">Written to {{contact.first_name}} because you asked to hear from us.<br>
+      <a href="{{unsubscribe_link}}" style="color:#8f8b85;text-decoration:underline;">Unsubscribe</a>
+      &nbsp;&nbsp;&middot;&nbsp;&nbsp;
+      <a href="mailto:{{custom_values.support_email}}" style="color:#8f8b85;text-decoration:underline;">{{custom_values.support_email}}</a>
+    </p>
+  </td></tr>
+
+</table>
+
+</td></tr>
+</table>
+</body>
+</html>
