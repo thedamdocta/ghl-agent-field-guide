@@ -6,6 +6,9 @@ memory rather than reading it once and forgetting it at the next context boundar
 
 ---
 
+> Working out which files apply to your task? [`ROADMAP.md`](ROADMAP.md) routes by
+> task and by symptom. Read it once before you start.
+
 ## First: understand what kind of knowledge this is
 
 There are three sorts of thing in here, and they age differently.

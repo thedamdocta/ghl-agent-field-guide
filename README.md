@@ -16,6 +16,11 @@ shipping something that returns `200 OK` and does nothing.
 
 ## Start here
 
+> **New to this repo? Open [`ROADMAP.md`](ROADMAP.md) first.** It routes you by TASK
+> ("build a form", "workflows", "something has no API") and by SYMPTOM ("a 200 and
+> nothing changed", "both branches ran"), and it flags where each area turns into a
+> rabbit hole. The table below is the index; the roadmap is the map.
+
 | if you want to… | read |
 |---|---|
 | **you have nothing yet — no token, no ids** | [`knowledge/step-zero-credentials-and-ids.md`](knowledge/step-zero-credentials-and-ids.md) |
