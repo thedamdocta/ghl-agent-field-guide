@@ -311,3 +311,12 @@ Honesty about the edges, so the next agent does not mistake absence for a closed
   decoder ring
 - `verification.md` — why a `200` from any of the above proves less than you think
 - `failure-modes.md` — the catalogue of silent failures, including the exemplar trap
+
+## Correction — the empty-body probe
+
+> ⚠️ **PUBLIC HOST ONLY — this probe is destructive on the internal host.**
+> `POST backend.leadconnectorhq.com/workflow/{locationId}` with `{}` returns
+> **200 and creates a nameless workflow**. The internal host does not validate
+> request bodies, so there is no 422 to read and every probe leaves an artefact
+> behind. Reported by a second account, 2026-08-09. Probe `services.` freely;
+> never probe `backend.` with an empty body.

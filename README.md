@@ -21,6 +21,7 @@ shipping something that returns `200 OK` and does nothing.
 | understand what you're dealing with | [`knowledge/api-map.md`](knowledge/api-map.md) |
 | authenticate anything | [`knowledge/auth.md`](knowledge/auth.md) |
 | **get the internal token (do it yourself)** | [`knowledge/getting-the-token.md`](knowledge/getting-the-token.md) |
+| **embed a form on your OWN site** | [`knowledge/forms-and-external-embeds.md`](knowledge/forms-and-external-embeds.md) |
 | stop guessing endpoint names | [`knowledge/mcp-server.md`](knowledge/mcp-server.md) |
 | find out how something works | [`methodology/discovery.md`](methodology/discovery.md) |
 | know whether it actually worked | [`methodology/verification.md`](methodology/verification.md) |

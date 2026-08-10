@@ -461,3 +461,13 @@ spaces, which does not match the compact form you write into content.
 - `auth.md` — the credential for each tier, and the status-code decoder ring
 - `mcp-server.md` — the catalogue that replaces steps 1–3 above for anything on the
   public API
+
+## Additions from a second account (2026-08-09)
+
+- **`DELETE backend.leadconnectorhq.com/workflow/{locationId}/{id}`** exists and
+  returns `{"success": true}`. Previously undocumented here.
+- **`POST backend…/workflow/{locationId}` does not validate its body** — an empty
+  `{}` returns 200 and creates a nameless workflow. The 422-as-documentation
+  technique applies to the PUBLIC host only.
+- **Form `name: null`** appears specific to API-created forms; UI-created forms
+  carry a real name.
