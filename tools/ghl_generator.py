@@ -154,9 +154,16 @@ ACTIONS_NEEDING_TARGET = {"scroll-to-element", "openPopup", "go-to-funnel-step",
 def uid(prefix: str) -> str:
     """A GHL-style AUTHORING id: `<type>-<nanoid>`, with NO leading 'c'.
 
-    The rendered counterpart is this id with a 'c' in front, and it goes on
-    `extra.nodeId`. Getting that relationship backwards is the single most common
-    reason "my CSS is being ignored".
+    Its rendered counterpart goes on `extra.nodeId` and must be 'c'-prefixed.
+    This module mints it as `"c" + id` because that is unique and readable — but
+    that is a CONVENTION OF THIS GENERATOR, not a fact about GHL. Verified on a
+    real builder-authored page: `extra.nodeId` equalled `"c" + id` for 0 of 78
+    nodes. GHL gives the two ids the same TYPE PREFIX and different random
+    suffixes, so code that reconstructs one from the other works on pages you
+    generated and breaks on pages you captured. Read the pair off `extra.nodeId`.
+
+    Emitting CSS for only one of the two is the single most common reason "my
+    CSS is being ignored" — see knowledge/page-css-and-classes.md.
     """
     alphabet = string.ascii_letters + string.digits + "_-"
     return f"{prefix}-{''.join(random.choice(alphabet) for _ in range(10))}"

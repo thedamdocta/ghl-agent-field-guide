@@ -303,6 +303,27 @@ literal: open the file; the visible ink should touch all four canvas edges.
   next to it. It was working **by coincidence** and would move to the wrong element on
   any injected wrapper. Replaced by a JS pass tagging sections with stable semantic
   class names — which alone unblocked half the remaining fixes.
+- **Whether your rule *won*, not merely whether it exists.** On a platform that injects
+  a generated stylesheet after yours, a rule that is present and outranked looks exactly
+  like a rule that was never written — and the instinct is to rewrite a correct rule
+  instead of raising its specificity by one class. So when a measured value is wrong,
+  measure the winning rule too, not just the value:
+
+  ```js
+  // for one element, list every rule that mentions the property, in cascade order
+  const el = document.querySelector('h1');
+  [...document.styleSheets].flatMap(s => { try { return [...s.cssRules] } catch { return [] } })
+    .filter(r => r.style && r.style.getPropertyValue('color'))
+    .filter(r => el.matches(r.selectorText))
+    .map(r => ({ sel: r.selectorText,
+                 val: r.style.getPropertyValue('color'),
+                 imp: r.style.getPropertyPriority('color') }));
+  ```
+
+  Compare the last entry with `getComputedStyle(el).color`. If your rule is in the list
+  and not the winner, the fix is arithmetic, not authorship. For GHL specifically the
+  ladder is in `knowledge/page-css-and-classes.md`; the generalisable habit is that
+  **"the rule is in the file" is not a measurement.**
 - **Dead code that promises an interaction.** One script removed and re-added a class
   four times per second to trigger an animation. **There was no rule for that class
   anywhere in the stylesheet.** The promised micro-interaction did not exist; the page
@@ -561,3 +582,7 @@ Stated plainly, because a design document that pretends to objectivity is useles
 - `methodology/working-with-agents.md` — running a review panel without generating noise
 - `patterns/design-systems-in-ghl.md` — the four points where the platform fights a
   design system, and how to emit CSS it will respect
+- `knowledge/page-css-and-classes.md` — the rendered class map, the specificity ladder,
+  and a worked page spec → tree → CSS → injected with real values
+- `tools/page-styles.starter.css` — a working, brand-neutral page stylesheet to start
+  from instead of a blank file

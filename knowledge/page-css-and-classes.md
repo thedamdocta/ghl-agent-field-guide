@@ -108,7 +108,7 @@ a debug rectangle.
 
 ### Your own classes on a section
 
-`extra.customClass` exists in the schema. It was `{"value": []}` on all 158 nodes of
+`extra.customClass` exists in the schema. It was `{"value": []}` on all 158 of its occurrences in
 the captured corpus, so whether writing to it reaches the rendered DOM is
 **UNVERIFIED**. Do not build a design on it without testing it first.
 
@@ -237,7 +237,7 @@ one colour — but it means:
 Either fix is legitimate. The failure mode is picking neither, because the rule *looks*
 right in the file.
 
-**You cannot beat an `#id` rule with a class.** GHL emitted 77 ID-selector rules on a
+**You cannot beat an `#id` rule with a class.** GHL emitted 77 ID selectors on a
 single page, carrying `margin`, `width` and `height` on element wrappers. If a margin or
 a width will not move no matter what you do, stop escalating classes: match it with an
 `#id` of your own, or change the element's `styles` so the emitter writes the value you

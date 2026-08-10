@@ -24,6 +24,7 @@ shipping something that returns `200 OK` and does nothing.
 | authenticate anything | [`knowledge/auth.md`](knowledge/auth.md) |
 | **get the internal token (do it yourself)** | [`knowledge/getting-the-token.md`](knowledge/getting-the-token.md) |
 | **embed a form on your OWN site** | [`knowledge/forms-and-external-embeds.md`](knowledge/forms-and-external-embeds.md) |
+| **style a funnel page — and find out why your CSS loses** | [`knowledge/page-css-and-classes.md`](knowledge/page-css-and-classes.md) |
 | stop guessing endpoint names | [`knowledge/mcp-server.md`](knowledge/mcp-server.md) |
 | **learn the platform yourself** | [`methodology/how-to-learn-ghl.md`](methodology/how-to-learn-ghl.md) |
 | **what nobody here has cracked yet** | [`knowledge/known-unknowns.md`](knowledge/known-unknowns.md) |
@@ -74,13 +75,13 @@ garbage id — and now that the MCP server exists, ask the catalogue instead of 
 ## What's here
 
 ```
-knowledge/     the platform: auth, API map, MCP server, pages, emails,
-               workflows, custom values
+knowledge/     the platform: auth, API map, MCP server, pages, page CSS
+               and class conventions, emails, workflows, custom values
 methodology/   how to work: discovery, verification, failure modes,
                delegating to other agents — and how to produce the
                content itself: specs, design quality, copy
 tools/         runnable scripts: token capture, MCP client, page injection,
-               CSS emission, workflow deploy
+               CSS emission, page + form starter stylesheets, workflow deploy
 patterns/      architectures that worked, and why
 ```
 

@@ -62,7 +62,9 @@ USAGE
     python3 page_shell.py --emit --css my-page.css \\
         --font-css "https://fonts.googleapis.com/css2?family=...&display=swap"
 
-    # attach to a pageData tree as a final section, then style and inject
+    # attach to a pageData tree as a final section, then style and inject.
+    # --strip-comments halves the payload for production; keep them while
+    # debugging so DevTools shows what you edit.
     python3 page_shell.py --attach page.json --out page.json
     python3 css_emitter.py page.json
     python3 inject_page.py --page-data page.styled.json ...
@@ -187,12 +189,21 @@ def font_links(href: str) -> str:
             f'<link rel="stylesheet" href="{href}">')
 
 
-def build_block(css: str, font_css: str = "") -> str:
+def build_block(css: str, font_css: str = "", strip_comments: bool = False) -> str:
     """Assemble the custom-code payload.
 
     The three top-level tags are SIBLINGS. Nesting the <script> inside a <div>
     is the single most common way this block ships inert.
+
+    `strip_comments` drops the CSS commentary before embedding. The starter
+    stylesheet is roughly half prose — that prose is for the agent editing the
+    file, not for the visitor downloading it, and it all rides inside the
+    pageData payload on every save. Strip it for production; keep it while you
+    are still debugging, so what you read in DevTools matches what you edit.
     """
+    if strip_comments:
+        css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+        css = re.sub(r"\n{3,}", "\n\n", css)
     return f"{font_links(font_css)}<style>\n{css.strip()}\n</style>\n{SCRIPT}"
 
 
@@ -339,6 +350,10 @@ def main() -> int:
     ap.add_argument("--font-css", default="",
                     help="Webfont stylesheet URL; emitted as <link> with "
                          "preconnect, never @import.")
+    ap.add_argument("--strip-comments", action="store_true",
+                    help="Drop CSS comments before embedding. The starter is "
+                         "about half prose, and all of it rides in the pageData "
+                         "payload. Use for production, not while debugging.")
     ap.add_argument("--out", help="Output path for --attach (default: in place).")
     args = ap.parse_args()
 
@@ -354,7 +369,7 @@ def main() -> int:
             f"FATAL: no stylesheet at {css_path}.\n"
             f"  The starter ships with this repo as tools/page-styles.starter.css.")
     css = css_path.read_text()
-    block = build_block(css, args.font_css)
+    block = build_block(css, args.font_css, args.strip_comments)
 
     if args.emit:
         print(block)

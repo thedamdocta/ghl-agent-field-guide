@@ -43,7 +43,7 @@
        .hl_page-preview--content div[class*=...]            (0,2,1)  beats the above
        .hl_page-preview--content #<type>-<authoringId>      (1,1,0)  GHL — beats ALL
 
-     That last row is the one that costs a day. GHL emits 77 ID-selector rules on
+     That last row is the one that costs a day. GHL emits 77 ID selectors on
      a single 9-section page, carrying `margin`, `width` and `height` on element
      WRAPPERS. No class-based rule of yours can outrank one. If a margin or width
      will not move, you are fighting an `#id` rule: match it with an `#id` of

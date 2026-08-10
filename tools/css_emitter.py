@@ -41,6 +41,22 @@ sections lay out correctly and every button, heading and nav item renders in
 default styling, which reads as "my CSS is being ignored" when in fact half of it
 landed on a selector nothing matches. So: emit a grouped selector covering both.
 
+The two ids are INDEPENDENT — verified, `extra.nodeId` was `"c" + id` for 0 of 78
+nodes of a real builder-authored page. Same type prefix, different random suffix.
+This module never derives one from the other; it reads `extra.nodeId`.
+
+THE COST OF DOING THIS CORRECTLY: the rule paints both nodes. For a button that
+means the wrapper `div.c-button` takes the fill as well as the `<button>` — free
+while the wrapper hugs the button, a full-width slab of colour the moment it
+spans the row. tools/page-styles.starter.css forces the wrapper transparent for
+exactly this reason. Keep that rule if you write your own stylesheet.
+
+WHAT THIS MODULE DOES NOT DO: the design SYSTEM. Per-element values belong here;
+a type scale, a spacing scale and one button treatment belong in a page-level
+stylesheet attached with `page_shell.py`. That sheet is injected BEFORE this
+one, so anything this module emits wins every specificity TIE against it — see
+knowledge/page-css-and-classes.md for the ladder.
+
 MAPPING RULES (decoded from a real builder-generated page)
 -----------------------------------------------------------
   camelCase key             -> kebab-case property
@@ -134,6 +150,13 @@ RENAME = {
 # GHL's own stylesheet outranks a plain rule for these, so they must be forced.
 # background-color is the one that visibly breaks a design: without !important
 # every section renders transparent and the page flattens to one colour.
+#
+# THE OTHER EDGE OF THIS KNIFE: these four are also the four your page-level
+# stylesheet most wants to own, and this output is injected AFTER it at the same
+# (0,2,0) specificity — so an equal-specificity page-level rule ties and LOSES.
+# A section rule must be (0,3,0) and a type-colour rule (0,2,1) to survive.
+# tools/page-styles.starter.css is written that way; if you write your own,
+# knowledge/page-css-and-classes.md §4 has the arithmetic.
 FORCE = {"background-color", "color", "padding-top", "padding-bottom"}
 
 

@@ -140,7 +140,7 @@ specificity ladder in
 **Semantic section classes have to be applied at runtime.** A design system needs to
 say "the hero breathes more than the footer", and GHL gives you no verified way to put
 your own class on a section from the authoring tree (`extra.customClass` exists but was
-empty on all 158 nodes of the captured corpus — **UNVERIFIED**). The route that shipped
+empty on all 158 of its occurrences in the captured corpus — **UNVERIFIED**). The route that shipped
 is a small script in the same custom-code block that tags each section from its
 **content** — does it hold an `h1`, a form, the copyright line — never from its
 position. A positional list is wrong the moment a page has a different number of

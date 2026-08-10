@@ -278,7 +278,7 @@ nothing on the page — the same failure as a misspelled selector.
 
 **Why there is a script at all:** a design system needs semantic section classes,
 and GHL gives you no verified way to set one from the authoring tree
-(`extra.customClass` exists but was empty on all 158 nodes of the captured corpus —
+(`extra.customClass` exists but was empty on all 158 of its occurrences in the captured corpus —
 **UNVERIFIED**). The script tags each section from its **content** — an `h1` makes a
 hero, a form makes a form plate — never from its position, because a positional list
 is wrong the moment a page has a different number of sections.
