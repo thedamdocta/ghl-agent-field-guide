@@ -58,7 +58,7 @@ python3 tools/create_form.py --name "Registration" --seed \
 python3 tools/create_custom_values.py --set webinar_date="July 30, 2026" --apply
 
 # 4. somewhere to put the page
-python3 tools/create_steps.py --funnel-id "$FUNNEL_ID" --name "Opt-in"
+python3 tools/create_steps.py --funnel-id "$FUNNEL_ID" --step "Opt-in:optin" --apply
 
 # 5. build the page tree — built-in elements, no --templates needed
 python3 tools/ghl_generator.py --emit-example > spec.json

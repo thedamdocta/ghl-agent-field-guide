@@ -91,6 +91,21 @@ telling the next agent to repeat the discovery is not passing on knowledge.
 
 ## Before every commit
 
+```bash
+python3 tools/check_docs.py .        # every documented flag exists; no dead links
+python3 tools/scrub_secrets.py . --env-file .env --secret "<client name>"
+```
+
+**`check_docs.py` exists because prose rules do not survive a tired session.** An
+inheriting agent followed the golden path and hit two commands naming flags no parser
+had — step 4 and step 7, back to back, in the file called "building from scratch". It
+concluded the tools were broken and handed the work to a human. The tools were fine;
+the documentation had been written from memory of what they *should* take and never
+run. A rule saying "check your examples" would not have caught that. A check that
+fails does.
+
+## Before every commit — the details
+
 Nothing that identifies an account may ship. Grep for your own values explicitly —
 your token, your location id, your client's name — because a generic scan won't know
 them:

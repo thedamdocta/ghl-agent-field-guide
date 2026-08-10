@@ -38,9 +38,14 @@ payload also goes to a temp file and is sent with `--data-binary @file`, because
 full pageData tree on the command line will hit the OS argument-length limit on a
 real page.
 
-GETTING THE IDS (no ids are hardcoded anywhere in this repo)
-------------------------------------------------------------
-Open the page in the GHL funnel builder. The URL carries both:
+THE IDS (no ids are hardcoded anywhere in this repo)
+---------------------------------------------------
+You do not have to go hunting for them. ghl_ids.py resolves a funnel and a page
+from NAMES, or from nothing at all when there is exactly one candidate, and prints
+what it resolved so a wrong resolution is visible rather than silent. Explicit
+--funnel-id / --page-id still work exactly as before and skip the lookup entirely.
+
+If you would rather read them off the builder URL, it carries both:
 
     app.gohighlevel.com/v2/location/<locationId>/funnels-websites/funnels/
         <funnelId>/pages/<pageId>/edit
@@ -54,14 +59,17 @@ building from scratch):
 
 USAGE
 -----
-    python3 inject_page.py --page-id <id> --funnel-id <id> \
+    python3 inject_page.py --page-data page.json --expect "a distinctive phrase"
+
+    python3 inject_page.py --funnel "Launch" --page "Opt-in" \
         --page-data page.json --expect "a distinctive phrase"
 
     python3 inject_page.py --page-id <id> --funnel-id <id> \
         --page-data page.json --dry-run     # validate + show version, write nothing
 
-The default is a real write, which is why every id is an explicit required flag —
-there is no way to run this by accident against the wrong page.
+The default is a real WRITE. That is why the resolution line is printed BEFORE
+anything is sent, and why --dry-run exists: read the "resolved page" line, confirm
+it names the page you meant, then run it for real.
 """
 from __future__ import annotations
 
@@ -73,6 +81,11 @@ import subprocess
 import sys
 import tempfile
 import time
+
+HERE = pathlib.Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+import ghl_ids  # noqa: E402  (sibling module; the path fix above must run first)
 
 INTERNAL_API = "https://backend.leadconnectorhq.com"
 PREVIEW_BASE = "https://sites.leadconnectorhq.com/preview"
