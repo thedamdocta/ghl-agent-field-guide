@@ -119,13 +119,21 @@ but carries essentially empty `formData` — it cannot seed a clone.
 **You do not need a donor form.** Create the record, then write the schema. Two calls:
 
 ```bash
-# 1. create the record — PUBLIC host, PIT.  Do NOT send locationId in the body:
-#    it 422s, and the error names the offending field.
-POST services.leadconnectorhq.com/forms/     {"locationId": "<loc>", "name": "<name>"}   # → { id }
+# BOTH calls are on the INTERNAL host with the token-id JWT. The public
+# POST /forms/ is IAM-walled: 401 "not yet supported by the IAM Service".
+POST backend.leadconnectorhq.com/forms/       {"locationId": "<loc>", "name": "<name>"}
+     # → the id is at response["form"]["_id"]   (response["id"] is None)
 
-# 2. populate it — INTERNAL host, token-id
-POST backend.leadconnectorhq.com/forms/{id}  { "formData": <below> }
+GET  backend.leadconnectorhq.com/forms/{id}   # poll until readable — see below
+
+POST backend.leadconnectorhq.com/forms/{id}   {"name": "<name>", "formData": {...}}
+     # locationId must NOT be in this body
 ```
+
+> **`400 "form does not exist or is deleted"` right after creating one?** Two causes,
+> both common: you read `["id"]` instead of `["form"]["_id"]`, or you populated before
+> the id propagated. Poll the GET until it resolves. See
+> [`building-from-scratch.md`](building-from-scratch.md).
 
 A minimal known-good `formData`, verified in production:
 

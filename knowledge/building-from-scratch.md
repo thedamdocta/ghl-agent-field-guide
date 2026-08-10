@@ -82,21 +82,57 @@ emitted CSS.
 
 ## Forms and fields, in detail
 
-### Two calls, two different hosts
+### Two calls, BOTH on the internal host
 
 ```
-1. CREATE  POST services.leadconnectorhq.com/forms/     {"locationId": "...", "name": "..."}
-           → { id }
-           PIT + Authorization: Bearer
+1. CREATE   POST backend.leadconnectorhq.com/forms/      {"locationId": "...", "name": "..."}
+            token-id header (NOT Bearer)
+            → the id is at  response["form"]["_id"]
 
-2. POPULATE POST backend.leadconnectorhq.com/forms/{id} { "formData": {...} }
-           internal JWT + token-id header
+2. VERIFY   GET  backend.leadconnectorhq.com/forms/{id}   ← poll until readable
+
+3. POPULATE POST backend.leadconnectorhq.com/forms/{id}   {"name": "...", "formData": {...}}
+            NO locationId in this body
 ```
 
-**The asymmetry that costs an hour:** CREATE *requires* `locationId` in the body.
-UPDATE *rejects* it with a 422 that names the property. Same verb, same route family,
-opposite requirement. And `POST /forms/{id}` **is** the update route — `PUT` and
-`PATCH` both 404.
+**Three things an earlier version of this file got wrong, each of which produces a
+confusing failure:**
+
+1. **CREATE is NOT on the public host.** `POST services.leadconnectorhq.com/forms/`
+   returns `401 "This route is not yet supported by the IAM Service."` It cannot work.
+   Both calls are on `backend.`, with the internal `token-id` JWT.
+
+2. **The id is at `["form"]["_id"]`, not `["id"]`.** `response["id"]` is `None`. Read
+   the wrong key and you POST to `/forms/None`, which answers
+   **`400 "form does not exist or is deleted"`** — an error that sounds like the form
+   was never created when in fact you are asking about the wrong id.
+
+3. **There is read-after-write lag between the two calls.** Even with the right id,
+   populating immediately after creating returns that same
+   `400 "form does not exist or is deleted"` against an id handed to you seconds
+   earlier — and the identical call succeeds a minute later. **Poll `GET /forms/{id}`
+   until it resolves before populating.** In live testing the form became readable on
+   the second check. A fixed `sleep` is the wrong shape: too short still fails, too
+   long makes every run pay the worst case.
+
+**The update body:** `{"name", "formData"}`. Both required, and `locationId` must be
+absent.
+
+| body | result |
+|---|---|
+| includes `locationId` | `422 "property locationId should not exist"` |
+| omits `name` | `422 "name must be a string"` |
+| `{name, formData}` | works |
+
+So CREATE **requires** `locationId` and UPDATE **rejects** it — same verb, same route
+family, opposite requirement.
+
+**Verify by reading back, and retry that too.** The update response does **not** echo
+the stored `formData`. Reading immediately after the write returns an empty
+`formData`, so a single check reports "no fields stored" while the fields are stored —
+a false negative that sends you debugging a write that worked.
+
+And `POST /forms/{id}` **is** the update route — `PUT` and `PATCH` both 404.
 
 ### The field schema
 

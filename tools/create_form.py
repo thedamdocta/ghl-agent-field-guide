@@ -218,6 +218,43 @@ def list_forms(pit: str, location_id: str) -> list:
         raise SystemExit(f"FATAL: could not list forms. response: {out[:300]!r}")
 
 
+def wait_for_form(token: str, form_id: str, tries: int = 8) -> bool:
+    """Poll until a just-created form is readable.
+
+    THE BUG THIS FIXES. Create and populate are two calls, and the id is not
+    immediately resolvable on the write path. Populating straight after creating
+    returns:
+
+        400  "form does not exist or is deleted"
+
+    against an id that was handed to you seconds earlier. Run the identical populate
+    by hand a minute later and it returns 201. GHL has read-after-write propagation
+    lag — the same lag that makes an early check on a freshly injected PAGE report a
+    false mismatch.
+
+    A fixed `sleep` is the wrong shape: too short and it still fails, too long and
+    every run pays for the worst case. Poll for the condition instead, and say so
+    when it takes a while, so the next person does not think it hung.
+    """
+    import time
+    delay = 0.75
+    for attempt in range(1, tries + 1):
+        out = curl([*internal_headers(token), f"{INTERNAL_API}/forms/{form_id}"])
+        try:
+            rec = json.loads(out)
+            form = rec.get("form") or rec
+            if form.get("_id") == form_id and not form.get("deleted"):
+                if attempt > 1:
+                    print(f"  form became readable after {attempt} checks")
+                return True
+        except json.JSONDecodeError:
+            pass
+        if attempt < tries:
+            time.sleep(delay)
+            delay = min(delay * 1.6, 6.0)
+    return False
+
+
 def get_form(token: str, form_id: str) -> dict:
     """Read one form record from the internal API.
 
@@ -430,6 +467,19 @@ def main() -> int:
             return 1
         print(f"  created form {form_id}")
 
+    # A freshly created id is not immediately resolvable on the write path. Confirm
+    # it is readable BEFORE populating, or the populate 400s against an id that was
+    # returned seconds ago.
+    if not wait_for_form(token, form_id):
+        print(f"FATAL: form {form_id} was created but never became readable.\n"
+              f"  This is read-after-write lag, not a bad id — the same populate\n"
+              f"  usually succeeds if retried. Re-run with --id-file pointing at\n"
+              f"  this id to populate it without creating a second form.",
+              file=sys.stderr)
+        id_path.parent.mkdir(parents=True, exist_ok=True)
+        id_path.write_text(form_id)
+        return 1
+
     # UPDATE: `POST /forms/{id}` is the update route — PUT and PATCH both 404.
     # locationId MUST NOT appear in this body: it 422s with
     # "property locationId should not exist", and the 422 names the field.
@@ -437,7 +487,29 @@ def main() -> int:
     out = curl([*internal_headers(token), "-X", "POST", "-d", json.dumps(body),
                 f"{INTERNAL_API}/forms/{form_id}"])
     accepted = '"formData"' in out or '"_id"' in out
-    print(f"  populate fields: {'OK' if accepted else 'FAILED'}")
+    # The update response does NOT echo the stored formData, so "accepted" only means
+    # the request was taken. Read it back — that is the actual verification.
+    # The read-back needs the SAME retry as the create. Reading immediately after
+    # the write returns the record with an empty formData — so a single check reports
+    # "no fields stored" while the fields are, in fact, stored. That false negative is
+    # worse than no check at all: it would send you debugging a write that worked.
+    persisted = []
+    if accepted:
+        import time
+        delay = 0.75
+        for attempt in range(6):
+            rec = json.loads(curl([*internal_headers(token),
+                                   f"{INTERNAL_API}/forms/{form_id}"]) or "{}")
+            form = rec.get("form") or rec
+            persisted = (((form.get("formData") or {}).get("form") or {})
+                         .get("fields") or [])
+            if persisted:
+                break
+            time.sleep(delay)
+            delay = min(delay * 1.6, 5.0)
+    print(f"  populate fields: {'OK' if accepted else 'FAILED'}"
+          + (f"  — verified stored: {[f.get('tag') for f in persisted]}"
+             if persisted else ""))
     if not accepted:
         print(f"    response: {out[:300]!r}\n"
               f"    if it names `locationId`, something re-added it to the update "
