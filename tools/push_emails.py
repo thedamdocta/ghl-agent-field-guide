@@ -394,17 +394,24 @@ def run_dry(rows: list) -> int:
 # ── the account ──────────────────────────────────────────────────────────────
 
 def client(env_file: str, location_id, timeout: int):
-    """Imported lazily so --check/--dry-run/--emit-example never need credentials."""
+    """Imported lazily so --check/--dry-run/--emit-example never need credentials.
+
+    The location id is resolved, not demanded: --location-id, then
+    $GHL_LOCATION_ID, then .env (looked for beside this script as well as in the
+    current directory, so running from the repo root works).
+    """
     sys.path.insert(0, str(HERE))
     try:
-        from ghl_mcp import GHLMCP, GHLMCPError, load_env
+        from ghl_mcp import GHLMCP
+        import ghl_ids
     except ImportError as exc:
-        raise PushError(f"could not import ghl_mcp.py from {HERE}: {exc}") from exc
+        raise PushError(f"could not import from {HERE}: {exc}") from exc
     try:
-        pit, loc = load_env(env_file)
-    except GHLMCPError as exc:
+        loc = ghl_ids.location_id(location_id, env_file)
+        pit = ghl_ids.private_token(None, env_file, hint="")
+    except ghl_ids.ResolveError as exc:
         raise PushError(str(exc)) from exc
-    return GHLMCP(pit, location_id or loc, timeout=timeout), (location_id or loc)
+    return GHLMCP(pit, loc, timeout=timeout), loc
 
 
 def existing_by_name(ghl, loc: str, prefix: str) -> dict:
@@ -550,7 +557,9 @@ def main() -> int:
                     help="Where template ids and previewUrls are recorded "
                          "(default: pushed.json). Workflows need these ids.")
     ap.add_argument("--env-file", default=".env")
-    ap.add_argument("--location-id", help="Override the location id.")
+    ap.add_argument("--location-id",
+                    help="Override the location id. Optional — falls back to "
+                         "$GHL_LOCATION_ID, then .env.")
     ap.add_argument("--timeout", type=int, default=60)
     ap.add_argument("-v", "--verbose", action="store_true")
     args = ap.parse_args()

@@ -196,10 +196,23 @@ def main() -> int:
         description="Inject a pageData tree into a GHL funnel page and verify it "
                     "on the rendered preview.",
         epilog="Needs the internal token-id from get_token.py. The PIT will not work.")
-    ap.add_argument("--page-id", required=True,
-                    help="Funnel page id (from the builder URL).")
-    ap.add_argument("--funnel-id", required=True,
-                    help="Funnel id (from the builder URL).")
+    ap.add_argument("--page-id",
+                    help="Funnel page id. Optional — resolved from --page, or "
+                         "auto-selected when the funnel has exactly one page.")
+    ap.add_argument("--funnel-id",
+                    help="Funnel id. Optional — resolved from --funnel, or "
+                         "auto-selected when the location has exactly one funnel.")
+    ap.add_argument("--page", help="Page NAME instead of --page-id "
+                                   "(case-insensitive).")
+    ap.add_argument("--funnel", help="Funnel NAME instead of --funnel-id "
+                                     "(case-insensitive).")
+    ap.add_argument("--location-id", help="Sub-account id for the lookup "
+                                          "(or $GHL_LOCATION_ID, or .env).")
+    ap.add_argument("--env-file", default=".env",
+                    help="Where to read GHL_PIT / GHL_LOCATION_ID for the id "
+                         "lookup (default .env).")
+    ap.add_argument("--refresh", action="store_true",
+                    help="Ignore the cached id lookup and re-query GHL.")
     ap.add_argument("--page-data", required=True,
                     help="Path to a JSON file holding the pageData tree.")
     ap.add_argument("--expect",
@@ -237,27 +250,46 @@ def main() -> int:
         print("  warn: pageData has no 'sections' key. If you saved the whole page "
               "record, pass its .pageData sub-object instead.", file=sys.stderr)
 
+    # An id is a fact about the account, so look it up rather than demanding it.
+    # Both ids explicit -> no lookup at all, and no credentials needed for one.
+    if args.page_id and args.funnel_id:
+        funnel_id, page_id = args.funnel_id, args.page_id
+    else:
+        try:
+            loc = ghl_ids.location_id(args.location_id, args.env_file)
+            pit = ghl_ids.private_token(None, args.env_file)
+            funnel = ghl_ids.resolve_funnel(pit, loc, args.funnel_id or args.funnel,
+                                            refresh=args.refresh)
+            print(ghl_ids.report("funnel", funnel))
+            page = ghl_ids.resolve_page(pit, loc, funnel.id,
+                                        args.page_id or args.page,
+                                        refresh=args.refresh)
+            print(ghl_ids.report("page", page))
+        except ghl_ids.ResolveError as exc:
+            raise SystemExit(f"FATAL: {exc}")
+        funnel_id, page_id = funnel.id, page.id
+
     token = read_token(args.token, args.token_file)
-    version = current_version(token, args.page_id) + 1
+    version = current_version(token, page_id) + 1
 
     if args.dry_run:
-        print(f"  [dry-run] page {args.page_id} in funnel {args.funnel_id}")
+        print(f"  [dry-run] page {page_id} in funnel {funnel_id}")
         print(f"  [dry-run] would write pageVersion -> {version}")
         print(f"  [dry-run] payload: {len(json.dumps(tree)):,} bytes, "
               f"{len(tree.get('sections') or [])} section(s)")
         return 0
 
-    payload = {"funnelId": args.funnel_id, "pageData": tree,
+    payload = {"funnelId": funnel_id, "pageData": tree,
                "pageVersion": version}
 
     # Write to a temp file and send with --data-binary @file. A real pageData tree
     # on the command line blows past the OS argument-length limit.
-    tmp = pathlib.Path(tempfile.mkdtemp()) / f"payload-{args.page_id}.json"
+    tmp = pathlib.Path(tempfile.mkdtemp()) / f"payload-{page_id}.json"
     tmp.write_text(json.dumps(payload, separators=(",", ":")))
     try:
         out = curl([*auth_headers(token), "-H", "Content-Type: application/json",
                     "-X", "POST", "--data-binary", f"@{tmp}",
-                    f"{INTERNAL_API}/funnels/builder/autosave/{args.page_id}"])
+                    f"{INTERNAL_API}/funnels/builder/autosave/{page_id}"])
     finally:
         tmp.unlink(missing_ok=True)
         try:
@@ -268,7 +300,7 @@ def main() -> int:
     # A successful autosave echoes a pageDataUrl. Its absence is the failure
     # signal; the endpoint does not always use a helpful status code.
     accepted = '"pageDataUrl"' in out
-    print(f"  inject page {args.page_id}: "
+    print(f"  inject page {page_id}: "
           f"{'accepted' if accepted else 'FAILED'} (pageVersion -> {version})")
     if not accepted:
         print(f"    response: {out[:400]!r}", file=sys.stderr)
@@ -276,14 +308,14 @@ def main() -> int:
               "get_token.py.", file=sys.stderr)
         return 1
 
-    if verify(args.page_id, args.expect, args.attempts, args.delay,
+    if verify(page_id, args.expect, args.attempts, args.delay,
               args.preview_base):
         return 0
 
     print("    !! accepted but NOT verified on the rendered page.\n"
           "       Do not report this as done. Either the write did not compile, or\n"
           "       your --expect string was rewritten by GHL's compiler. Open\n"
-          f"       {args.preview_base}/{args.page_id} and look.", file=sys.stderr)
+          f"       {args.preview_base}/{page_id} and look.", file=sys.stderr)
     return 1
 
 

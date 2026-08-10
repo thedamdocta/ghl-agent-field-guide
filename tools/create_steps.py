@@ -61,14 +61,17 @@ the same name. This tool reads the existing step names first and skips matches;
 
 USAGE
 -----
-    python3 create_steps.py --funnel-id <id> --step "Registration:registration" \
+    python3 create_steps.py --funnel "Launch" --step "Registration:registration" \
         --step "Confirmation:confirmation"
 
     python3 create_steps.py --funnel-id <id> --steps-file steps.json --apply
 
     # steps.json: [{"name": "Registration", "path": "registration"}, ...]
 
-Nothing is created without `--apply`. The funnel id comes from the builder URL:
+Nothing is created without `--apply`. You do not have to supply ids: --funnel
+"<name>" resolves one, and with a single funnel in the location you can omit it
+entirely. Explicit --funnel-id / --location-id still work and skip the lookup. If
+you prefer to read them off the builder URL, it carries both:
     app.gohighlevel.com/v2/location/<locationId>/funnels-websites/funnels/<funnelId>
 """
 from __future__ import annotations
@@ -79,6 +82,11 @@ import os
 import pathlib
 import re
 import sys
+
+HERE = pathlib.Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+import ghl_ids  # noqa: E402  (sibling module; the path fix above must run first)
 
 DEFAULT_APP_BASE = "https://app.gohighlevel.com"
 DEFAULT_PORT = 9222
@@ -179,11 +187,20 @@ def main() -> int:
                     "an already-logged-in Chrome. There is no API for this.",
         epilog="Needs the same Chrome setup as get_token.py. Nothing is created "
                "without --apply.")
-    ap.add_argument("--funnel-id", required=True,
+    ap.add_argument("--funnel-id",
                     help="Funnel id from the builder URL "
-                         ".../funnels-websites/funnels/<THIS>")
-    ap.add_argument("--location-id", default=os.environ.get("GHL_LOCATION_ID"),
-                    help="Sub-account id (or $GHL_LOCATION_ID).")
+                         ".../funnels-websites/funnels/<THIS>. Optional — resolved "
+                         "from --funnel, or auto-selected when the location has "
+                         "exactly one funnel.")
+    ap.add_argument("--funnel", help="Funnel NAME instead of --funnel-id "
+                                     "(case-insensitive).")
+    ap.add_argument("--location-id",
+                    help="Sub-account id (or $GHL_LOCATION_ID, or .env).")
+    ap.add_argument("--env-file", default=".env",
+                    help="Where to read GHL_PIT / GHL_LOCATION_ID for the id "
+                         "lookup (default .env).")
+    ap.add_argument("--refresh", action="store_true",
+                    help="Ignore the cached id lookup and re-query GHL.")
     ap.add_argument("--step", action="append", default=[], metavar="NAME:PATH",
                     help="A step to create, e.g. \"Confirmation:confirmation\". "
                          "Repeatable. PATH may be omitted (\"Name:\") to derive it "
@@ -209,18 +226,30 @@ def main() -> int:
                          "the first fix for 'could not open the dialog'.")
     args = ap.parse_args()
 
-    if not args.location_id:
-        ap.error("no location id. Pass --location-id <id> or set GHL_LOCATION_ID "
-                 "(the 20-char id in your GHL URL).")
-
+    # Steps are a decision — the tool still refuses to invent them. Ids are facts
+    # about the account, so they get looked up instead of demanded.
     steps = parse_steps(args.step, args.steps_file)
     if not steps:
         raise SystemExit(
             "FATAL: no steps given. Pass --step \"Name:path\" (repeatable) or "
             "--steps-file <file>. This tool never invents steps.")
 
-    funnel_url = (f"{args.app_base.rstrip('/')}/v2/location/{args.location_id}"
-                  f"/funnels-websites/funnels/{args.funnel_id}")
+    try:
+        location_id = ghl_ids.location_id(args.location_id, args.env_file)
+        if args.funnel_id and not args.funnel:
+            funnel_id = args.funnel_id
+        else:
+            pit = ghl_ids.private_token(None, args.env_file)
+            funnel = ghl_ids.resolve_funnel(pit, location_id,
+                                            args.funnel_id or args.funnel,
+                                            refresh=args.refresh)
+            print(ghl_ids.report("funnel", funnel))
+            funnel_id = funnel.id
+    except ghl_ids.ResolveError as exc:
+        raise SystemExit(f"FATAL: {exc}")
+
+    funnel_url = (f"{args.app_base.rstrip('/')}/v2/location/{location_id}"
+                  f"/funnels-websites/funnels/{funnel_id}")
 
     print(f"  funnel: {funnel_url}")
     for step in steps:

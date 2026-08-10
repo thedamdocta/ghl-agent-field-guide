@@ -108,6 +108,11 @@ import subprocess
 import sys
 import uuid
 
+HERE = pathlib.Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+import ghl_ids  # noqa: E402  (sibling module; the path fix above must run first)
+
 INTERNAL_API = "https://backend.leadconnectorhq.com/workflow"
 
 # Values that are obviously stand-ins. They are warnings during validation and
@@ -928,8 +933,11 @@ def main() -> int:
     ap.add_argument("--deploy", action="store_true",
                     help="Actually create/update in GHL. Without this, the spec is "
                          "only validated and summarised.")
-    ap.add_argument("--location-id", default=os.environ.get("GHL_LOCATION_ID"),
-                    help="GHL location id. Defaults to $GHL_LOCATION_ID.")
+    ap.add_argument("--location-id",
+                    help="GHL location id. Optional — falls back to "
+                         "$GHL_LOCATION_ID, then .env.")
+    ap.add_argument("--env-file", default=".env",
+                    help="Where to read GHL_LOCATION_ID (default .env).")
     ap.add_argument("--token", help="Internal token-id (eyJ...).")
     ap.add_argument("--token-file",
                     default=os.environ.get("GHL_TOKEN_FILE", ".jwt"),
@@ -999,13 +1007,16 @@ def main() -> int:
                 f"Replace them; a placeholder id points at nothing and the API "
                 f"will not tell you.")
 
-    if not args.location_id:
-        raise SystemExit("FATAL: --deploy needs a location id "
-                         "(--location-id or $GHL_LOCATION_ID).")
+    # A location id is a fact about the account, not a decision: flag, then
+    # $GHL_LOCATION_ID, then .env. Only a genuinely absent one stops the deploy.
+    try:
+        location_id = ghl_ids.location_id(args.location_id, args.env_file)
+    except ghl_ids.ResolveError as exc:
+        raise SystemExit(f"FATAL: {exc}")
     token = read_token(args.token, args.token_file)
 
     print()
-    results = deploy(args.location_id, token, workflows, state)
+    results = deploy(location_id, token, workflows, state)
 
     # Merge rather than overwrite: a failed workflow must not erase the id of one
     # that deployed successfully on an earlier run.

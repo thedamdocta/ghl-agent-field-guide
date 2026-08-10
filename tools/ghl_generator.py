@@ -87,6 +87,11 @@ import random
 import string
 import sys
 
+HERE = pathlib.Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+import ghl_ids  # noqa: E402  (sibling module; the path fix above must run first)
+
 # ── the built-in element corpus ──────────────────────────────────────────────
 # 15 verified element types captured from a page GHL's own builder produced, with
 # every account id and hosted asset replaced by a placeholder.
@@ -642,6 +647,47 @@ def _read_json(path: str, label: str):
         raise SystemExit(f"FATAL: {file_path} ({label}) is not valid JSON: {exc}")
 
 
+def resolve_targets(args) -> tuple:
+    """Return (location_id, funnel_id, page_id), looking up whatever is missing.
+
+    THIS TOOL BUILDS OFFLINE. The ids are only stamped onto the sections, so a
+    lookup that cannot happen — no PIT, no network — is a NOTE, not an error, and
+    the build continues with whatever you did supply. That preserves the old
+    behaviour exactly: `--page-id X --funnel-id Y` never touches the network, and
+    passing nothing at all still produces a tree.
+
+    The one hard failure is a NAME that does not resolve. If you said
+    --funnel "Launch", you asked for something specific, and quietly stamping a
+    blank id instead would hide the mistake until the page rendered wrong.
+    """
+    by_name = bool(args.funnel or args.page)
+    loc, funnel_id, page_id = args.location_id, args.funnel_id, args.page_id
+
+    if loc and funnel_id and page_id and not by_name:
+        return loc, funnel_id, page_id
+
+    def give_up(exc) -> tuple:
+        if by_name:
+            raise SystemExit(f"FATAL: {exc}")
+        print(f"  note: ids not resolved ({str(exc).splitlines()[0]}). Building "
+              f"with what you gave; pass --page-id/--funnel-id if the sections "
+              f"need real ids.", file=sys.stderr)
+        return loc, funnel_id, page_id
+
+    try:
+        loc = ghl_ids.location_id(args.location_id or None, args.env_file)
+        pit = ghl_ids.private_token(None, args.env_file)
+        funnel = ghl_ids.resolve_funnel(pit, loc, funnel_id or args.funnel,
+                                        refresh=args.refresh)
+        print(ghl_ids.report("funnel", funnel))
+        page = ghl_ids.resolve_page(pit, loc, funnel.id, page_id or args.page,
+                                    refresh=args.refresh)
+        print(ghl_ids.report("page", page))
+        return loc, funnel.id, page.id
+    except ghl_ids.ResolveError as exc:
+        return give_up(exc)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         description="Build a GHL pageData authoring tree by cloning captured "
@@ -660,10 +706,22 @@ def main() -> int:
     ap.add_argument("--out", help="Where to write the pageData document "
                                   "(default: stdout).")
     ap.add_argument("--page-id", default="", help="Target funnel page id, stamped "
-                                                  "onto each section.")
-    ap.add_argument("--funnel-id", default="", help="Target funnel id.")
-    ap.add_argument("--location-id", default=os.environ.get("GHL_LOCATION_ID", ""),
-                    help="Sub-account id (or $GHL_LOCATION_ID).")
+                                                  "onto each section. Optional — "
+                                                  "resolved from --page when a PIT "
+                                                  "is available.")
+    ap.add_argument("--funnel-id", default="", help="Target funnel id. Optional — "
+                                                    "resolved from --funnel.")
+    ap.add_argument("--page", help="Page NAME instead of --page-id "
+                                   "(case-insensitive).")
+    ap.add_argument("--funnel", help="Funnel NAME instead of --funnel-id "
+                                     "(case-insensitive).")
+    ap.add_argument("--location-id", default="",
+                    help="Sub-account id (or $GHL_LOCATION_ID, or .env).")
+    ap.add_argument("--env-file", default=".env",
+                    help="Where to read GHL_PIT / GHL_LOCATION_ID for the id "
+                         "lookup (default .env).")
+    ap.add_argument("--refresh", action="store_true",
+                    help="Ignore the cached id lookup and re-query GHL.")
     ap.add_argument("--emit-example", action="store_true",
                     help="Print a runnable example spec and exit.")
     ap.add_argument("--list", dest="list_exemplars", action="store_true",
@@ -701,17 +759,18 @@ def main() -> int:
             "--emit-example to see the spec format, or --list to inspect "
             "exemplars. This tool never writes without an explicit --spec.")
     spec = _read_json(args.spec, "spec")
+    location_id, funnel_id, page_id = resolve_targets(args)
     if args.templates:
         gen = Generator.from_file(args.templates, args.base,
-                                  page_id=args.page_id, funnel_id=args.funnel_id,
-                                  location_id=args.location_id)
+                                  page_id=page_id, funnel_id=funnel_id,
+                                  location_id=location_id)
     else:
         # No --templates is the NORMAL case now. The built-in corpus covers the
         # 15 element types; override only when matching an existing design.
         print(f"  using built-in element corpus ({BUILTIN_TEMPLATES_PATH.name})")
         gen = Generator(load_builtin_templates(), args.base,
-                        page_id=args.page_id, funnel_id=args.funnel_id,
-                        location_id=args.location_id)
+                        page_id=page_id, funnel_id=funnel_id,
+                        location_id=location_id)
     doc = build_page(gen, spec)
 
     dumped = json.dumps(doc, indent=args.indent) if args.indent \

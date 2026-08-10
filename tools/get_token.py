@@ -95,6 +95,11 @@ import pathlib
 import sys
 import time
 
+HERE = pathlib.Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+import ghl_ids  # noqa: E402  (sibling module; the path fix above must run first)
+
 DEFAULT_PORT = 9222
 DEFAULT_OUT = ".jwt"
 
@@ -130,8 +135,9 @@ def main() -> int:
                     "already-logged-in Chrome (see module docstring for setup).",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    ap.add_argument("--location-id", default=os.environ.get("GHL_LOCATION_ID"),
-                    help="GHL location (sub-account) id. Defaults to $GHL_LOCATION_ID.")
+    ap.add_argument("--location-id",
+                    help="GHL location (sub-account) id. Optional — falls back to "
+                         "$GHL_LOCATION_ID, then .env.")
     ap.add_argument("--port", type=int,
                     default=int(os.environ.get("GHL_CDP_PORT", DEFAULT_PORT)),
                     help=f"Chrome remote-debugging port (default {DEFAULT_PORT}, "
@@ -155,15 +161,12 @@ def main() -> int:
     if args.url:
         url = args.url
     else:
-        if not args.location_id:
-            ap.error(
-                "no location id. Pass --location-id <id> or set GHL_LOCATION_ID "
-                "(it is the 20-char id in your GHL URL: "
-                "app.gohighlevel.com/v2/location/<THIS>/...). "
-                "Or pass --url with any authenticated in-app URL."
-            )
+        try:
+            location_id = ghl_ids.location_id(args.location_id)
+        except ghl_ids.ResolveError as exc:
+            ap.error(f"{exc}\n  or pass --url with any authenticated in-app URL.")
         url = (f"https://app.gohighlevel.com/v2/location/"
-               f"{args.location_id}/{DEFAULT_PATH}")
+               f"{location_id}/{DEFAULT_PATH}")
 
     # Imported late, and deliberately: `--help` must work on a machine that has
     # never installed Playwright.

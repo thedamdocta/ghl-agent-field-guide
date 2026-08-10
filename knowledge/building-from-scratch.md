@@ -40,16 +40,22 @@ shipped. Telling the next agent to redo the reading is not passing on the knowle
 ## The whole chain, empty account to live page
 
 ```bash
-export GHL_PIT=...  GHL_LOCATION_ID=...
+export GHL_PIT=...  GHL_LOCATION_ID=...       # or put them in tools/.env
 
 # 0. prove the token works, and see what the API offers
 python3 tools/ghl_mcp.py locations
 
+# 0b. see the account: every funnel, and every page in it, with its id
+#     You never have to copy an id out of this. Names work everywhere ids do.
+python3 tools/ghl_ids.py
+
 # 1. internal token — needed for pages, forms and workflows
 #    (see knowledge/getting-the-token.md; you can do this without a human)
-python3 tools/get_token.py --location-id "$GHL_LOCATION_ID"
+python3 tools/get_token.py
 
 # 2. a form, from the built-in seed. NO donor form required.
+#    --name is REQUIRED and always will be: a form name is a decision, not a fact
+#    the account can be asked for.
 python3 tools/create_form.py --name "Registration" --seed \
         --fields first_name,email,phone --id-file .form-id --apply
 
@@ -57,23 +63,35 @@ python3 tools/create_form.py --name "Registration" --seed \
 #    (an unknown {{custom_values.x}} renders as EMPTY STRING, silently)
 python3 tools/create_custom_values.py --set webinar_date="July 30, 2026" --apply
 
-# 4. somewhere to put the page
-python3 tools/create_steps.py --funnel-id "$FUNNEL_ID" --step "Opt-in:optin" --apply
+# 4. somewhere to put the page. --funnel takes the NAME; drop it entirely if the
+#    location has exactly one funnel.
+python3 tools/create_steps.py --funnel "Launch" --step "Opt-in:optin" --apply
 
 # 5. build the page tree — built-in elements, no --templates needed
 python3 tools/ghl_generator.py --emit-example > spec.json
 #    edit spec.json: your sections, your copy, your form id from .form-id
 python3 tools/ghl_generator.py --spec spec.json \
-        --page-id "$PAGE_ID" --funnel-id "$FUNNEL_ID" \
-        --location-id "$GHL_LOCATION_ID" --out page.json
+        --funnel "Launch" --page "Opt-in" --out page.json
 
 # 6. styling — WITHOUT THIS NOTHING IS STYLED
 python3 tools/css_emitter.py page.json --out page-styled.json
 
 # 7. write it, then verify at the RENDERED surface
-python3 tools/inject_page.py --page-id "$PAGE_ID" --funnel-id "$FUNNEL_ID" \
-        --file page-styled.json
+python3 tools/inject_page.py --funnel "Launch" --page "Opt-in" \
+        --page-data page-styled.json --expect "a distinctive phrase from your copy"
 ```
+
+Every `--funnel`/`--page` above is optional sugar over `--funnel-id`/`--page-id`,
+which still work unchanged. Both forms print what they resolved:
+
+```
+  resolved funnel "Launch"       -> <funnelId>   (matched by name)
+  resolved page   "Opt-in"       -> <pageId>     (matched by name)
+```
+
+Read that line. A resolution you did not intend is only catchable if you look at it.
+When two funnels could match, the tool lists them and stops rather than picking —
+guessing between real options is how the wrong page gets overwritten.
 
 Verified end to end with no capture and no donor: 2 sections, 10 nodes, 7,622 bytes of
 emitted CSS.

@@ -3,6 +3,8 @@
 !.env.example
 *.jwt
 .jwt
+# id-lookup cache — holds YOUR account's funnel/page ids and names
+.ghl-ids.json
 __pycache__/
 *.pyc
 node_modules/

@@ -151,18 +151,26 @@ def location_id(explicit: str = None, env_file: str = ".env") -> str:
         "  or pass --location-id <id>, or put it in .env (see .env.example).")
 
 
-def private_token(explicit: str = None, env_file: str = ".env") -> str:
-    """The Private Integration Token, used for the two read-only lookup routes."""
+def private_token(explicit: str = None, env_file: str = ".env",
+                  hint: str = "  or pass the ids explicitly with "
+                              "--funnel-id / --page-id.") -> str:
+    """The Private Integration Token, used for the two read-only lookup routes.
+
+    `hint` is the second line of the failure. Callers that cannot be satisfied by
+    passing ids instead (push_emails.py needs the PIT for the API itself, not for
+    a lookup) pass hint="" so the message does not suggest a flag they lack.
+    """
     if explicit and explicit.strip():
         return explicit.strip()
     found = load_env(env_file).get("GHL_PIT")
     if found and found.strip():
         return found.strip()
     raise ResolveError(
-        "no GHL_PIT, so ids cannot be looked up.\n"
+        "no GHL_PIT.\n"
         "  fix: export GHL_PIT=<token>   (sub-account Settings -> Private "
-        "Integrations)\n"
-        "  or pass the ids explicitly with --funnel-id / --page-id.")
+        "Integrations),\n"
+        "       or copy .env.example to .env and fill it in."
+        + (("\n" + hint) if hint else ""))
 
 
 # ── the two lookup routes ────────────────────────────────────────────────────
@@ -373,7 +381,7 @@ def resolve_page(pit: str, loc: str, funnel_id: str, name_or_id: str = None,
 def report(kind: str, res: Resolved) -> str:
     """The one line every tool prints, so a wrong resolution is never silent."""
     label = f'"{res.name}"' if res.name else "(by id)"
-    return f"  resolved {kind:<6} {label:<26} -> {res.id}   ({res.how})"
+    return f"  resolved {kind:<6} {label:<16} -> {res.id}   ({res.how})"
 
 
 # ── offline self-test ────────────────────────────────────────────────────────

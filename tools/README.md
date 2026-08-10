@@ -53,11 +53,37 @@ pip install playwright    # only needed for get_token.py
 `app.gohighlevel.com/v2/location/<THIS>/dashboard`
 
 Add `.env` and `.jwt` to `.gitignore` — both hold live credentials. Also ignore
-`.workflows-deployed.json` (or whatever you pass to `deploy_workflow.py --state`):
-it is not a credential, but it holds real workflow ids for a real account.
+`.workflows-deployed.json` (or whatever you pass to `deploy_workflow.py --state`)
+and `.ghl-ids.json` (the id-lookup cache): neither is a credential, but both hold
+real ids for a real account.
 
 Every tool runs `--help`. Every tool that writes refuses to write without an
 explicit flag.
+
+### You do not have to go and find the ids
+
+`--location-id`, `--funnel-id` and `--page-id` are **optional everywhere**. Give a
+name instead — `--funnel "Launch"`, `--page "Opt-in"` — or give nothing at all when
+there is only one candidate. `ghl_ids.py` resolves them and every tool prints what
+it resolved:
+
+```
+  resolved funnel "Launch"       -> <funnelId>   (matched by name)
+  resolved page   "Opt-in"       -> <pageId>     (matched by name)
+```
+
+The rule underneath, which is worth keeping if you extend these tools:
+
+> **Refuse to invent. Never refuse to look up.**
+
+An id is a fact about the account, so it gets looked up. A form name, a step name,
+a spec — those are decisions, and a tool that invents one is worse than a tool that
+stops. `create_form.py` still refuses without `--name`, and always should. And when
+a lookup finds *several* real candidates, it lists them and stops: picking one for
+you would be guessing between real options, which is how the wrong page gets
+overwritten.
+
+Explicit ids still work exactly as they always did, and skip the lookup entirely.
 
 ---
 
@@ -103,6 +129,41 @@ read-only, and there is no create-funnel-step operation at all. Those need
 `inject_page.py`, `deploy_workflow.py` and `create_steps.py` below. Re-check with
 `search` before believing it — the catalogue grows.
 
+### 1b. `ghl_ids.py` — resolve the ids so nothing else has to ask for them
+
+```bash
+python3 ghl_ids.py                          # every funnel in the location, with ids
+python3 ghl_ids.py --funnel "Launch"        # that funnel's id, and all of its pages
+python3 ghl_ids.py --funnel "Launch" --page "Opt-in" --json
+python3 ghl_ids.py --refresh                # ignore the cache after creating something
+python3 ghl_ids.py --self-test              # 15 offline fixture tests, no credentials
+```
+
+Read-only. Every other tool imports it, which is why `--funnel "<name>"` works
+wherever `--funnel-id` does. Two routes do the whole job:
+
+```
+GET services.leadconnectorhq.com/funnels/funnel/list?locationId=<loc>&limit=20
+    -> {"funnels": [{"_id", "name", "steps": [...]}]}
+
+GET services.leadconnectorhq.com/funnels/page
+        ?funnelId=<f>&locationId=<loc>&limit=20&offset=0
+    -> a BARE ARRAY of {"_id", "name", "funnelId", "stepId"}
+```
+
+**Two traps, both live-confirmed, both worth the ink:**
+
+1. `/funnels/page` returns a **bare array**, not `{"pages": [...]}` — it is the one
+   collection route here that does not wrap. A parser reaching for a `"pages"` key
+   gets `None`, reports "no pages", and makes a healthy endpoint look broken. That
+   single wrong assumption is the whole reason this route had a bad reputation.
+2. **All four query params are required.** Drop `locationId` or drop `offset` and it
+   returns 422 rather than defaulting.
+
+Results are cached in `.ghl-ids.json` for an hour so a multi-step build does not
+re-query on every tool; `--refresh` bypasses it. Gitignore it — it holds your
+account's funnel and page names.
+
 ### 2. `get_token.py` — capture the internal `token-id`
 
 > Full cold-start runbook, including launching Chrome yourself and what to do when
@@ -128,8 +189,10 @@ is really listening with `curl -s http://127.0.0.1:9222/json/version` before
 blaming the script.
 
 ```bash
-python3 get_token.py --location-id "$GHL_LOCATION_ID"   # writes ./.jwt
+python3 get_token.py                                    # writes ./.jwt
 ```
+
+The location id comes from `--location-id`, then `$GHL_LOCATION_ID`, then `.env`.
 
 **This is passive observation.** It attaches to your browser, subscribes to
 network request events, navigates to a normal in-app URL, and reads the
@@ -184,9 +247,17 @@ Output holds the source account's real ids. Gitignore it.
 
 ```bash
 python3 ghl_generator.py --emit-example > page-spec.json
+python3 ghl_generator.py --spec page-spec.json --funnel "Launch" --page "Opt-in" \
+    --out page.json
 python3 ghl_generator.py --spec page-spec.json --templates exemplars.json \
-    --base captured-pagedata.json --out page.json
+    --base captured-pagedata.json --out page.json    # explicit ids also still work
 ```
+
+The ids here are only *stamped onto* the sections, so this tool stays usable
+offline: if there is no PIT to look one up with, it prints a note and builds
+anyway. A `--funnel`/`--page` NAME that does not resolve is fatal, though — you
+asked for something specific, and a blank id would hide the mistake until the page
+rendered wrong.
 
 `css_emitter.py` *styles* a tree and `inject_page.py` *writes* one; this is what
 **builds** one. It clones the exemplars from step 3 and overrides only text, colour
@@ -294,9 +365,12 @@ and widths, which no class-based rule can outrank.
 ### 6. `create_steps.py` — create somewhere to inject into
 
 ```bash
-python3 create_steps.py --funnel-id <id> \
+python3 create_steps.py --funnel "Launch" \
     --step "Registration:registration" --step "Confirmation:confirmation" --apply
 ```
+
+`--funnel-id <id>` still works. Drop the funnel entirely when the location has one.
+The steps themselves are never invented: no `--step`/`--steps-file`, no run.
 
 `inject_page.py` writes *into* an existing page; it cannot conjure one. **There is
 no REST route for creating a funnel step** — `POST backend/funnels/page` 404s, and
@@ -406,11 +480,15 @@ nothing and made the client's own copy unreadable in the builder.
 ### 9. `inject_page.py` — write a page and prove it
 
 ```bash
+python3 inject_page.py --funnel "Launch" --page "Opt-in" \
+    --page-data page.styled.json --expect "a distinctive phrase"
 python3 inject_page.py --page-id <id> --funnel-id <id> \
     --page-data page.styled.json --expect "a distinctive phrase"
 ```
 
-Both ids come from the builder URL:
+This one WRITES, so read the `resolved page` line it prints before it sends
+anything, or run it with `--dry-run` first. If you would rather supply the ids
+yourself they are both in the builder URL:
 `.../funnels/<funnelId>/pages/<pageId>/edit`
 
 It reads the current `pageVersion`, POSTs `current + 1` to the builder's autosave
@@ -555,12 +633,13 @@ scanner cannot know them, and they are the ones that matter.
  2. ghl_mcp.py locations                       # prove auth
  3. ghl_mcp.py search / describe               # find real operations, never guess
  4. capture_funnel.py <url> --exemplars ex.json  # READ a real page first
+ 4b. ghl_ids.py                                # see the account; ids resolved for you
  5. get_token.py                               # internal token, for 6-11
  6. ghl_generator.py --spec ... --out page.json  # BUILD the tree
  7. page_shell.py --attach page.json           # the design system, BEFORE the emitter
     css_emitter.py page.json                   # emit sectionStyles (or nothing styles)
     page_shell.py --check page.json            # one shell, wired, no orphan classes
- 8. create_steps.py --funnel-id ... --apply    # somewhere to inject into
+ 8. create_steps.py --funnel "..." --apply     # somewhere to inject into
     create_form.py --name ... --apply          # the funnel's own form
     create_custom_values.py --values ... --apply   # every slot, before it is referenced
  9. inject_page.py --expect "..."              # write the page

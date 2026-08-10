@@ -71,6 +71,17 @@ Two ways, no human needed:
 
 ## 4. `FUNNEL_ID`
 
+**You usually do not need this as a variable at all.** `tools/ghl_ids.py` wraps the
+call below, and every tool that used to demand `--funnel-id` now accepts
+`--funnel "<name>"` — or nothing, when the location has exactly one funnel:
+
+```bash
+python3 tools/ghl_ids.py                    # every funnel, with its id
+python3 tools/ghl_ids.py --funnel "Launch"  # one funnel, plus all of its pages
+```
+
+The raw call, for when you want it:
+
 ```bash
 curl -s -H "Authorization: Bearer $GHL_PIT" -H "Version: 2021-07-28" \
   -A "Mozilla/5.0" \
@@ -83,6 +94,9 @@ No funnel yet? Create one in the UI — there is no public create-funnel endpoin
 a two-minute manual step, once per project.
 
 ## 5. `PAGE_ID`
+
+Same story: `python3 tools/ghl_ids.py --funnel "Launch"` lists every page with its
+id, and `--page "<name>"` is accepted wherever `--page-id` is.
 
 Fully solved. **All four query params are required:**
 
@@ -117,12 +131,10 @@ Other sources: the **builder URL** (the id is in the address) always works, and
 `tools/create_steps.py` prints the ids of steps it creates — capture them then rather
 than re-deriving them later.
 
-**Keep an id map.** Write `page-ids.json` mapping human names to ids the moment you
-have them. Every later step needs them and re-deriving them is pure waste.
-
-```json
-{ "Optin": "…", "Registration": "…", "Confirmation": "…" }
-```
+**You no longer have to keep an id map by hand.** `ghl_ids.py` caches the name→id
+mapping in `.ghl-ids.json` for an hour and every tool reads it, so a five-step build
+queries once. Run anything with `--refresh` after you create a funnel or page.
+Gitignore that file — it holds your account's funnel and page names.
 
 ## 6. The internal token — separate, and you get it yourself
 
